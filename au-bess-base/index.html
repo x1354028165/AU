@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AU BESS Platform - Login</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310B981'%3E%3Crect x='6' y='6' width='12' height='14' rx='2' /%3E%3Crect x='9' y='3' width='6' height='3' rx='1' /%3E%3Crect x='9' y='10' width='6' height='6' rx='0.5' fill='%23064E3B' /%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/main.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 min-h-screen bg-grid flex items-center justify-center">
+
+  <div class="text-center">
+    <!-- Logo -->
+    <div class="mb-10">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500 mb-4">
+        <i data-lucide="zap" class="w-8 h-8 text-white"></i>
+      </div>
+      <h1 class="text-3xl font-bold text-white">AU BESS Platform</h1>
+      <p class="text-slate-400 mt-2">Australia Battery Energy Storage System</p>
+      <p class="text-slate-500 text-sm mt-1">Select your role to continue</p>
+    </div>
+
+    <!-- Login Cards -->
+    <div class="flex flex-col sm:flex-row gap-5 justify-center">
+
+      <!-- Owner -->
+      <a href="#" onclick="loginAs('owner')"
+        class="login-card group block w-64 bg-slate-800/80 border border-slate-700 rounded-2xl p-6 text-left hover:border-amber-500/50">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center mb-4 group-hover:bg-amber-500/30 transition-colors">
+          <i data-lucide="briefcase" class="w-6 h-6 text-amber-400"></i>
+        </div>
+        <h2 class="text-white font-bold text-lg">Asset Owner</h2>
+        <p class="text-slate-400 text-sm mt-1">Pacific Energy Group</p>
+        <p class="text-slate-500 text-xs mt-3">Manage portfolio, assign operators, monitor SoH</p>
+        <div class="mt-4 flex items-center text-amber-400 text-sm font-medium">
+          Enter Portal
+          <i data-lucide="arrow-right" class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- Operator A -->
+      <a href="#" onclick="loginAs('op_a')"
+        class="login-card group block w-64 bg-slate-800/80 border border-slate-700 rounded-2xl p-6 text-left hover:border-emerald-500/50">
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-4 group-hover:bg-emerald-500/30 transition-colors">
+          <i data-lucide="cpu" class="w-6 h-6 text-emerald-400"></i>
+        </div>
+        <h2 class="text-white font-bold text-lg">Operator A</h2>
+        <p class="text-slate-400 text-sm mt-1">GreenGrid Operations</p>
+        <p class="text-slate-500 text-xs mt-3">Dispatch, monitor assets, view logs</p>
+        <div class="mt-4 flex items-center text-emerald-400 text-sm font-medium">
+          Enter Portal
+          <i data-lucide="arrow-right" class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- Operator B -->
+      <a href="#" onclick="loginAs('op_b')"
+        class="login-card group block w-64 bg-slate-800/80 border border-slate-700 rounded-2xl p-6 text-left hover:border-emerald-500/50">
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-4 group-hover:bg-emerald-500/30 transition-colors">
+          <i data-lucide="cpu" class="w-6 h-6 text-emerald-400"></i>
+        </div>
+        <h2 class="text-white font-bold text-lg">Operator B</h2>
+        <p class="text-slate-400 text-sm mt-1">VoltEdge Energy</p>
+        <p class="text-slate-500 text-xs mt-3">Dispatch, monitor assets, view logs</p>
+        <div class="mt-4 flex items-center text-emerald-400 text-sm font-medium">
+          Enter Portal
+          <i data-lucide="arrow-right" class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Footer -->
+    <p class="text-slate-600 text-xs mt-10">Phase 1 Demo · AU BESS Management Platform</p>
+  </div>
+
+  <script>
+    function loginAs(role) {
+      localStorage.setItem('role', role);
+      window.location.href = 'dashboard.html';
+    }
+    lucide.createIcons();
+  </script>
+</body>
+</html>
