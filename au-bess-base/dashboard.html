@@ -29,11 +29,16 @@
       <!-- Header -->
       <header id="header" class="px-8 py-4 border-b border-white/10"></header>
 
-      <!-- Market Banner + Chart -->
-      <div id="market-banner" class="px-4 md:px-8 pt-4 md:pt-6"></div>
+      <!-- View: Dashboard (default) -->
+      <div id="view-dashboard">
+        <!-- Market Banner + Chart -->
+        <div id="market-banner" class="px-4 md:px-8 pt-4 md:pt-6"></div>
+        <!-- Station Cards -->
+        <div id="station-container" class="flex-1 p-4 md:p-8"></div>
+      </div>
 
-      <!-- Station Cards -->
-      <div id="station-container" class="flex-1 p-4 md:p-8"></div>
+      <!-- View: Reports (hidden by default) -->
+      <div id="view-reports" class="hidden p-4 md:p-8"></div>
     </main>
   </div>
 
@@ -41,6 +46,7 @@
   <script src="js/auth.js"></script>
   <script src="js/simulator.js"></script>
   <script src="js/charts.js"></script>
+  <script src="js/reports.js"></script>
   <script src="js/ui_router.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', initDashboard);

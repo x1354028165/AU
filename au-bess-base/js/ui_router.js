@@ -21,20 +21,42 @@ const THEMES = {
   }
 };
 
+let currentView = 'dashboard';
+
 function getMenus() {
   return {
     owner: [
-      { id: 'portfolio', labelKey: 'menu_portfolio', icon: 'briefcase' },
-      { id: 'assets', labelKey: 'menu_assets', icon: 'battery-charging' },
-      { id: 'lease', labelKey: 'menu_lease', icon: 'file-text' },
-      { id: 'health', labelKey: 'menu_health', icon: 'activity' }
+      { id: 'portfolio', labelKey: 'menu_portfolio', icon: 'briefcase', view: 'dashboard' },
+      { id: 'assets', labelKey: 'menu_assets', icon: 'battery-charging', view: 'dashboard' },
+      { id: 'lease', labelKey: 'menu_lease', icon: 'file-text', view: 'reports' },
+      { id: 'health', labelKey: 'menu_health', icon: 'activity', view: 'reports' }
     ],
     operator: [
-      { id: 'dispatch', labelKey: 'menu_dispatch', icon: 'zap' },
-      { id: 'assets', labelKey: 'menu_assets', icon: 'battery-charging' },
-      { id: 'logs', labelKey: 'menu_logs', icon: 'scroll-text' }
+      { id: 'dispatch', labelKey: 'menu_dispatch', icon: 'zap', view: 'dashboard' },
+      { id: 'assets', labelKey: 'menu_assets', icon: 'battery-charging', view: 'dashboard' },
+      { id: 'logs', labelKey: 'menu_logs', icon: 'scroll-text', view: 'reports' }
     ]
   };
+}
+
+/**
+ * 切换视图
+ */
+function switchView(viewId) {
+  currentView = viewId;
+  const dashView = document.getElementById('view-dashboard');
+  const reportView = document.getElementById('view-reports');
+
+  if (!dashView || !reportView) return;
+
+  if (viewId === 'reports') {
+    dashView.classList.add('hidden');
+    reportView.classList.remove('hidden');
+    if (typeof renderReports === 'function') renderReports();
+  } else {
+    reportView.classList.add('hidden');
+    dashView.classList.remove('hidden');
+  }
 }
 
 // ============ 初始化 ============
@@ -82,6 +104,11 @@ function onSimUpdate(price, history) {
   // 尖峰警报
   if (price > 5000) {
     triggerSpikeAlert();
+  }
+
+  // 如果当前在报表视图，实时更新
+  if (currentView === 'reports' && typeof renderReports === 'function') {
+    renderReports();
   }
 }
 
@@ -180,14 +207,16 @@ function renderSidebar(role, theme) {
       </span>
     </div>
     <nav class="flex-1 p-4 space-y-1">
-      ${menuItems.map((item, i) => `
-        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
-          ${i === 1 ? theme.sidebarActive : theme.sidebarText + ' ' + theme.sidebarHover}"
-          onclick="closeMobileMenu(); return false;">
+      ${menuItems.map((item) => {
+        const isActive = (item.view === currentView) || (currentView === 'dashboard' && (item.id === 'assets' || item.id === 'portfolio' || item.id === 'dispatch'));
+        return `
+        <a href="#" data-menu="${item.id}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
+          ${isActive && item.view === currentView ? theme.sidebarActive : theme.sidebarText + ' ' + theme.sidebarHover}"
+          onclick="handleMenuClick('${item.id}', '${item.view}'); return false;">
           <i data-lucide="${item.icon}" class="w-4 h-4"></i>
           ${getTrans(item.labelKey)}
-        </a>
-      `).join('')}
+        </a>`;
+      }).join('')}
     </nav>
     <div class="p-4 border-t border-white/10">
       <a href="#" onclick="logout()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors">
@@ -204,8 +233,20 @@ function renderSidebar(role, theme) {
 function toggleMobileMenu() {
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('mobile-overlay');
+  const isOpening = sidebar.classList.contains('-translate-x-full');
   sidebar.classList.toggle('-translate-x-full');
   if (overlay) overlay.classList.toggle('hidden');
+
+  // 移动端打开菜单时暂停 ECharts 渲染以节省内存
+  if (typeof marketChart !== 'undefined' && marketChart) {
+    if (isOpening) {
+      // 菜单打开 → 暂停图表动画
+      marketChart.setOption({ animation: false });
+    } else {
+      // 菜单关闭 → 恢复动画
+      marketChart.setOption({ animation: true });
+    }
+  }
 }
 
 function closeMobileMenu() {
@@ -321,6 +362,7 @@ function renderStationCard(station, theme, isOwner) {
       <p class="text-sm font-bold font-mono ${station.revenue_today >= 0 ? 'text-emerald-400' : 'text-red-400'} revenue-tick" data-revenue="${station.id}">
         ${station.revenue_today >= 0 ? '' : '-'}A$${Math.abs(station.revenue_today).toFixed(2)}
       </p>
+      <p class="text-xs text-slate-600 mt-0.5">${getTrans('efficiency_label')}: ${(station.efficiency * 100).toFixed(0)}%</p>
     </div>
   ` : '';
 
@@ -454,6 +496,19 @@ function updateStationCards(theme, isOwner) {
       // This is the SoC percentage (in the bar area)
     }
   });
+}
+
+// ============ 菜单路由 ============
+
+function handleMenuClick(menuId, viewId) {
+  closeMobileMenu();
+  switchView(viewId);
+
+  // 更新侧边栏高亮
+  const role = getCurrentUser();
+  const isOwner = role === 'owner';
+  const theme = THEMES[isOwner ? 'owner' : 'operator'];
+  renderSidebar(role, theme);
 }
 
 // ============ 划转交互 ============

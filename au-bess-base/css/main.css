@@ -213,6 +213,11 @@ input[type="checkbox"] {
     width: 2.5rem;
     height: 3rem;
   }
+
+  /* 手机端图表缩小 */
+  #market-chart {
+    height: 200px !important;
+  }
 }
 
 /* ============ 响应式：4K 大屏 ============ */

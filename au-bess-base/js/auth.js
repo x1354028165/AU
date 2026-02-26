@@ -50,6 +50,27 @@ const TRANSLATIONS = {
     owner_subtitle: 'Manage your energy storage portfolio',
     operator_subtitle: 'Your assigned stations',
 
+    // Reports
+    export_csv: 'Export CSV',
+    leaderboard: 'Operator Leaderboard',
+    logs_title: 'Dispatch Logs',
+    table_time: 'Time',
+    table_event: 'Event',
+    table_station: 'Station',
+    table_action: 'Action',
+    table_price: 'Trigger Price',
+    table_revenue: 'Revenue',
+    table_rev_per_mw: 'Revenue/MW',
+    table_soh_loss: 'SoH Loss',
+    table_total_rev: 'Total Revenue',
+    table_total_cap: 'Total Capacity',
+    table_operator: 'Operator',
+    rank: 'Rank',
+    no_logs: 'No dispatch logs yet',
+    no_logs_hint: 'Logs will appear as the simulator runs',
+    report_owner_hint: 'Performance comparison across operators',
+    report_op_hint: 'Real-time dispatch activity for your stations',
+
     // Simulation
     soc: 'SoC',
     status_idle: 'Idle',
@@ -148,6 +169,27 @@ const TRANSLATIONS = {
     owner_subtitle: '管理您的储能资产组合',
     operator_subtitle: '您负责运维的电站',
 
+    // 报表
+    export_csv: '导出 CSV',
+    leaderboard: '运维方绩效榜',
+    logs_title: '调度日志',
+    table_time: '时间',
+    table_event: '事件',
+    table_station: '电站',
+    table_action: '动作',
+    table_price: '触发电价',
+    table_revenue: '收益',
+    table_rev_per_mw: '单兆瓦收益',
+    table_soh_loss: '健康度损耗',
+    table_total_rev: '总收益',
+    table_total_cap: '总容量',
+    table_operator: '运维方',
+    rank: '排名',
+    no_logs: '暂无调度日志',
+    no_logs_hint: '仿真运行后日志将自动出现',
+    report_owner_hint: '各运维方绩效对比',
+    report_op_hint: '您电站的实时调度记录',
+
     // 仿真
     soc: '荷电状态',
     status_idle: '待机',
@@ -206,13 +248,13 @@ const TRANSLATIONS = {
 // ============ 语言管理 ============
 
 function initLang() {
-  if (!localStorage.getItem('lang')) {
-    try {
-      // Phase 2: 默认英文
-      localStorage.setItem('lang', 'en');
-    } catch (e) {
-      localStorage.setItem('lang', 'en');
-    }
+  // Phase 2: 强制默认英文，确保演示第一眼为英文
+  // 用户手动切换后通过 switchLang 存储，下次加载仍尊重手动选择
+  const VERSION_KEY = 'lang_version';
+  const CURRENT_VERSION = '2'; // 递增此值可强制重置所有用户语言
+  if (localStorage.getItem(VERSION_KEY) !== CURRENT_VERSION) {
+    localStorage.setItem('lang', 'en');
+    localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
   }
 }
 
