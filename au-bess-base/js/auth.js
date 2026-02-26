@@ -1,23 +1,35 @@
 /**
- * auth.js - 数据中心、确权逻辑与 i18n
- * Phase 1 Enhanced: 澳洲储能电站管理平台
+ * auth.js - 数据中心、确权逻辑、i18n 与登录验证
+ * Phase 1 Enhanced v2: 澳洲储能电站管理平台
  */
 
 // ============ i18n 多语言 ============
 const TRANSLATIONS = {
   en: {
-    // Login page
+    // Login
     app_title: 'AU BESS Platform',
     app_subtitle: 'Australia Battery Energy Storage System',
-    select_role: 'Select your role to continue',
-    asset_owner: 'Asset Owner',
-    operator_a: 'Operator A',
-    operator_b: 'Operator B',
-    enter_portal: 'Enter Portal',
-    owner_desc: 'Manage portfolio, assign operators, monitor SoH',
-    operator_desc: 'Dispatch, monitor assets, view logs',
-    loading: 'Initializing secure session...',
+    login_title: 'Account Login',
+    login_subtitle: 'Enter your credentials to access the platform',
+    username: 'Username',
+    username_placeholder: 'Enter username',
+    password: 'Password',
+    password_placeholder: 'Enter password',
+    remember_me: 'Remember me',
+    login_btn: 'Sign In',
+    logging_in: 'Verifying...',
+    invalid_creds: 'Invalid username or password',
     phase_label: 'Phase 1 Demo · AU BESS Management Platform',
+    loading: 'Initializing secure session...',
+
+    // 2FA
+    mfa_title: 'Two-Factor Authentication',
+    mfa_subtitle: 'Enter the 6-digit code from your authenticator app',
+    mfa_verify: 'Verify',
+    mfa_verifying: 'Verifying...',
+    mfa_back: 'Back to login',
+    incorrect_code: 'Invalid verification code',
+    attempts_left: 'attempts remaining',
 
     // Sidebar menus
     menu_portfolio: 'Portfolio',
@@ -37,6 +49,21 @@ const TRANSLATIONS = {
     assets_overview: 'Assets Overview',
     owner_subtitle: 'Manage your energy storage portfolio',
     operator_subtitle: 'Your assigned stations',
+
+    // Simulation
+    soc: 'SoC',
+    status_idle: 'Idle',
+    status_charging: 'Charging',
+    status_discharging: 'Discharging',
+    revenue_today: "Today's Revenue",
+    market_price: 'Market Price',
+    power_output: 'Power Output',
+    market_chart_title: 'NEM Spot Price & Station Output (5-min)',
+    price_spike_alert: 'PRICE SPIKE',
+    efficiency_label: 'Round-trip Eff.',
+    charging: 'Charging',
+    discharging: 'Discharging',
+    idle: 'Standby',
 
     // Station card
     capacity: 'Capacity',
@@ -77,18 +104,30 @@ const TRANSLATIONS = {
     lang_switch: 'CN',
   },
   zh: {
-    // 登录页
+    // 登录
     app_title: '澳洲储能管理平台',
     app_subtitle: 'Australia Battery Energy Storage System',
-    select_role: '请选择角色登录',
-    asset_owner: '资产业主',
-    operator_a: '运维商 A',
-    operator_b: '运维商 B',
-    enter_portal: '进入系统',
-    owner_desc: '管理资产组合、分配运维商、监控电池健康',
-    operator_desc: '调度管理、资产监控、查看日志',
-    loading: '正在初始化安全会话...',
+    login_title: '账号登录',
+    login_subtitle: '输入您的凭证以访问系统',
+    username: '用户名',
+    username_placeholder: '请输入用户名',
+    password: '密码',
+    password_placeholder: '请输入密码',
+    remember_me: '记住我',
+    login_btn: '登 录',
+    logging_in: '验证中...',
+    invalid_creds: '用户名或密码错误',
     phase_label: 'Phase 1 演示 · 澳洲储能管理平台',
+    loading: '正在初始化安全会话...',
+
+    // 2FA
+    mfa_title: '双重身份验证',
+    mfa_subtitle: '请输入验证器应用中的 6 位验证码',
+    mfa_verify: '验 证',
+    mfa_verifying: '验证中...',
+    mfa_back: '返回登录',
+    incorrect_code: '验证码错误',
+    attempts_left: '次重试机会',
 
     // 侧边栏菜单
     menu_portfolio: '资产总览',
@@ -108,6 +147,21 @@ const TRANSLATIONS = {
     assets_overview: '资产概览',
     owner_subtitle: '管理您的储能资产组合',
     operator_subtitle: '您负责运维的电站',
+
+    // 仿真
+    soc: '荷电状态',
+    status_idle: '待机',
+    status_charging: '充电中',
+    status_discharging: '放电中',
+    revenue_today: '今日收益',
+    market_price: '市场电价',
+    power_output: '输出功率',
+    market_chart_title: 'NEM 现货电价与电站出力 (5分钟)',
+    price_spike_alert: '电价尖峰',
+    efficiency_label: '往返效率',
+    charging: '充电中',
+    discharging: '放电中',
+    idle: '待机',
 
     // 电站卡片
     capacity: '额定容量',
@@ -149,66 +203,69 @@ const TRANSLATIONS = {
   }
 };
 
-/**
- * 初始化语言设置（自动检测浏览器语言）
- */
+// ============ 语言管理 ============
+
 function initLang() {
   if (!localStorage.getItem('lang')) {
     try {
-      const browserLang = (typeof navigator !== 'undefined' && (navigator.language || navigator.userLanguage)) || 'en';
-      localStorage.setItem('lang', browserLang.startsWith('zh') ? 'zh' : 'en');
+      // Phase 2: 默认英文
+      localStorage.setItem('lang', 'en');
     } catch (e) {
       localStorage.setItem('lang', 'en');
     }
   }
 }
 
-/**
- * 获取当前语言
- */
 function getLang() {
   return localStorage.getItem('lang') || 'en';
 }
 
-/**
- * 获取翻译文本
- * @param {string} key - 翻译键
- * @returns {string}
- */
 function getTrans(key) {
   const lang = getLang();
   return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS['en'][key] || key;
 }
 
-/**
- * 切换语言并重绘（无刷新）
- * @param {string} lang - 'en' | 'zh'
- */
 function switchLang(lang) {
   localStorage.setItem('lang', lang);
-  // 如果在 dashboard 页面，重新渲染
   if (typeof initDashboard === 'function') {
     initDashboard();
   }
 }
 
-/**
- * 切换到另一种语言
- */
 function toggleLang() {
   const current = getLang();
   switchLang(current === 'en' ? 'zh' : 'en');
 }
 
-// 初始化语言
 initLang();
 
-// ============ 用户数据 ============
+// ============ 用户数据（含账号密码）============
 const users = [
-  { id: 'owner_1', role: 'owner', name: 'Pacific Energy Group' },
-  { id: 'op_a', role: 'operator', name: 'GreenGrid Operations' },
-  { id: 'op_b', role: 'operator', name: 'VoltEdge Energy' }
+  { id: 'owner_1', role: 'owner', name: 'Pacific Energy Group', username: 'admin', password: 'admin123' },
+  { id: 'op_a', role: 'operator', name: 'GreenGrid Operations', username: 'op_a', password: 'pass123' },
+  { id: 'op_b', role: 'operator', name: 'VoltEdge Energy', username: 'op_b', password: 'pass123' }
 ];
+
+// ============ 登录验证 ============
+
+/**
+ * 验证用户名密码
+ * @param {string} username
+ * @param {string} password
+ * @returns {object|null} 匹配的用户对象或 null
+ */
+function verifyCredentials(username, password) {
+  return users.find(u => u.username === username && u.password === password) || null;
+}
+
+/**
+ * 验证 MFA 验证码（Demo 模式：接受任意 6 位数字）
+ * @param {string} code - 6 位验证码
+ * @returns {boolean}
+ */
+function verifyMFA(code) {
+  return /^\d{6}$/.test(code);
+}
 
 // ============ 电站默认数据 ============
 const DEFAULT_STATIONS = [
@@ -222,7 +279,8 @@ const DEFAULT_STATIONS = [
     location: 'Newcastle, NSW',
     lease_start: '2025-01-01',
     lease_end: '2028-12-31',
-    annual_fee: 850000
+    annual_fee: 850000,
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0
   },
   {
     id: 'st_02',
@@ -234,7 +292,8 @@ const DEFAULT_STATIONS = [
     location: 'Geelong, VIC',
     lease_start: '2024-06-01',
     lease_end: '2027-05-31',
-    annual_fee: 420000
+    annual_fee: 420000,
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0
   },
   {
     id: 'st_03',
@@ -246,7 +305,8 @@ const DEFAULT_STATIONS = [
     location: 'Sunshine Coast, QLD',
     lease_start: '2025-02-15',
     lease_end: '2030-02-14',
-    annual_fee: 1200000
+    annual_fee: 1200000,
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0
   },
   {
     id: 'st_04',
@@ -258,21 +318,19 @@ const DEFAULT_STATIONS = [
     location: 'Adelaide, SA',
     lease_start: '-',
     lease_end: '-',
-    annual_fee: 0
+    annual_fee: 0,
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0
   }
 ];
 
-// ============ 从 localStorage 加载或使用默认数据 ============
+// ============ 数据持久化 ============
 let stations = loadStations();
 
 function loadStations() {
   const saved = localStorage.getItem('stations');
   if (saved) {
-    try {
-      return JSON.parse(saved);
-    } catch (e) {
-      return JSON.parse(JSON.stringify(DEFAULT_STATIONS));
-    }
+    try { return JSON.parse(saved); }
+    catch (e) { return JSON.parse(JSON.stringify(DEFAULT_STATIONS)); }
   }
   return JSON.parse(JSON.stringify(DEFAULT_STATIONS));
 }
@@ -305,9 +363,7 @@ function getOperators() {
 
 function getStationsByRole() {
   const role = getCurrentUser();
-  if (role === 'owner') {
-    return stations;
-  }
+  if (role === 'owner') return stations;
   return stations.filter(s => s.operator_id === role);
 }
 
@@ -339,8 +395,7 @@ function getLeaseRemaining(endDate) {
   if (endDate === '-') return '-';
   const end = new Date(endDate);
   const now = new Date();
-  const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-  return diff;
+  return Math.ceil((end - now) / (1000 * 60 * 60 * 24));
 }
 
 function formatAUD(amount) {

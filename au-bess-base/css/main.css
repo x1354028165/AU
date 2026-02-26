@@ -1,6 +1,6 @@
 /**
  * main.css - 样式、动画与响应式
- * Phase 1 Enhanced: 澳洲储能电站管理平台
+ * Phase 1 Enhanced v2: 澳洲储能电站管理平台
  */
 
 /* ============ CSS 变量 ============ */
@@ -32,6 +32,65 @@ body {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ Auth Step 滑入滑出动画 ============ */
+.auth-step {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Step 1 → Step 2: 向左滑出 */
+.auth-step-exit {
+  animation: slideOutLeft 0.3s ease-in forwards;
+}
+
+/* Step 2 → Step 1: 向右滑出 */
+.auth-step-exit-reverse {
+  animation: slideOutRight 0.3s ease-in forwards;
+}
+
+/* Step 2 从右滑入 */
+.auth-step-enter {
+  animation: slideInRight 0.4s ease-out forwards;
+}
+
+/* Step 1 从左滑入 */
+.auth-step-enter-reverse {
+  animation: slideInLeft 0.4s ease-out forwards;
+}
+
+@keyframes slideOutLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-30px); }
+}
+
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(30px); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ============ 抖动动画 ============ */
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-4px); }
+  60% { transform: translateX(3px); }
+  75% { transform: translateX(-1px); }
 }
 
 /* ============ Toast 动画 ============ */
@@ -73,19 +132,15 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-@keyframes pulse-glow-yellow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-  50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
-}
-
-.status-glow-yellow {
-  animation: pulse-glow-yellow 2s ease-in-out infinite;
-}
-
 /* ============ Select 下拉框 ============ */
 select option {
   background: #1e293b;
   color: white;
+}
+
+/* ============ Checkbox ============ */
+input[type="checkbox"] {
+  accent-color: #10b981;
 }
 
 /* ============ 滚动条 ============ */
@@ -94,7 +149,7 @@ select option {
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
-/* ============ 登录页卡片 ============ */
+/* ============ 登录卡片 ============ */
 .login-card {
   transition: all 0.3s ease;
 }
@@ -112,6 +167,33 @@ select option {
   background-size: 40px 40px;
 }
 
+/* ============ MFA 数字输入聚焦 ============ */
+.mfa-digit:focus {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* ============ 收益数字跳动 ============ */
+.revenue-tick {
+  animation: revenueTick 0.3s ease-out;
+}
+
+@keyframes revenueTick {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* ============ 尖峰边框闪烁 ============ */
+.spike-border {
+  animation: spikeBorder 0.5s ease-in-out 3;
+}
+
+@keyframes spikeBorder {
+  0%, 100% { border-color: rgba(255, 255, 255, 0.1); }
+  50% { border-color: rgba(239, 68, 68, 0.8); box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+}
+
 /* ============ 响应式：移动端 ============ */
 @media (max-width: 768px) {
   .sidebar-panel {
@@ -122,10 +204,14 @@ select option {
     z-index: 40;
   }
 
-  /* Toast 移动端适配 */
   .toast {
     max-width: 90vw;
     font-size: 0.8rem;
+  }
+
+  .mfa-digit {
+    width: 2.5rem;
+    height: 3rem;
   }
 }
 

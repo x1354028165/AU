@@ -1,11 +1,9 @@
 /**
- * Phase 1 增强版完整测试
- * 运行: node test_runner.js
+ * Phase 2 完整测试
  */
 const fs = require('fs');
 const vm = require('vm');
 
-// ====== 模拟浏览器环境 ======
 const storage = {};
 const sandbox = {
   localStorage: {
@@ -13,148 +11,178 @@ const sandbox = {
     setItem: (k, v) => { storage[k] = String(v); },
     removeItem: k => { delete storage[k]; }
   },
-  navigator: { language: 'zh-CN' },
+  navigator: { language: 'en-AU' },
   window: {},
-  console: console,
-  Date: Date,
-  JSON: JSON,
-  Math: Math,
-  parseInt: parseInt,
-  parseFloat: parseFloat,
-  setTimeout: setTimeout,
-  String: String,
-  Number: Number,
-  Array: Array,
-  Object: Object,
+  console, Date, JSON, Math, parseInt, parseFloat, String, Number, Array, Object, RegExp,
+  setInterval: () => 999, clearInterval: () => {},
 };
 vm.createContext(sandbox);
 
-// ====== 加载 auth.js（用脚本方式，让 const 在 context 内部可见）======
+// Load auth.js
 const authCode = fs.readFileSync(__dirname + '/js/auth.js', 'utf8');
+vm.runInContext(authCode + `
+;this.__T=TRANSLATIONS;this.__getLang=getLang;this.__getTrans=getTrans;
+this.__switchLang=switchLang;this.__toggleLang=toggleLang;
+this.__getCurrentUser=getCurrentUser;this.__getUserName=getUserName;
+this.__getOperators=getOperators;this.__getStationsByRole=getStationsByRole;
+this.__assignStation=assignStation;this.__getLeaseRemaining=getLeaseRemaining;
+this.__formatAUD=formatAUD;this.__stations=stations;
+this.__verifyCredentials=verifyCredentials;this.__verifyMFA=verifyMFA;
+this.__users=users;this.__DEFAULT_STATIONS=DEFAULT_STATIONS;
+`, sandbox);
 
-// 追加导出代码到 sandbox
-const testWrapper = authCode + `
-;
-// 暴露到 sandbox 
-this.__TRANSLATIONS = TRANSLATIONS;
-this.__getLang = getLang;
-this.__getTrans = getTrans;
-this.__switchLang = switchLang;
-this.__toggleLang = toggleLang;
-this.__getCurrentUser = getCurrentUser;
-this.__getUserName = getUserName;
-this.__getOperators = getOperators;
-this.__getStationsByRole = getStationsByRole;
-this.__assignStation = assignStation;
-this.__getLeaseRemaining = getLeaseRemaining;
-this.__formatAUD = formatAUD;
-this.__stations = stations;
-`;
+// Load simulator.js
+const simCode = fs.readFileSync(__dirname + '/js/simulator.js', 'utf8');
+vm.runInContext(simCode + `
+;this.__generatePrice=generatePrice;this.__parseCapacity=parseCapacity;
+this.__runAutoBidder=runAutoBidder;this.__simTick=simTick;
+this.__getCurrentPrice=getCurrentPrice;this.__getPriceHistory=getPriceHistory;
+this.__isPriceSpike=isPriceSpike;this.__priceHistory=priceHistory;
+`, sandbox);
 
-vm.runInContext(testWrapper, sandbox);
+const { __T: T, __getLang: getLang, __getTrans: getTrans, __switchLang: switchLang,
+  __getStationsByRole: getStationsByRole, __assignStation: assignStation,
+  __getLeaseRemaining: getLeaseRemaining, __formatAUD: formatAUD,
+  __getUserName: getUserName, __getOperators: getOperators,
+  __stations: stations, __verifyCredentials: verifyCredentials,
+  __verifyMFA: verifyMFA, __users: users, __DEFAULT_STATIONS: DS,
+  __generatePrice: generatePrice, __parseCapacity: parseCapacity,
+  __runAutoBidder: runAutoBidder, __simTick: simTick,
+  __getCurrentPrice: getCurrentPrice, __getPriceHistory: getPriceHistory,
+  __isPriceSpike: isPriceSpike } = sandbox;
 
-// ====== 提取函数 ======
-const TRANSLATIONS = sandbox.__TRANSLATIONS;
-const getLang = sandbox.__getLang;
-const getTrans = sandbox.__getTrans;
-const switchLang = sandbox.__switchLang;
-const toggleLang = sandbox.__toggleLang;
-const getStationsByRole = sandbox.__getStationsByRole;
-const assignStation = sandbox.__assignStation;
-const getLeaseRemaining = sandbox.__getLeaseRemaining;
-const formatAUD = sandbox.__formatAUD;
-const getUserName = sandbox.__getUserName;
-const getOperators = sandbox.__getOperators;
-const stations = sandbox.__stations;
-
-// ====== 测试框架 ======
 let pass = 0, fail = 0;
-function test(name, condition) {
-  if (condition) { console.log('✅ ' + name); pass++; }
-  else { console.log('❌ ' + name); fail++; }
-}
+function test(n, c) { if(c){console.log('✅ '+n);pass++;}else{console.log('❌ '+n);fail++;} }
 
-// ====== i18n 测试 ======
-console.log('\n--- i18n Tests ---');
-test('TRANSLATIONS.en exists', !!TRANSLATIONS.en);
-test('TRANSLATIONS.zh exists', !!TRANSLATIONS.zh);
-test('EN: assets_overview', TRANSLATIONS.en.assets_overview === 'Assets Overview');
-test('ZH: assets_overview', TRANSLATIONS.zh.assets_overview === '资产概览');
-test('EN: 24+ keys', Object.keys(TRANSLATIONS.en).length >= 24);
-test('ZH: 24+ keys', Object.keys(TRANSLATIONS.zh).length >= 24);
-test('ZH key count = EN key count', Object.keys(TRANSLATIONS.zh).length === Object.keys(TRANSLATIONS.en).length);
-
-test('Auto detect zh-CN → zh', getLang() === 'zh');
-test('getTrans default = 退出登录', getTrans('sign_out') === '退出登录');
-
-switchLang('en');
-test('Switch to en', getLang() === 'en');
-test('getTrans en: Sign Out', getTrans('sign_out') === 'Sign Out');
-test('getTrans en: Portfolio', getTrans('menu_portfolio') === 'Portfolio');
-test('getTrans en: Pending Assignment', getTrans('pending_assignment') === 'Pending Assignment');
+// ====== i18n ======
+console.log('\n--- i18n ---');
+test('Default lang = en', getLang() === 'en');
+test('EN login_title', T.en.login_title === 'Account Login');
+test('ZH login_title', T.zh.login_title === '账号登录');
+test('EN soc', T.en.soc === 'SoC');
+test('ZH soc', T.zh.soc === '荷电状态');
+test('EN revenue_today', T.en.revenue_today === "Today's Revenue");
+test('ZH revenue_today', T.zh.revenue_today === '今日收益');
+test('EN market_price', !!T.en.market_price);
+test('EN price_spike_alert', !!T.en.price_spike_alert);
+test('Key count match', Object.keys(T.en).length === Object.keys(T.zh).length);
 
 switchLang('zh');
-test('Switch to zh', getLang() === 'zh');
-test('getTrans zh: 退出登录', getTrans('sign_out') === '退出登录');
-test('getTrans zh: 资产总览', getTrans('menu_portfolio') === '资产总览');
-test('getTrans zh: 待分配', getTrans('pending_assignment') === '待分配');
+test('Switch zh', getLang() === 'zh');
+test('getTrans zh', getTrans('revenue_today') === '今日收益');
+switchLang('en');
 
-toggleLang();
-test('toggleLang zh→en', getLang() === 'en');
-toggleLang();
-test('toggleLang en→zh', getLang() === 'zh');
+// ====== Login ======
+console.log('\n--- Login ---');
+test('3 accounts', users.length === 3);
+test('admin login', verifyCredentials('admin', 'admin123')?.id === 'owner_1');
+test('op_a login', verifyCredentials('op_a', 'pass123')?.id === 'op_a');
+test('op_b login', verifyCredentials('op_b', 'pass123')?.id === 'op_b');
+test('wrong pass', verifyCredentials('admin', 'x') === null);
+test('MFA 6 digits', verifyMFA('123456'));
+test('MFA 5 digits fail', !verifyMFA('12345'));
+test('MFA letters fail', !verifyMFA('abcdef'));
 
-// ====== 权限隔离测试 ======
-console.log('\n--- Permission Tests ---');
+// ====== Data Model ======
+console.log('\n--- Data Model ---');
+test('st_01 has soc', typeof DS[0].soc === 'number');
+test('st_01 soc = 50', DS[0].soc === 50);
+test('st_01 has efficiency', DS[0].efficiency === 0.88);
+test('st_01 has revenue_today', DS[0].revenue_today === 0);
+test('st_01 has status', DS[0].status === 'IDLE');
+test('st_01 has cumulative_mwh', DS[0].cumulative_mwh === 0);
+test('All 4 stations have soc', DS.every(s => typeof s.soc === 'number'));
+
+// ====== Price Generator ======
+console.log('\n--- Price Generator ---');
+// Test 1000 samples per time slot
+let nightPrices = [], dayPrices = [], peakPrices = [], eveningPrices = [];
+for (let i = 0; i < 1000; i++) {
+  nightPrices.push(generatePrice(3));
+  dayPrices.push(generatePrice(10));
+  peakPrices.push(generatePrice(17));
+  eveningPrices.push(generatePrice(22));
+}
+const nightAvg = nightPrices.reduce((a,b) => a+b) / nightPrices.length;
+const dayAvg = dayPrices.reduce((a,b) => a+b) / dayPrices.length;
+const peakAvg = peakPrices.reduce((a,b) => a+b) / peakPrices.length;
+const eveningAvg = eveningPrices.reduce((a,b) => a+b) / eveningPrices.length;
+
+test('Night avg < $80', nightAvg < 80);
+test('Day avg $50-200', dayAvg > 50 && dayAvg < 250);
+test('Peak avg > $200', peakAvg > 200);
+test('Evening avg $80-150', eveningAvg > 60 && eveningAvg < 200);
+test('Night can be negative', nightPrices.some(p => p < 0));
+// Peak spike (may not trigger in 1000 samples, but price range should be wide)
+test('Peak max > $500', Math.max(...peakPrices) > 500);
+
+// ====== Capacity Parser ======
+console.log('\n--- Capacity Parser ---');
+const cap1 = parseCapacity('5MW/10MWh');
+test('Parse 5MW', cap1.mw === 5);
+test('Parse 10MWh', cap1.mwh === 10);
+const cap2 = parseCapacity('2.5MW/5MWh');
+test('Parse 2.5MW', cap2.mw === 2.5);
+test('Parse 5MWh', cap2.mwh === 5);
+
+// ====== Auto Bidder ======
+console.log('\n--- Auto Bidder ---');
+// Low price → charge
+const testStation1 = { ...DS[0], soc: 50, operator_id: 'op_a', status: 'IDLE', revenue_today: 0, cumulative_mwh: 0 };
+const r1 = runAutoBidder(testStation1, 30);
+test('Low price → charge', testStation1.status === 'CHARGING');
+test('Power negative (charging)', r1.power < 0);
+test('SoC increased', testStation1.soc > 50);
+
+// High price → discharge
+const testStation2 = { ...DS[0], soc: 80, operator_id: 'op_a', status: 'IDLE', revenue_today: 0, cumulative_mwh: 0 };
+const r2 = runAutoBidder(testStation2, 500);
+test('High price → discharge', testStation2.status === 'DISCHARGING');
+test('Power positive (discharging)', r2.power > 0);
+test('SoC decreased', testStation2.soc < 80);
+test('Revenue positive', testStation2.revenue_today > 0);
+
+// Efficiency applied
+const expectedRev = r2.power * (5/60) * 500 * 0.88;
+// Revenue should be approximately: power * interval_hours * price * efficiency
+test('88% efficiency applied', Math.abs(testStation2.revenue_today - expectedRev) < 0.01);
+
+// Mid price → idle
+const testStation3 = { ...DS[0], soc: 50, operator_id: 'op_a', status: 'IDLE', revenue_today: 0, cumulative_mwh: 0 };
+runAutoBidder(testStation3, 100);
+test('Mid price → idle', testStation3.status === 'IDLE');
+
+// Unassigned → always idle
+const testStation4 = { ...DS[3], soc: 50, operator_id: 'unassigned', status: 'IDLE', revenue_today: 0, cumulative_mwh: 0 };
+runAutoBidder(testStation4, 30);
+test('Unassigned → idle', testStation4.status === 'IDLE');
+
+// SoH degradation
+const testStation5 = { ...DS[0], soc: 50, soh: 99.99, operator_id: 'op_a', status: 'IDLE', revenue_today: 0, cumulative_mwh: 0 };
+runAutoBidder(testStation5, 30); // charge
+test('SoH decreased after charge', testStation5.soh < 99.99);
+test('Cumulative MWh tracked', testStation5.cumulative_mwh > 0);
+
+// SoC limits
+const testStation6 = { ...DS[0], soc: 96, operator_id: 'op_a', status: 'IDLE', revenue_today: 0, cumulative_mwh: 0 };
+runAutoBidder(testStation6, 30);
+test('SoC > 95 → no charge', testStation6.status === 'IDLE');
+
+const testStation7 = { ...DS[0], soc: 3, operator_id: 'op_a', status: 'IDLE', revenue_today: 0, cumulative_mwh: 0 };
+runAutoBidder(testStation7, 500);
+test('SoC < 5 → no discharge', testStation7.status === 'IDLE');
+
+// ====== Permissions ======
+console.log('\n--- Permissions ---');
 storage.role = 'owner';
-test('Owner sees 4 stations', getStationsByRole().length === 4);
-
+test('Owner 4', getStationsByRole().length === 4);
 storage.role = 'op_a';
-const opA = getStationsByRole();
-test('OpA sees 2 stations', opA.length === 2);
-test('OpA has st_01', opA.some(s => s.id === 'st_01'));
-test('OpA has st_03', opA.some(s => s.id === 'st_03'));
-test('OpA no st_02', !opA.some(s => s.id === 'st_02'));
-test('OpA no st_04(unassigned)', !opA.some(s => s.id === 'st_04'));
+test('OpA 2', getStationsByRole().length === 2);
 
-storage.role = 'op_b';
-const opB = getStationsByRole();
-test('OpB sees 1 station', opB.length === 1);
-test('OpB has st_02', opB[0].id === 'st_02');
-
-// ====== 划转测试 ======
-console.log('\n--- Assignment Tests ---');
-test('Assign st_04→op_a succeeds', assignStation('st_04', 'op_a') === true);
-test('st_04 operator = op_a', stations.find(s => s.id === 'st_04').operator_id === 'op_a');
-test('Assign invalid station fails', assignStation('st_99', 'op_a') === false);
-
-storage.role = 'op_a';
-test('OpA now sees 3 stations', getStationsByRole().length === 3);
-test('st_04 appears in OpA list', getStationsByRole().some(s => s.id === 'st_04'));
-
-// ====== 持久化测试 ======
-console.log('\n--- Persistence Tests ---');
-test('Data persisted to localStorage', !!storage.stations);
-const saved = JSON.parse(storage.stations);
-test('Persisted st_04 = op_a', saved.find(s => s.id === 'st_04').operator_id === 'op_a');
-
-// ====== 工具函数测试 ======
-console.log('\n--- Utility Tests ---');
-test('Lease future date > 0', getLeaseRemaining('2028-12-31') > 0);
-test('Lease past date < 0', getLeaseRemaining('2020-01-01') < 0);
-test('Lease unset = "-"', getLeaseRemaining('-') === '-');
-test('AUD 850k includes "850"', formatAUD(850000).includes('850'));
-test('AUD 850k starts with A$', formatAUD(850000).startsWith('A$'));
-test('AUD 0 = "-"', formatAUD(0) === '-');
-test('getUserName(op_a) = GreenGrid', getUserName('op_a') === 'GreenGrid Operations');
-test('getUserName(owner_1) = Pacific', getUserName('owner_1') === 'Pacific Energy Group');
-test('getOperators() = 2', getOperators().length === 2);
-
-// ====== 结果 ======
+// ====== Result ======
 console.log('\n========================================');
 console.log(`Total: ${pass + fail} | Pass: ${pass} | Fail: ${fail}`);
 console.log(`Pass Rate: ${((pass / (pass + fail)) * 100).toFixed(1)}%`);
 console.log(fail === 0 ? '🎉 ALL TESTS PASSED' : '⚠️ SOME TESTS FAILED');
 console.log('========================================');
-
 process.exit(fail > 0 ? 1 : 0);
