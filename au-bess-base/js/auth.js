@@ -154,8 +154,12 @@ const TRANSLATIONS = {
  */
 function initLang() {
   if (!localStorage.getItem('lang')) {
-    const browserLang = navigator.language || navigator.userLanguage || 'en';
-    localStorage.setItem('lang', browserLang.startsWith('zh') ? 'zh' : 'en');
+    try {
+      const browserLang = (typeof navigator !== 'undefined' && (navigator.language || navigator.userLanguage)) || 'en';
+      localStorage.setItem('lang', browserLang.startsWith('zh') ? 'zh' : 'en');
+    } catch (e) {
+      localStorage.setItem('lang', 'en');
+    }
   }
 }
 
