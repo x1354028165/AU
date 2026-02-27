@@ -364,6 +364,23 @@ function shortTime(timeStr) {
 /**
  * 解析告警消息（支持翻译 key: 'alarm_msg_temp|55' → 翻译后文本）
  */
+function calcAlarmDuration(alarm) {
+  if (alarm.status === 'RESOLVED' && alarm.resolved_ms && alarm.created_ms) {
+    const diff = alarm.resolved_ms - alarm.created_ms;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return mins + 'm';
+    return Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm';
+  }
+  if (alarm.created_ms) {
+    const diff = Date.now() - alarm.created_ms;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return '<1m';
+    if (mins < 60) return mins + 'm';
+    return Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm';
+  }
+  return '-';
+}
+
 function resolveAlarmMsg(msg) {
   if (!msg) return '';
   // 新格式：'alarm_msg_temp|55'
@@ -601,9 +618,11 @@ function renderAlarmsList(container, isOwner) {
         ${alarmFilterTab === 'PENDING' ? `<td class="${tdClass} w-10"><input type="checkbox" class="alarm-checkbox accent-emerald-500" data-station="${alarm.stationId}" data-alarm="${alarm.id}" /></td>` : ''}
         <td class="${tdClass} font-mono text-slate-400 text-xs">${shortTime(alarm.timestamp)}</td>
         <td class="${tdClass} text-slate-300" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;" title="${escapeHTML(resolveAlarmMsg(alarm.message))}">${escapeHTML(resolveAlarmMsg(alarm.message))}</td>
+        <td class="${tdClass} text-amber-400 font-mono text-xs whitespace-nowrap">${alarm.fault_code || '-'}</td>
         <td class="${tdClass} whitespace-nowrap">${severityBadge}</td>
         <td class="${tdClass} text-slate-400 font-mono text-xs whitespace-nowrap">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
         <td class="${tdClass} text-white text-xs whitespace-nowrap">${escapeHTML(alarm.stationName)}</td>
+        <td class="${tdClass} text-cyan-400 text-xs whitespace-nowrap">${calcAlarmDuration(alarm)}</td>
         <td class="${tdClass} whitespace-nowrap">${statusBadge}</td>
         <td class="${tdClass} text-right whitespace-nowrap">${actionCol}</td>
       </tr>
@@ -612,7 +631,7 @@ function renderAlarmsList(container, isOwner) {
 
   // 空状态
   const emptyState = allAlarms.length === 0 ? `
-    <tr><td colspan="7" class="text-center py-16">
+    <tr><td colspan="9" class="text-center py-16">
       <div class="text-slate-600">
         <p class="text-base mb-1">🛡️ ${getTrans('no_alarms_active')}</p>
         <p class="text-sm">${getTrans('no_alarms_hint')}</p>
@@ -637,9 +656,11 @@ function renderAlarmsList(container, isOwner) {
               ${alarmFilterTab === 'PENDING' ? `<th class="${thClass} w-10"><input type="checkbox" onchange="toggleAllAlarmCheckbox(this.checked)" class="accent-emerald-500" /></th>` : ''}
               <th class="${thClass}">${getTrans('alarm_col_time')}</th>
               <th class="${thClass}">${getTrans('alarm_col_desc')}</th>
+              <th class="${thClass}">${getTrans('alarm_col_code')}</th>
               <th class="${thClass}">${getTrans('alarm_col_level')}</th>
               <th class="${thClass}">${getTrans('alarm_col_device')}</th>
               <th class="${thClass}">${getTrans('alarm_col_station')}</th>
+              <th class="${thClass}">${getTrans('alarm_col_duration')}</th>
               <th class="${thClass}">${getTrans('alarm_col_status')}</th>
               <th class="${thClass} text-right">${getTrans('alarm_col_action')}</th>
             </tr>

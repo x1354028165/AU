@@ -227,15 +227,15 @@ function runAutoBidder(station, price) {
       station.status = 'CHARGING';
       revenue = -(energyMWh * price);
     } else if (inDischargeSlot && station.soc > minSoc) {
-      // 最优计划：放电时段 — 分段功率控制
-      // 当前价 vs 计划均价，动态调整功率
+      // 最优计划：放电时段 — 5 档分段功率控制
       const avgPeak = optimalPlan.avgDischarge || 300;
-      let powerRatio = 1.0;
-      if (price < avgPeak * 0.5) {
-        powerRatio = 0.3;  // 价格远低于均峰，小功率试探
-      } else if (price < avgPeak * 0.8) {
-        powerRatio = 0.6;
-      }
+      const priceRatio = price / avgPeak;
+      let powerRatio;
+      if (priceRatio < 0.3) { powerRatio = 0.2; }        // 0.5MW 试探
+      else if (priceRatio < 0.5) { powerRatio = 0.4; }    // 1.0MW
+      else if (priceRatio < 0.8) { powerRatio = 0.6; }    // 1.5MW
+      else if (priceRatio < 1.0) { powerRatio = 0.8; }    // 2.0MW
+      else { powerRatio = 1.0; }                           // 2.5MW 满功率
       const actualMW = cap.mw * powerRatio;
       power = actualMW;
       energyMWh = actualMW * intervalHours;
@@ -297,11 +297,15 @@ function simTick() {
   }
   previousPrice = currentPrice;
 
-  // 预测价格：当前价 + 趋势偏移 + 噪声，移动平均平滑
-  const trendBias = (currentPrice - previousPrice) * 0.5;
-  const noise = (Math.random() - 0.5) * 30;
-  const rawForecast = currentPrice + trendBias + noise;
-  forecastPrice = prevForecast * (1 - FORECAST_SMOOTH) + rawForecast * FORECAST_SMOOTH;
+  // 预测价格：优先从 24h 预测曲线取下一个点，保持一致性
+  if (forecast24h.length > 0 && currentTickIndex + 1 < forecast24h.length) {
+    forecastPrice = forecast24h[currentTickIndex + 1].price;
+  } else {
+    const trendBias = (currentPrice - previousPrice) * 0.5;
+    const noise = (Math.random() - 0.5) * 30;
+    const rawForecast = currentPrice + trendBias + noise;
+    forecastPrice = prevForecast * (1 - FORECAST_SMOOTH) + rawForecast * FORECAST_SMOOTH;
+  }
   prevForecast = forecastPrice;
 
   const powers = {};
