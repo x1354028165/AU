@@ -1144,26 +1144,28 @@ function updateMarketBanner(price) {
       if (narratorBox) { narratorBox.className = 'mb-4 px-4 py-3 rounded-xl border bg-amber-500/10 border-amber-500/30'; }
       if (modeBadge) { modeBadge.textContent = getTrans('dispatch_mode_manual'); modeBadge.className = 'px-2 py-1 rounded text-xs font-bold bg-amber-500/20 text-amber-400'; }
     } else {
-      const fc = typeof getForecastPrice === 'function' ? getForecastPrice() : price;
-      const trend = fc - price;
-      // 汇总预计收益
-      const totalProfit = stations.reduce((s, st) => s + (st.projected_profit || 0), 0);
-      const hour = new Date().getHours();
-      const peakHour = hour < 15 ? 18 : (hour < 20 ? hour + 1 : 18);
+      // 从最优计划获取数据
+      const plan = typeof optimalPlan !== 'undefined' ? optimalPlan : {};
+      const totalProfit = plan.projectedCycleProfit || stations.reduce((s, st) => s + (st.projected_profit || 0), 0);
+      const nextDischTime = plan.nextDischargeTime || '--:--';
+      const nextChgTime = plan.nextChargeTime || '--:--';
 
-      if (trend > 30 || price > 500) {
-        narratorEl.textContent = getTrans('ai_target').replace('{0}', peakHour).replace('{1}', totalProfit.toFixed(0));
+      // 判断当前整体状态
+      const anyDischarging = stations.some(s => s.status === 'DISCHARGING');
+      const anyCharging = stations.some(s => s.status === 'CHARGING');
+
+      if (anyDischarging || price > 500) {
+        narratorEl.textContent = getTrans('ai_target').replace('{0}', nextDischTime).replace('{1}', totalProfit.toFixed(0));
         narratorEl.className = 'text-sm font-medium text-red-400';
-      } else if (trend < -30 || price < 50) {
-        narratorEl.textContent = getTrans('ai_narrator_charging');
+      } else if (anyCharging || price < 50) {
+        narratorEl.textContent = getTrans('ai_narrator_charging') + ' | ' + getTrans('projected_profit') + ': A$' + totalProfit.toFixed(0);
         narratorEl.className = 'text-sm font-medium text-blue-400';
       } else {
-        // FCAS 待机
         const totalFcas = stations.reduce((s, st) => s + (st.fcas_revenue || 0), 0);
         if (totalFcas > 0) {
-          narratorEl.textContent = getTrans('fcas_standby').replace('{0}', totalFcas.toFixed(1));
+          narratorEl.textContent = getTrans('fcas_standby').replace('{0}', totalFcas.toFixed(1)) + ' | ' + getTrans('projected_profit') + ': A$' + totalProfit.toFixed(0);
         } else {
-          narratorEl.textContent = getTrans('ai_narrator_idle');
+          narratorEl.textContent = getTrans('ai_narrator_idle') + ' | ' + getTrans('projected_profit') + ': A$' + totalProfit.toFixed(0);
         }
         narratorEl.className = 'text-sm font-medium text-emerald-400';
       }
@@ -1515,7 +1517,7 @@ function renderStationCard(station, theme, isOwner) {
       </div>
       <div class="mt-2 flex items-center gap-2">
         <span class="text-xs text-slate-500">${getTrans('next_action')}:</span>
-        <span class="text-xs font-medium text-cyan-400" data-next-action="${station.id}">${station.nextAction ? (station.nextAction.action === 'discharge' ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.hour) : getTrans('expect_charge_at').replace('{0}', station.nextAction.hour)) : '-'}</span>
+        <span class="text-xs font-medium text-cyan-400" data-next-action="${station.id}">${station.nextAction ? (station.nextAction.action === 'discharge' ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.time || station.nextAction.hour) : getTrans('expect_charge_at').replace('{0}', station.nextAction.time || station.nextAction.hour)) : '-'}</span>
       </div>
 
       ${leaseInfo}
@@ -1548,8 +1550,8 @@ function updateStationCards(theme, isOwner) {
     const nextEl = card.querySelector(`[data-next-action="${station.id}"]`);
     if (nextEl && station.nextAction) {
       nextEl.textContent = station.nextAction.action === 'discharge'
-        ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.hour)
-        : getTrans('expect_charge_at').replace('{0}', station.nextAction.hour);
+        ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.time || station.nextAction.hour)
+        : getTrans('expect_charge_at').replace('{0}', station.nextAction.time || station.nextAction.hour);
     }
 
     // Update Revenue

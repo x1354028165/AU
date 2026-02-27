@@ -24,6 +24,82 @@ let dispatchLogs = [];         // [{time, stationName, stationId, operatorId, ac
 const MAX_LOGS = 100;
 let previousStationStatus = {}; // 记录上一轮状态用于检测变化
 
+// ============ 24 小时预测曲线 & 最优计划 ============
+let forecast24h = [];          // 288 个 5 分钟预测点 [{tick, hour, min, price}]
+let optimalPlan = { charge: [], discharge: [] };  // {charge: [tickIndex], discharge: [tickIndex]}
+let planTickCounter = 0;       // 计划刷新计数器（每 6 tick = 30 分钟刷新一次）
+let currentTickIndex = 0;      // 当前在 288 tick 中的位置
+
+/**
+ * 生成 24 小时预测曲线（288 个 5 分钟点）
+ */
+function generate24hForecast() {
+  forecast24h = [];
+  const now = new Date();
+  const baseHour = now.getHours();
+  const baseMin = now.getMinutes();
+
+  for (let i = 0; i < 288; i++) {
+    const totalMin = baseHour * 60 + baseMin + i * 5;
+    const h = Math.floor(totalMin / 60) % 24;
+    const m = totalMin % 60;
+    const rawPrice = generatePrice(h);
+    // 平滑：越远的点噪声越大
+    const distanceFactor = 1 + (i / 288) * 0.3;
+    const noise = (Math.random() - 0.5) * 40 * distanceFactor;
+    forecast24h.push({
+      tick: i,
+      hour: h,
+      min: m,
+      price: Math.max(-50, rawPrice + noise)
+    });
+  }
+  // 3 点移动平均平滑
+  for (let i = 1; i < forecast24h.length - 1; i++) {
+    forecast24h[i].price = (forecast24h[i - 1].price + forecast24h[i].price + forecast24h[i + 1].price) / 3;
+  }
+}
+
+/**
+ * 从 288 点中选出最优充放电计划
+ * 充电：最便宜的 48 个点（4 小时）
+ * 放电：最贵的 48 个点（4 小时）
+ */
+function computeOptimalPlan() {
+  if (forecast24h.length === 0) generate24hForecast();
+
+  const sorted = forecast24h.map((p, i) => ({ ...p, idx: i })).sort((a, b) => a.price - b.price);
+  const chargeSlots = sorted.slice(0, 48).map(p => p.idx);
+  const dischargeSlots = sorted.slice(-48).map(p => p.idx);
+
+  optimalPlan = {
+    charge: new Set(chargeSlots),
+    discharge: new Set(dischargeSlots),
+    avgCharge: sorted.slice(0, 48).reduce((s, p) => s + p.price, 0) / 48,
+    avgDischarge: sorted.slice(-48).reduce((s, p) => s + p.price, 0) / 48
+  };
+
+  // 计算预期周期利润
+  const spread = optimalPlan.avgDischarge - optimalPlan.avgCharge;
+  optimalPlan.projectedCycleProfit = Math.round(spread * MAX_MWH * 0.88 * 100) / 100; // 88% 效率
+
+  // 找下一个动作
+  for (let i = currentTickIndex; i < 288; i++) {
+    if (optimalPlan.discharge.has(i)) {
+      const pt = forecast24h[i];
+      optimalPlan.nextDischargeTime = `${String(pt.hour).padStart(2, '0')}:${String(pt.min).padStart(2, '0')}`;
+      break;
+    }
+  }
+  for (let i = currentTickIndex; i < 288; i++) {
+    if (optimalPlan.charge.has(i)) {
+      const pt = forecast24h[i];
+      optimalPlan.nextChargeTime = `${String(pt.hour).padStart(2, '0')}:${String(pt.min).padStart(2, '0')}`;
+      break;
+    }
+  }
+}
+
 // ============ 电价模型 ============
 
 /**
@@ -132,39 +208,33 @@ function runAutoBidder(station, price) {
   } else if (strat.mode === 'manual_idle') {
     station.status = 'IDLE';
   } else {
-    // Auto 模式：分段收割策略
-    const chargeAt = strat.charge_threshold || 50;
-    const dischargeAt = strat.discharge_threshold || 200;
-    const fc = typeof forecastPrice !== 'undefined' ? forecastPrice : price;
-    const hour = new Date().getHours();
+    // Auto 模式：最优路径规划驱动
+    const inChargeSlot = optimalPlan.charge && optimalPlan.charge.has(currentTickIndex);
+    const inDischargeSlot = optimalPlan.discharge && optimalPlan.discharge.has(currentTickIndex);
 
-    // 预测下一个高峰时段（15:00-20:00）
-    const nextPeakHour = hour < 15 ? 15 : (hour < 20 ? hour + 1 : 15);
-    station.nextAction = hour < 15
-      ? { action: 'discharge', hour: nextPeakHour }
-      : (hour >= 20 ? { action: 'charge', hour: 2 } : { action: 'discharge', hour: nextPeakHour });
-
-    // 负电价强制充电
+    // 负电价强制充电（优先级最高）
     if (price < 0 && station.soc < 95) {
       power = -cap.mw;
       energyMWh = cap.mw * intervalHours;
       station.soc = Math.min(95, station.soc + (energyMWh / cap.mwh) * 100);
       station.status = 'CHARGING';
-      revenue = -(energyMWh * price); // 负电价充电=赚钱
-    } else if (price < chargeAt && station.soc < 95) {
+      revenue = -(energyMWh * price);
+    } else if (inChargeSlot && station.soc < 95) {
+      // 最优计划：充电时段
       power = -cap.mw;
       energyMWh = cap.mw * intervalHours;
       station.soc = Math.min(95, station.soc + (energyMWh / cap.mwh) * 100);
       station.status = 'CHARGING';
       revenue = -(energyMWh * price);
-    } else if (price > dischargeAt && station.soc > minSoc) {
-      // 分段放电：预测价更高→只放一部分，保留子弹
+    } else if (inDischargeSlot && station.soc > minSoc) {
+      // 最优计划：放电时段 — 分段功率控制
+      // 当前价 vs 计划均价，动态调整功率
+      const avgPeak = optimalPlan.avgDischarge || 300;
       let powerRatio = 1.0;
-      if (fc > price * 1.3) {
-        // 预测未来更贵，只放 40% 功率
-        powerRatio = 0.4;
-      } else if (fc > price * 1.1) {
-        powerRatio = 0.7;
+      if (price < avgPeak * 0.5) {
+        powerRatio = 0.3;  // 价格远低于均峰，小功率试探
+      } else if (price < avgPeak * 0.8) {
+        powerRatio = 0.6;
       }
       const actualMW = cap.mw * powerRatio;
       power = actualMW;
@@ -174,16 +244,20 @@ function runAutoBidder(station, price) {
       revenue = energyMWh * price * station.efficiency;
     } else {
       station.status = 'IDLE';
-      // FCAS 待机收益：SoC 在 20%-80% 之间提供调频支持
+      // FCAS 待机收益
       if (station.soc >= 20 && station.soc <= 80) {
         station.fcas_revenue = (station.fcas_revenue || 0) + 0.5;
         station.revenue_today = (station.revenue_today || 0) + 0.5;
       }
     }
 
-    // 收益预估：按预测价估算剩余电量全部放出的收益
-    const remainMWh = station.soc * cap.mwh / 100;
-    station.projected_profit = Math.round(remainMWh * Math.max(fc, price) * station.efficiency * 100) / 100;
+    // 下一动作预告
+    station.nextAction = optimalPlan.nextDischargeTime
+      ? { action: 'discharge', time: optimalPlan.nextDischargeTime }
+      : (optimalPlan.nextChargeTime ? { action: 'charge', time: optimalPlan.nextChargeTime } : null);
+
+    // 周期收益预估
+    station.projected_profit = optimalPlan.projectedCycleProfit || 0;
   }
 
   // SoH 损耗
@@ -202,6 +276,15 @@ function runAutoBidder(station, price) {
  * 执行一轮仿真 tick
  */
 function simTick() {
+  // 最优计划刷新：每 6 tick（30 分钟）或首次
+  planTickCounter++;
+  currentTickIndex = (currentTickIndex + 1) % 288;
+  if (planTickCounter >= 6 || forecast24h.length === 0) {
+    generate24hForecast();
+    computeOptimalPlan();
+    planTickCounter = 0;
+  }
+
   const hour = new Date().getHours();
   const rawPrice = generatePrice(hour);
 
@@ -347,14 +430,20 @@ function isPriceSpike() {
  * 记录一条调度日志
  */
 function logDispatch(time, station, action, price, revenue) {
+  // 纯运维口径：只记录时间、电站、动作、买/卖价、瞬时利润
+  const buyPrice = action === 'CHARGING' ? price : null;
+  const sellPrice = action === 'DISCHARGING' || action === 'SPIKE_DISCHARGE' ? price : null;
+  const spreadProfit = sellPrice ? Math.round((revenue || 0) * 100) / 100 : (buyPrice ? Math.round((revenue || 0) * 100) / 100 : 0);
+
   dispatchLogs.push({
     time,
     stationName: station.name,
     stationId: station.id,
     operatorId: station.operator_id,
     action,
-    price: Math.round(price * 100) / 100,
-    revenue: Math.round((revenue || 0) * 100) / 100
+    buyPrice: buyPrice ? Math.round(buyPrice * 100) / 100 : null,
+    sellPrice: sellPrice ? Math.round(sellPrice * 100) / 100 : null,
+    spreadProfit
   });
   if (dispatchLogs.length > MAX_LOGS) dispatchLogs.shift();
 }

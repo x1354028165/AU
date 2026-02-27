@@ -2,6 +2,7 @@
 
 - 不要讲技术细节（grep了什么、改了哪行等）
 - 做完直接给节点状态播报
-- 每次完成后推本地服务器链接：http://49.51.194.118:8080/dashboard.html
-- GitHub Pages 备用：https://x1354028165.github.io/AU/dashboard.html
+- 每次完成后推两个链接：
+  1. 本地服务器：http://49.51.194.118:8080/dashboard.html
+  2. Git 仓库：https://github.com/x1354028165/AU
 - 简洁高效
