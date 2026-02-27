@@ -16,6 +16,15 @@
       theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] } } }
     }
   </script>
+  <script>
+    // 角色切换防闪烁：如果是从 dashboard 跳转过来，立刻通过 CSS 隐藏登录页、显示角色选择
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('jump') === 'role-select' && localStorage.getItem('isLoggedIn') === 'true') {
+        document.write('<style id="role-switch-preload">#login-container{display:none!important}#role-select-overlay{display:block!important}</style>');
+      }
+    })();
+  </script>
 </head>
 <body class="bg-slate-950 min-h-screen bg-grid">
 
@@ -25,7 +34,7 @@
   </button>
 
   <!-- Main Container -->
-  <div class="flex items-center justify-center min-h-screen px-4">
+  <div id="login-container" class="flex items-center justify-center min-h-screen px-4">
     <div class="w-full max-w-md">
 
       <!-- Logo -->
@@ -427,7 +436,7 @@
 
     function showRoleSelect() {
       // Hide login container, show full-screen role overlay
-      document.querySelector('.flex.items-center.justify-center.min-h-screen').style.display = 'none';
+      document.getElementById('login-container').style.display = 'none';
       document.getElementById('role-select-overlay').classList.remove('hidden');
       document.getElementById('role-lang-btn').textContent = getTrans('lang_switch');
       lucide.createIcons();
