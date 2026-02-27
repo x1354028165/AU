@@ -1356,12 +1356,14 @@ function toggleLangAndRefresh() {
     switchView(savedView);
   }
   
-  // 语言切换后重新渲染AI面板（如果存在）
+  // 语言切换后强制重新渲染AI面板（如果存在）
   const aiPanel = document.getElementById('ai-decision-panel');
-  if (aiPanel) {
-    const stationId = aiPanel.getAttribute('data-station-id');
-    if (stationId) {
-      renderAIDecisionPanel(stationId);
+  if (aiPanel && !aiPanel.classList.contains('hidden')) {
+    // 直接重新渲染整个调度控制面板
+    const container = document.getElementById('dispatch-control-container');
+    const stationId = aiPanel.getAttribute('data-station-id') || 'st_01';
+    if (container) {
+      renderDispatchControlPanel(container, stationId);
     }
   }
 }
@@ -2473,6 +2475,12 @@ function renderAIDecisionResult() {
 function updateAIDecisionPanel() {
   const panel = document.getElementById('ai-decision-panel');
   if (!panel || panel.classList.contains('hidden')) return;
+  
+  // 每次更新时重新应用翻译
+  const titleEl = panel.querySelector('h3');
+  if (titleEl && titleEl.textContent.startsWith('ai_')) {
+    titleEl.textContent = getTrans('ai_panel_title');
+  }
 
   const state = typeof getAIDecisionState === 'function' ? getAIDecisionState() : {};
 
