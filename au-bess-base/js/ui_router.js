@@ -498,7 +498,7 @@ function renderStationDetail(station, theme, isOwner) {
           <i data-lucide="arrow-left" class="w-5 h-5"></i>
         </button>
         <div>
-          <h2 class="text-xl font-bold text-white">${escapeHTML(station.name)}</h2>
+          <h2 class="text-xl font-bold text-white truncate max-w-[280px]">${escapeHTML(station.name)}</h2>
           <p class="text-sm text-slate-400">${escapeHTML(station.location)} · ${station.timezone} · ${station.capacity}</p>
         </div>
       </div>
@@ -1496,7 +1496,7 @@ function renderStationCard(station, theme, isOwner) {
             ${assignmentLabel}
             ${(station.alarms && station.alarms.some(a => a.status !== 'RESOLVED')) ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold">(' + getTrans('alarm') + ')</span>' : ''}
           </div>
-          <h3 class="text-base md:text-lg font-bold text-white">${escapeHTML(station.name)}</h3>
+          <h3 class="text-base md:text-lg font-bold text-white truncate max-w-[280px]">${escapeHTML(station.name)}</h3>
           <p class="text-sm text-slate-400 flex items-center gap-1 mt-1">
             <i data-lucide="map-pin" class="w-3 h-3"></i>
             ${escapeHTML(station.location)}
@@ -1979,7 +1979,7 @@ function renderDispatchControlPanel(container, forceStationId) {
         <div class="space-y-8" style="width: 480px; flex-shrink: 0;">
 
           <!-- 电站管理标题 + 智能托管 -->
-          <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-b from-white/[0.03] to-transparent">
+          <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-b from-white/[0.03] to-transparent overflow-hidden">
             <div class="flex items-center justify-between mb-8">
               <h3 class="text-xl font-bold text-white tracking-tight">${getTrans('menu_dispatch')}</h3>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -1990,27 +1990,27 @@ function renderDispatchControlPanel(container, forceStationId) {
             </div>
 
             <!-- 充电按钮 | 价格球 | 放电按钮 -->
-            <div class="flex items-center justify-center gap-8 py-4">
+            <div class="flex items-center justify-center gap-4 py-4">
               <!-- 左：充电胶囊按钮 -->
               <button onclick="showDispatchConfirm('${station.id}', 'charge')"
-                class="px-8 py-4 rounded-full text-lg font-bold text-white transition-all hover:scale-105 active:scale-95"
-                style="background: linear-gradient(135deg, #34d399, #10b981); min-width: 120px;">
-                ${getTrans('force_charge')}
+                class="px-5 py-3 rounded-full text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 flex-shrink-0"
+                style="background: linear-gradient(135deg, #34d399, #10b981);">
+                ⚡ ${getTrans('force_charge')}
               </button>
 
               <!-- 中：价格实心球 -->
               <div class="flex-shrink-0">
-                <div class="rounded-full flex flex-col items-center justify-center" style="width: 240px; height: 240px; background: radial-gradient(circle at 38% 32%, #93c5fd, #60a5fa 50%, #3b82f6 80%);">
-                  <span class="text-4xl font-bold font-mono tracking-tight text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="dp-ring-price">${priceStr}</span>
-                  <span class="text-sm text-white/70 mt-2 font-medium" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
+                <div class="rounded-full flex flex-col items-center justify-center" style="width: 180px; height: 180px; background: radial-gradient(circle at 38% 32%, #93c5fd, #60a5fa 50%, #3b82f6 80%);">
+                  <span class="text-3xl font-bold font-mono tracking-tight text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="dp-ring-price">${priceStr}</span>
+                  <span class="text-xs text-white/70 mt-1 font-medium" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
                 </div>
               </div>
 
               <!-- 右：放电胶囊按钮 -->
               <button onclick="showDispatchConfirm('${station.id}', 'discharge')"
-                class="px-8 py-4 rounded-full text-lg font-bold text-white transition-all hover:scale-105 active:scale-95"
-                style="background: linear-gradient(135deg, #fbbf24, #f59e0b); min-width: 120px;">
-                ${getTrans('force_discharge')}
+                class="px-5 py-3 rounded-full text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 flex-shrink-0"
+                style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+                🔋 ${getTrans('force_discharge')}
               </button>
             </div>
           </div>

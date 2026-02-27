@@ -257,3 +257,7 @@ input[type="checkbox"] {
     padding: 3rem 4rem;
   }
 }
+
+/* UI 加固 */
+.station-card { overflow: hidden; }
+.line-clamp-1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
