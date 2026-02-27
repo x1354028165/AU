@@ -582,7 +582,15 @@ const DEFAULT_STATIONS = [
       { id: 'pcs-01', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 5, rated_capacity: 10 }
     ],
     soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' },
-    alarms: []
+    alarms: [
+      {
+        id: 'alm_init_1', type: 'HIGH_TEMP', severity: 'Critical',
+        message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
+        timestamp: new Date(Date.now() - 1000 * 60 * 15).toLocaleString('en-AU'),
+        status: 'ACTIVE',
+        ack_by: null, ack_at: null, resolved_by: null, resolved_at: null
+      }
+    ]
   },
   {
     id: 'st_02',
@@ -605,7 +613,16 @@ const DEFAULT_STATIONS = [
       { id: 'pcs-02', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 2.5, rated_capacity: 5 }
     ],
     soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' },
-    alarms: []
+    alarms: [
+      {
+        id: 'alm_init_2', type: 'LOW_SOC', severity: 'Warning',
+        message: 'Battery Low SoC — State of charge dropped below 10% (8.2%)',
+        timestamp: new Date(Date.now() - 1000 * 60 * 45).toLocaleString('en-AU'),
+        status: 'ACKNOWLEDGED',
+        ack_by: 'op_a', ack_at: new Date(Date.now() - 1000 * 60 * 30).toLocaleString('en-AU'),
+        resolved_by: null, resolved_at: null
+      }
+    ]
   },
   {
     id: 'st_03',
@@ -628,7 +645,16 @@ const DEFAULT_STATIONS = [
       { id: 'pcs-03', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 10, rated_capacity: 20 }
     ],
     soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' },
-    alarms: []
+    alarms: [
+      {
+        id: 'alm_init_3', type: 'HIGH_TEMP', severity: 'Critical',
+        message: 'BMS High Temperature Warning — Cell temp exceeded 58°C during grid event',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toLocaleString('en-AU'),
+        status: 'RESOLVED',
+        ack_by: 'op_b', ack_at: new Date(Date.now() - 1000 * 60 * 90).toLocaleString('en-AU'),
+        resolved_by: 'owner_1', resolved_at: new Date(Date.now() - 1000 * 60 * 60).toLocaleString('en-AU')
+      }
+    ]
   },
   {
     id: 'st_04',
@@ -658,7 +684,16 @@ const DEFAULT_STATIONS = [
 // ============ 数据持久化 ============
 let stations = loadStations();
 
+const STATIONS_DATA_VERSION = 'v3_alarms';
+
 function loadStations() {
+  const savedVersion = localStorage.getItem('stations_version');
+  // 数据版本不匹配时清除旧缓存，使用最新默认数据
+  if (savedVersion !== STATIONS_DATA_VERSION) {
+    localStorage.removeItem('stations');
+    localStorage.setItem('stations_version', STATIONS_DATA_VERSION);
+    return JSON.parse(JSON.stringify(DEFAULT_STATIONS));
+  }
   const saved = localStorage.getItem('stations');
   if (saved) {
     try { return JSON.parse(saved); }
