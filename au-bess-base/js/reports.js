@@ -341,14 +341,19 @@ let alarmFilterDateFrom = '';
 let alarmFilterDateTo = '';
 
 /**
- * 缩短时间显示：'27/02/2026, 13:30:32 (Sydney)' → '02-27 13:30'
+ * 缩短时间显示：'27/02/2026, 13:30:32 (Sydney)' → '02-27 13:30 (+11)'
  */
+const tzOffsetMap = {
+  'Sydney': '+11', 'Melbourne': '+11', 'Brisbane': '+10',
+  'Perth': '+8', 'Adelaide': '+10.5', 'Hobart': '+11', 'Darwin': '+9.5'
+};
 function shortTime(timeStr) {
   if (!timeStr) return '-';
-  // 尝试提取 dd/mm/yyyy, HH:MM
   const m = String(timeStr).match(/(\d{2})\/(\d{2})\/\d{4},?\s*(\d{2}):(\d{2})/);
-  if (m) return m[2] + '-' + m[1] + ' ' + m[3] + ':' + m[4];
-  return timeStr.replace(/\s*\(.*\)\s*$/, '').replace(/:\d{2}$/, '');
+  const city = String(timeStr).match(/\((\w+)\)/);
+  const tz = city && tzOffsetMap[city[1]] ? ' (+' + tzOffsetMap[city[1]].replace('+','') + ')' : '';
+  if (m) return m[2] + '-' + m[1] + ' ' + m[3] + ':' + m[4] + tz;
+  return timeStr.replace(/\s*\(.*\)\s*$/, '').replace(/:\d{2}$/, '') + tz;
 }
 
 /**
@@ -601,13 +606,13 @@ function renderAlarmsList(container, isOwner) {
       <div class="bg-white/[0.02] rounded-xl border border-white/10 overflow-x-auto">
         <table class="w-full text-sm" style="min-width:1400px;table-layout:fixed;">
           <colgroup>
-            <col style="width:110px">
-            <col style="width:320px">
+            <col style="width:140px">
+            <col style="width:300px">
             <col style="width:75px">
             <col style="width:70px">
-            <col style="width:145px">
+            <col style="width:140px">
             <col style="width:75px">
-            <col style="width:110px">
+            <col style="width:140px">
             <col style="width:110px">
             <col style="width:90px">
           </colgroup>
