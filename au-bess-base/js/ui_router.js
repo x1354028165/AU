@@ -1986,9 +1986,9 @@ function renderDispatchControlPanel(container, forceStationId) {
         <!-- 左栏：电站控制 -->
         <div class="space-y-8" style="width: 440px; flex-shrink: 0;">
 
-          <!-- SoC 大圆环 -->
+          <!-- 电站管理标题 + 智能托管 -->
           <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-b from-white/[0.03] to-transparent">
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center justify-between mb-8">
               <h3 class="text-xl font-bold text-white tracking-tight">${getTrans('menu_dispatch')}</h3>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" id="dp-auto-toggle" ${isAuto ? 'checked' : ''} onchange="dispatchToggleAuto('${station.id}', this.checked)" class="sr-only peer">
@@ -1997,36 +1997,37 @@ function renderDispatchControlPanel(container, forceStationId) {
               </label>
             </div>
 
-            <div class="flex justify-center py-6">
-              <div class="relative">
-                <svg width="${ringSize}" height="${ringSize}" viewBox="0 0 ${ringSize} ${ringSize}">
-                  <circle cx="${ringSize/2}" cy="${ringSize/2}" r="${ringR}" fill="none" stroke="#1e293b" stroke-width="14"/>
-                  <circle cx="${ringSize/2}" cy="${ringSize/2}" r="${ringR}" fill="none" stroke="${socColor}" stroke-width="14"
-                    stroke-dasharray="${ringCirc}" stroke-dashoffset="${ringSocOffset}"
-                    stroke-linecap="round" transform="rotate(-90 ${ringSize/2} ${ringSize/2})" class="transition-all duration-1000"/>
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <!-- 充电 | 价格球 | 放电 三栏布局 -->
+            <div class="flex items-center justify-center gap-6">
+              <!-- 左：充电信息 -->
+              <div class="text-right flex-1">
+                <p class="text-sm font-semibold text-blue-400 mb-3">⚡ ${getTrans('force_charge')}</p>
+                <p class="text-xs text-slate-500 mb-1">${getTrans('time')}</p>
+                <p class="text-sm text-white font-mono mb-3">${station.nextAction?.action === 'charge' ? (station.nextAction.time || '--:--') : '--:--'}</p>
+                <p class="text-xs text-slate-500 mb-1">${getTrans('price')}</p>
+                <p class="text-sm text-white font-mono mb-3">$${(strat.charge_threshold || 50).toFixed(0)}</p>
+                <p class="text-xs text-slate-500 mb-1">SoC</p>
+                <p class="text-sm text-white font-mono">${(strat.charge_soc_limit || 90)}%</p>
+              </div>
+
+              <!-- 中：价格实心球 -->
+              <div class="flex-shrink-0">
+                <div class="rounded-full flex flex-col items-center justify-center" style="width: 200px; height: 200px; background: radial-gradient(circle at 40% 35%, ${socColor}44, ${socColor}11 70%, transparent);">
                   <span class="text-4xl font-bold font-mono tracking-tight" style="color:${priceColor}" id="dp-ring-price">${priceStr}</span>
-                  <span class="text-sm text-slate-400 mt-2 font-medium" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
-                  <span class="text-xs text-slate-600 mt-1">${station.status || 'Standby'}</span>
+                  <span class="text-sm text-slate-400 mt-2 font-medium" id="dp-ring-soc">${station.status || 'Standby'}</span>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <!-- 3个 KPI -->
-          <div class="grid grid-cols-3 gap-4">
-            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
-              <p class="text-sm text-slate-400 mb-2">${getTrans('discharge_cycles')}</p>
-              <p class="text-3xl font-bold text-white font-mono" id="dp-cycles">${Math.floor(station.soc * cap.mwh / 100 / cap.mwh * 10)}</p>
-            </div>
-            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
-              <p class="text-sm text-slate-400 mb-2">${getTrans('available_kwh')}</p>
-              <p class="text-3xl font-bold text-cyan-400 font-mono" id="dp-kwh">${(station.soc * cap.mwh / 100 * 1000).toFixed(0)}<span class="text-lg">kWh</span></p>
-            </div>
-            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
-              <p class="text-sm text-slate-400 mb-2">${getTrans('projected_profit')}</p>
-              <p class="text-3xl font-bold text-emerald-400 font-mono" id="dp-profit">$${plan.summary.profit}</p>
+              <!-- 右：放电信息 -->
+              <div class="text-left flex-1">
+                <p class="text-sm font-semibold text-red-400 mb-3">🔋 ${getTrans('force_discharge')}</p>
+                <p class="text-xs text-slate-500 mb-1">${getTrans('time')}</p>
+                <p class="text-sm text-white font-mono mb-3">${station.nextAction?.action === 'discharge' ? (station.nextAction.time || '--:--') : '--:--'}</p>
+                <p class="text-xs text-slate-500 mb-1">${getTrans('price')}</p>
+                <p class="text-sm text-white font-mono mb-3">$${(strat.discharge_threshold || 200).toFixed(0)}</p>
+                <p class="text-xs text-slate-500 mb-1">SoC</p>
+                <p class="text-sm text-white font-mono">${(strat.reserve_soc || 20)}%</p>
+              </div>
             </div>
           </div>
 
