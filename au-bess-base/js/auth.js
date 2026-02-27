@@ -619,8 +619,15 @@ function getTrans(key) {
 function switchLang(lang) {
   localStorage.setItem('lang', lang);
   // 保存当前视图状态，刷新后恢复
-  if (typeof currentView !== 'undefined') localStorage.setItem('_view', currentView);
-  if (typeof currentSubView !== 'undefined') localStorage.setItem('_subview', currentSubView);
+  const rv = document.getElementById('view-reports');
+  const dv = document.getElementById('view-detail');
+  if (rv && !rv.classList.contains('hidden')) {
+    localStorage.setItem('_view', 'reports');
+  } else if (dv && !dv.classList.contains('hidden')) {
+    localStorage.setItem('_view', 'detail');
+  } else {
+    localStorage.setItem('_view', 'dashboard');
+  }
   window.location.reload();
 }
 
