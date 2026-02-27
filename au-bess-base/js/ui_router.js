@@ -1193,16 +1193,7 @@ function renderSidebar(role, theme) {
         </a>`;
       }).join('')}
     </nav>
-    <div class="p-4 border-t border-white/10 mt-auto shrink-0">
-      <a href="#" onclick="switchRole()" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-amber-400 hover:bg-amber-500/10 transition-colors">
-        <i data-lucide="repeat" class="w-4 h-4"></i>
-        ${getTrans('switch_role')}
-      </a>
-      <a href="#" onclick="logout()" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors">
-        <i data-lucide="log-out" class="w-4 h-4"></i>
-        ${getTrans('sign_out')}
-      </a>
-    </div>
+    <!-- 切换角色/退出登录 只保留顶部导航栏 -->
   `;
   if (window.lucide) lucide.createIcons();
 }
