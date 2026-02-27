@@ -2125,14 +2125,17 @@ function updateDispatchPanel() {
   const profit = el('dp-profit'); if (profit) profit.textContent = '$' + (station.projected_profit || 0).toFixed(0);
   const kwh = el('dp-kwh'); if (kwh) kwh.textContent = (station.soc * cap.mwh / 100 * 1000).toFixed(0) + 'kWh';
 
-  // 实时更新今日汇总
+  // 实时更新今日汇总：有实时数据用实时，否则用计划数据
   if (typeof getTodayTradesSummary === 'function') {
-    const ts = getTodayTradesSummary();
-    const buyEl = el('dp-summary-buy'); if (buyEl) buyEl.textContent = ts.totalBuyQty + ' MWh';
-    const sellEl = el('dp-summary-sell'); if (sellEl) sellEl.textContent = ts.totalSellQty + ' MWh';
-    const profitEl = el('dp-summary-profit'); if (profitEl) {
-      profitEl.textContent = 'A$' + ts.profit;
-      profitEl.className = profitEl.className.replace(/text-(emerald|red)-400/g, '') + (parseFloat(ts.profit) >= 0 ? ' text-emerald-400' : ' text-red-400');
+    const live = getTodayTradesSummary();
+    const hasLive = parseFloat(live.totalBuyQty) > 0 || parseFloat(live.totalSellQty) > 0;
+    if (hasLive) {
+      const buyEl = el('dp-summary-buy'); if (buyEl) buyEl.innerHTML = live.totalBuyQty + ' <span class="text-base text-slate-500 font-normal">MWh</span>';
+      const sellEl = el('dp-summary-sell'); if (sellEl) sellEl.innerHTML = live.totalSellQty + ' <span class="text-base text-slate-500 font-normal">MWh</span>';
+      const profitEl = el('dp-summary-profit'); if (profitEl) {
+        profitEl.textContent = 'A$' + live.profit;
+        profitEl.className = profitEl.className.replace(/text-(emerald|red)-400/g, '') + (parseFloat(live.profit) >= 0 ? ' text-emerald-400' : ' text-red-400');
+      }
     }
   }
 }
