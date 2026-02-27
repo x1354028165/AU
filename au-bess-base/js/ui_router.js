@@ -1950,6 +1950,31 @@ function generateTradingPlan(station) {
 }
 
 function renderDispatchControlPanel(container, forceStationId) {
+  // 预先计算所有AI面板翻译文本，避免动态翻译问题
+  function getCurrentLang() {
+    return (typeof getLang === 'function' ? getLang() : localStorage.getItem('lang')) || 'en';
+  }
+  
+  const aiTexts = {
+    title: getCurrentLang() === 'zh' ? 'AI 决策引擎' : 'AI Decision Engine',
+    analyzing: getCurrentLang() === 'zh' ? '正在分析市场数据…' : 'Analyzing market data…',
+    lastUpdated: getCurrentLang() === 'zh' ? '上次更新' : 'Last Updated',
+    seconds: getCurrentLang() === 'zh' ? '秒' : 's',
+    thinking: getCurrentLang() === 'zh' ? 'AI 思考过程' : 'AI Analysis',
+    decisionLogic: getCurrentLang() === 'zh' ? '决策逻辑' : 'Decision Logic',
+    decisionResult: getCurrentLang() === 'zh' ? '决策结果' : 'Decision Result',
+    stable: getCurrentLang() === 'zh' ? '稳定' : 'Stable',
+    charge: getCurrentLang() === 'zh' ? '充电' : 'CHARGE',
+    lowSoc: getCurrentLang() === 'zh' ? '低电量' : 'Low SoC',
+    high: getCurrentLang() === 'zh' ? '高' : 'High',
+    executeTime: getCurrentLang() === 'zh' ? '执行时间' : 'Execute At',
+    powerLevel: getCurrentLang() === 'zh' ? '功率级别' : 'Power Level',
+    expectedProfit: getCurrentLang() === 'zh' ? '预期收益' : 'Expected Profit',
+    thisCycle: getCurrentLang() === 'zh' ? '本次周期收益' : 'This Cycle Profit',
+    todayTotal: getCurrentLang() === 'zh' ? '今日累计' : 'Today Total',
+    confidence: getCurrentLang() === 'zh' ? '置信度' : 'Confidence'
+  };
+
   const stationList = getStationsByRole();
   const targetId = forceStationId || dispatchSelectedStationId;
   const station = targetId ? stationList.find(s => s.id === targetId) || stationList[0] : stationList[0];
@@ -2183,18 +2208,18 @@ function renderDispatchControlPanel(container, forceStationId) {
                 <span class="text-lg">🧠</span>
               </div>
               <div>
-                <h3 class="text-lg font-bold text-white tracking-tight">${typeof getTrans === 'function' ? safeGetTrans('ai_panel_title') : 'AI Decision Engine'}</h3>
+                <h3 class="text-lg font-bold text-white tracking-tight">${aiTexts.title}</h3>
                 <div class="flex items-center gap-2 mt-0.5">
                   <span class="ai-pulse-dot w-2 h-2 rounded-full bg-cyan-400"></span>
-                  <span class="text-xs text-cyan-400 font-medium" id="ai-thinking-status">${safeGetTrans('ai_status_analyzing')}</span>
+                  <span class="text-xs text-cyan-400 font-medium" id="ai-thinking-status">${aiTexts.analyzing}</span>
                 </div>
               </div>
             </div>
             <div class="flex items-center gap-3">
-              <span class="text-xs text-slate-500" id="ai-last-update">${safeGetTrans('ai_last_updated')}: --:--</span>
+              <span class="text-xs text-slate-500" id="ai-last-update">${aiTexts.lastUpdated}: --:--</span>
               <div class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                 <i data-lucide="timer" class="w-3.5 h-3.5 text-slate-400"></i>
-                <span class="text-xs text-slate-400 font-mono" id="ai-countdown">30${safeGetTrans('ai_seconds')}</span>
+                <span class="text-xs text-slate-400 font-mono" id="ai-countdown">30${aiTexts.seconds}</span>
               </div>
             </div>
           </div>
@@ -2207,7 +2232,7 @@ function renderDispatchControlPanel(container, forceStationId) {
               <div class="space-y-4">
                 <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
                   <i data-lucide="brain" class="w-4 h-4 text-cyan-400"></i>
-                  ${safeGetTrans('ai_thinking')}
+                  ${aiTexts.thinking}
                 </h4>
                 <div id="ai-thinking-steps" class="space-y-2">
                   ${renderAIThinkingSteps()}
@@ -2218,7 +2243,7 @@ function renderDispatchControlPanel(container, forceStationId) {
               <div class="space-y-4">
                 <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
                   <i data-lucide="git-branch" class="w-4 h-4 text-purple-400"></i>
-                  ${safeGetTrans('ai_decision_logic')}
+                  ${aiTexts.decisionLogic}
                 </h4>
                 <div id="ai-logic-factors" class="space-y-3">
                   ${renderAILogicFactors()}
@@ -2229,7 +2254,7 @@ function renderDispatchControlPanel(container, forceStationId) {
               <div class="space-y-4">
                 <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
                   <i data-lucide="target" class="w-4 h-4 text-amber-400"></i>
-                  ${safeGetTrans('ai_decision_result')}
+                  ${aiTexts.decisionResult}
                 </h4>
                 <div id="ai-decision-result" class="space-y-3">
                   ${renderAIDecisionResult()}
