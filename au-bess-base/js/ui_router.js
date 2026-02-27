@@ -1957,10 +1957,10 @@ function renderDispatchControlPanel(container, forceStationId) {
   container.innerHTML = `
     <div id="dispatch-panel" data-station-id="${station.id}">
       <!-- 左右分栏 -->
-      <div class="flex flex-col lg:flex-row gap-6">
+      <div class="flex flex-col md:flex-row gap-6">
 
         <!-- 左栏：电站控制 -->
-        <div class="w-full lg:w-[380px] flex-shrink-0 space-y-4">
+        <div class="w-full md:w-[380px] flex-shrink-0 space-y-4">
           <!-- 标题 + 自动开关 -->
           <div class="bg-white/5 rounded-xl p-5 border border-white/10">
             <div class="flex items-center justify-between mb-4">
