@@ -346,12 +346,15 @@ let alarmFilterDateTo = '';
 const tzGmtMap = {
   'Sydney': 'GMT+11', 'Melbourne': 'GMT+11', 'Hobart': 'GMT+11',
   'Brisbane': 'GMT+10', 'Perth': 'GMT+8',
-  'Adelaide': 'GMT+10:30', 'Darwin': 'GMT+9:30'
+  'Adelaide': 'GMT+10:30', 'Darwin': 'GMT+9:30',
+  '悉尼': 'GMT+11', '墨尔本': 'GMT+11', '霍巴特': 'GMT+11',
+  '布里斯班': 'GMT+10', '珀斯': 'GMT+8',
+  '阿德莱德': 'GMT+10:30', '达尔文': 'GMT+9:30'
 };
 function shortTime(timeStr) {
   if (!timeStr) return '-';
   const m = String(timeStr).match(/(\d{2})\/(\d{2})\/\d{4},?\s*(\d{2}):(\d{2})/);
-  const city = String(timeStr).match(/\((\w+)\)/);
+  const city = String(timeStr).match(/\(([^)]+)\)/);
   const gmt = city && tzGmtMap[city[1]] ? ' ' + tzGmtMap[city[1]] : '';
   const mFull = String(timeStr).match(/(\d{2})\/(\d{2})\/(\d{4}),?\s*(\d{2}):(\d{2})/);
   if (mFull) return mFull[3] + '-' + mFull[2] + '-' + mFull[1] + ' ' + mFull[4] + ':' + mFull[5] + (gmt ? '<br><span class="text-slate-600 text-[10px]">（' + gmt + '）</span>' : '');
