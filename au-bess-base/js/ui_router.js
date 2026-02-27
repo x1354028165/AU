@@ -107,14 +107,18 @@ function initDashboard() {
   // 根据角色设置默认菜单并渲染
   if (!isOwner) {
     activeMenuId = 'dispatch';
-    // 调度中心：隐藏视图切换，显示操盘面板
+    // 调度中心：隐藏所有不需要的顶部元素
     const viewToggle = document.getElementById('view-toggle-container');
     const mapCont = document.getElementById('map-container');
     const listCont = document.getElementById('list-container');
     const stationCont = document.getElementById('station-container');
+    const kpiRow = document.getElementById('kpi-container');
+    const marketBanner = document.getElementById('market-banner');
     if (viewToggle) viewToggle.classList.add('hidden');
     if (mapCont) mapCont.classList.add('hidden');
     if (listCont) listCont.classList.add('hidden');
+    if (kpiRow) kpiRow.classList.add('hidden');
+    if (marketBanner) marketBanner.classList.add('hidden');
     if (stationCont) {
       stationCont.classList.remove('hidden');
       renderDispatchControlPanel(stationCont);
@@ -1643,18 +1647,17 @@ function handleMenuClick(menuId, viewId) {
   const stationCont = document.getElementById('station-container');
 
   if (menuId === 'dispatch') {
-    // 调度中心：单电站操盘视图
-    if (marketBanner) marketBanner.classList.remove('hidden');
+    // 调度中心：隐藏顶部 KPI/banner/图表，只显示操盘面板
+    if (marketBanner) marketBanner.classList.add('hidden');
     if (viewToggle) viewToggle.classList.add('hidden');
     if (mapCont) mapCont.classList.add('hidden');
     if (listCont) listCont.classList.add('hidden');
+    const kpiRow = document.getElementById('kpi-container');
+    if (kpiRow) kpiRow.classList.add('hidden');
     if (stationCont) {
       stationCont.classList.remove('hidden');
       renderDispatchControlPanel(stationCont);
     }
-    renderMarketBanner();
-    if (typeof initChart === 'function') initChart();
-    if (typeof updateChart === 'function' && typeof getPriceHistory === 'function') updateChart(getPriceHistory());
   } else if (menuId === 'assets' || menuId === 'portfolio') {
     // 电站管理：隐藏 AI 面板/图表，显示资产视图切换
     if (marketBanner) marketBanner.classList.add('hidden');
@@ -1954,8 +1957,38 @@ function renderDispatchControlPanel(container, forceStationId) {
   const priceColor = price < 0 ? '#10b981' : price > 300 ? '#ef4444' : '#fbbf24';
   const priceStr = price < 0 ? '-$' + Math.abs(price).toFixed(2) : '$' + price.toFixed(2);
 
+  const profitColor = parseFloat(plan.summary.profit) >= 0 ? 'text-emerald-400' : 'text-red-400';
+
   container.innerHTML = `
     <div id="dispatch-panel" data-station-id="${station.id}">
+      <!-- 顶部套利汇总 -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="bg-white/5 rounded-xl p-5 border border-white/10">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-sm">⬇</span>
+            <span class="text-xs text-slate-400">${getTrans('total_buy')}</span>
+          </div>
+          <p class="text-2xl font-bold text-white font-mono" id="dp-summary-buy">${plan.summary.totalBuyQty} MWh</p>
+          <p class="text-xs text-slate-500 mt-1">${getTrans('cost')}: A$${plan.summary.totalBuyCost}</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-5 border border-white/10">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-sm">⬆</span>
+            <span class="text-xs text-slate-400">${getTrans('total_sell')}</span>
+          </div>
+          <p class="text-2xl font-bold text-white font-mono" id="dp-summary-sell">${plan.summary.totalSellQty} MWh</p>
+          <p class="text-xs text-slate-500 mt-1">${getTrans('revenue')}: A$${plan.summary.totalSellRevenue}</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-5 border border-white/10">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm">🏆</span>
+            <span class="text-xs text-slate-400">${getTrans('spread_profit')}</span>
+          </div>
+          <p class="text-2xl font-bold ${profitColor} font-mono" id="dp-summary-profit">A$${plan.summary.profit}</p>
+          <p class="text-xs text-slate-500 mt-1">${getTrans('margin')}: ${plan.summary.margin}%</p>
+        </div>
+      </div>
+
       <!-- 左右分栏 -->
       <div class="flex gap-6" style="flex-direction: row; flex-wrap: wrap;">
 
