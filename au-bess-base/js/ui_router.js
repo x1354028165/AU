@@ -105,8 +105,10 @@ function initDashboard() {
   }
 
   // 根据角色设置默认菜单并渲染
-  if (!isOwner) {
-    activeMenuId = 'dispatch';
+  if (isOwner) {
+    activeMenuId = 'portfolio';  // 业主默认：资产组合首页
+  } else {
+    activeMenuId = 'dispatch';   // 运维默认：调度中心
     // 调度中心：隐藏所有不需要的顶部元素
     const viewToggle = document.getElementById('view-toggle-container');
     const mapCont = document.getElementById('map-container');
