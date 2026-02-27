@@ -110,6 +110,15 @@ function initDashboard() {
 
   // 仿真引擎：始终启动（运维需要实时电价，业主也需要间接收益计算）
   if (typeof startSimulator === 'function') startSimulator();
+
+  // 语言切换后恢复视图状态
+  const savedView = localStorage.getItem('_view');
+  const savedSubView = localStorage.getItem('_subview');
+  if (savedView) {
+    localStorage.removeItem('_view');
+    localStorage.removeItem('_subview');
+    switchView(savedView, savedSubView || undefined);
+  }
 }
 
 // ============ 仿真回调 ============

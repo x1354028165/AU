@@ -618,7 +618,9 @@ function getTrans(key) {
 
 function switchLang(lang) {
   localStorage.setItem('lang', lang);
-  // 直接刷新页面，确保所有文案 100% 重新渲染
+  // 保存当前视图状态，刷新后恢复
+  if (typeof currentView !== 'undefined') localStorage.setItem('_view', currentView);
+  if (typeof currentSubView !== 'undefined') localStorage.setItem('_subview', currentSubView);
   window.location.reload();
 }
 
