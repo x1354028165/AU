@@ -2012,7 +2012,7 @@ function renderDispatchControlPanel(container, forceStationId) {
 
               <!-- 中：价格实心球 -->
               <div class="flex-shrink-0">
-                <div class="rounded-full flex flex-col items-center justify-center" style="width: 200px; height: 200px; background: radial-gradient(circle at 40% 35%, ${socColor}44, ${socColor}11 70%, transparent);">
+                <div class="rounded-full flex flex-col items-center justify-center border-2" style="width: 200px; height: 200px; background: radial-gradient(circle at 35% 30%, ${socColor}99, ${socColor}55 50%, ${socColor}22 80%, #0f172a); border-color: ${socColor}66;">
                   <span class="text-4xl font-bold font-mono tracking-tight" style="color:${priceColor}" id="dp-ring-price">${priceStr}</span>
                   <span class="text-sm text-slate-400 mt-2 font-medium" id="dp-ring-soc">${station.status || 'Standby'}</span>
                 </div>
