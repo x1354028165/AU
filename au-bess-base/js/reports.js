@@ -338,17 +338,43 @@ let alarmFilterSeverity = 'all';
 let alarmFilterStatus = 'all';
 
 /**
- * 计算持续时长
+ * 解析时间戳（剥离城市后缀后转 Date）
+ */
+function parseAlarmTime(timeStr) {
+  if (!timeStr) return null;
+  // 剥离 " (Sydney)" 等城市后缀
+  const cleaned = String(timeStr).replace(/\s*\(.*\)\s*$/, '');
+  const d = new Date(cleaned);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * 计算持续时长（优先用 _ms 毫秒字段，兜底用字符串解析）
  */
 function calcDuration(alarm) {
-  const start = alarm.created_ms || 0;
-  if (!start) return '-';
-  const end = alarm.status === 'RESOLVED' ? (alarm.resolved_ms || Date.now()) : Date.now();
-  const diffMin = Math.floor((end - start) / 60000);
-  if (diffMin < 60) return diffMin + 'min';
-  const hours = Math.floor(diffMin / 60);
-  const mins = diffMin % 60;
-  return hours + 'h ' + mins + 'min';
+  let startMs = alarm.created_ms || 0;
+  if (!startMs) {
+    const parsed = parseAlarmTime(alarm.timestamp);
+    startMs = parsed ? parsed.getTime() : 0;
+  }
+  if (!startMs) return '-';
+
+  let endMs;
+  if (alarm.status === 'RESOLVED') {
+    endMs = alarm.resolved_ms || 0;
+    if (!endMs) {
+      const parsed = parseAlarmTime(alarm.resolved_at);
+      endMs = parsed ? parsed.getTime() : Date.now();
+    }
+  } else {
+    endMs = Date.now();
+  }
+
+  const diffMin = Math.round((endMs - startMs) / 60000);
+  if (diffMin < 1) return '<1m';
+  if (diffMin < 60) return diffMin + 'm';
+  const hours = (diffMin / 60).toFixed(1);
+  return hours + 'h';
 }
 
 /**
@@ -372,7 +398,9 @@ function renderAlarmsList(container, isOwner) {
     allAlarms = allAlarms.filter(a =>
       a.message.toLowerCase().includes(q) ||
       a.stationName.toLowerCase().includes(q) ||
-      (a.fault_code && a.fault_code.toLowerCase().includes(q))
+      (a.fault_code && a.fault_code.toLowerCase().includes(q)) ||
+      (a.device_id && a.device_id.toLowerCase().includes(q)) ||
+      (a.root_cause && a.root_cause.toLowerCase().includes(q))
     );
   }
   if (alarmFilterSeverity !== 'all') {
@@ -400,7 +428,7 @@ function renderAlarmsList(container, isOwner) {
   const filterBar = `
     <div class="flex flex-wrap items-center gap-3 mb-4 p-3 bg-white/[0.03] rounded-xl border border-white/10">
       <input type="text" id="alarm-search" placeholder="${getTrans('alarm_filter_search')}" value="${escapeHTML(alarmFilterSearch)}"
-        onchange="alarmFilterSearch=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+        oninput="alarmFilterSearch=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
         class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 w-48" />
       <select id="alarm-severity-filter" onchange="alarmFilterSeverity=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
         class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white">
