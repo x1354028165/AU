@@ -587,19 +587,19 @@ function renderAlarmsList(container, isOwner) {
       suggestion = `<span class="text-cyan-400 text-xs">${escapeHTML(causeText)}</span>`;
     }
 
-    // 操作
-    let actionCol = '';
+    // 操作：详情 + 处理
+    const detailBtn = `<button onclick="showAlarmDetail('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-blue-500/20 text-xs text-blue-400 hover:bg-blue-500/30 transition-colors">${getTrans('btn_detail')}</button>`;
+    let handleBtn = '';
     if (alarm.status === 'ACTIVE') {
-      actionCol = isOwner
-        ? `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-500/30 transition-colors">${getTrans('btn_resolve')}</button>`
-        : `<button onclick="ackAlarm('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-amber-500/20 text-xs text-amber-400 hover:bg-amber-500/30 transition-colors">${getTrans('btn_ack')}</button>`;
+      handleBtn = isOwner
+        ? `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-500/30 transition-colors">${getTrans('btn_handle')}</button>`
+        : `<button onclick="ackAlarm('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-amber-500/20 text-xs text-amber-400 hover:bg-amber-500/30 transition-colors">${getTrans('btn_handle')}</button>`;
     } else if (alarm.status === 'ACKNOWLEDGED') {
-      actionCol = isOwner
-        ? `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-500/30 transition-colors">${getTrans('btn_resolve')}</button>`
-        : `<span class="text-xs text-amber-400">${getTrans('awaiting_resolve')}</span>`;
-    } else {
-      actionCol = `<span class="text-xs text-slate-600">—</span>`;
+      handleBtn = isOwner
+        ? `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-500/30 transition-colors">${getTrans('btn_handle')}</button>`
+        : ``;
     }
+    const actionCol = `<div class="flex items-center justify-end gap-2">${detailBtn}${handleBtn}</div>`;
 
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
@@ -609,7 +609,6 @@ function renderAlarmsList(container, isOwner) {
         <td class="${tdClass} text-slate-400 font-mono text-xs whitespace-nowrap">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
         <td class="${tdClass} text-white text-xs whitespace-nowrap">${escapeHTML(alarm.stationName)}</td>
         <td class="${tdClass} whitespace-nowrap">${statusBadge}</td>
-        <td class="${tdClass} font-mono text-slate-400 text-xs">${alarm.status === 'RESOLVED' && alarm.resolved_at ? shortTime(alarm.resolved_at) : '-'}</td>
         <td class="${tdClass} whitespace-nowrap">${suggestion}</td>
         <td class="${tdClass} text-right whitespace-nowrap">${actionCol}</td>
       </tr>
@@ -618,7 +617,7 @@ function renderAlarmsList(container, isOwner) {
 
   // 空状态
   const emptyState = allAlarms.length === 0 ? `
-    <tr><td colspan="9" class="text-center py-16">
+    <tr><td colspan="8" class="text-center py-16">
       <div class="text-slate-600">
         <p class="text-base mb-1">🛡️ ${getTrans('no_alarms_active')}</p>
         <p class="text-sm">${getTrans('no_alarms_hint')}</p>
@@ -657,7 +656,6 @@ function renderAlarmsList(container, isOwner) {
               <th class="${thClass}">${getTrans('alarm_col_device')}</th>
               <th class="${thClass}">${getTrans('alarm_col_station')}</th>
               <th class="${thClass}">${getTrans('alarm_col_status')}</th>
-              <th class="${thClass}">${getTrans('alarm_col_resolve_time')}</th>
               <th class="${thClass}">${getTrans('alarm_col_root_cause')}</th>
               <th class="${thClass} text-right">${getTrans('alarm_col_action')}</th>
             </tr>
@@ -670,6 +668,44 @@ function renderAlarmsList(container, isOwner) {
 }
 
 // ============ Resolve Modal ============
+
+function showAlarmDetail(stationId, alarmId) {
+  const stations = typeof getStationsByRole === 'function' ? getStationsByRole() : [];
+  const station = stations.find(s => s.id === stationId);
+  if (!station || !station.alarms) return;
+  const alarm = station.alarms.find(a => a.id === alarmId);
+  if (!alarm) return;
+
+  const existing = document.getElementById('alarm-detail-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'alarm-detail-modal';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+  const rows = [
+    [getTrans('alarm_col_time'), shortTime(alarm.timestamp)],
+    [getTrans('alarm_col_station'), alarm.stationName || stationId],
+    [getTrans('alarm_col_device'), alarm.device_id || '-'],
+    [getTrans('alarm_col_level'), alarm.severity || '-'],
+    [getTrans('alarm_col_status'), alarm.status || '-'],
+    [getTrans('alarm_col_desc'), resolveAlarmMsg(alarm.message)],
+    [getTrans('alarm_col_root_cause'), alarm.root_cause || '-'],
+    [getTrans('alarm_col_resolve_time'), alarm.resolved_at ? shortTime(alarm.resolved_at) : '-'],
+  ].map(([k, v]) => `<tr><td class="text-slate-500 text-sm py-2 pr-4 whitespace-nowrap align-top">${k}</td><td class="text-white text-sm py-2">${v}</td></tr>`).join('');
+
+  modal.innerHTML = `
+    <div class="bg-slate-800 border border-white/10 rounded-xl p-6 w-[480px] max-h-[80vh] overflow-y-auto shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-white">${getTrans('btn_detail')}</h3>
+        <button onclick="document.getElementById('alarm-detail-modal').remove()" class="text-slate-400 hover:text-white text-xl">✕</button>
+      </div>
+      <table class="w-full">${rows}</table>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
 
 function showResolveModal(stationId, alarmId) {
   // 移除已有 modal
