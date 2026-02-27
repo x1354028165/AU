@@ -1852,6 +1852,69 @@ function saveStrategy(stationId) {
 
 let dispatchSelectedStationId = null;
 
+// 生成今日交易计划（8个时段）
+function generateTradingPlan(station) {
+  const cap = typeof getPhysicalCapacity === 'function' ? getPhysicalCapacity(station) : { mw: MAX_MW, mwh: MAX_MWH };
+  const strat = station.strategy || {};
+  const chargeAt = strat.charge_threshold || 50;
+  const dischargeAt = strat.discharge_threshold || 200;
+  const hour = new Date().getHours();
+
+  const slots = [
+    { time: '00:00 - 03:00', type: 'off_peak', typeName: getTrans('off_peak'), avgPrice: 25, action: 'buy', qty: cap.mw * 3 },
+    { time: '03:00 - 06:00', type: 'off_peak', typeName: getTrans('off_peak'), avgPrice: 18, action: 'buy', qty: cap.mw * 3 },
+    { time: '06:00 - 09:00', type: 'shoulder', typeName: getTrans('shoulder'), avgPrice: 65, action: 'hold', qty: 0 },
+    { time: '09:00 - 12:00', type: 'shoulder', typeName: getTrans('shoulder'), avgPrice: 85, action: 'partial_sell', qty: cap.mw * 1.5 },
+    { time: '12:00 - 15:00', type: 'shoulder', typeName: getTrans('shoulder'), avgPrice: 72, action: 'hold', qty: 0 },
+    { time: '15:00 - 17:00', type: 'shoulder', typeName: getTrans('shoulder'), avgPrice: 110, action: 'partial_sell', qty: cap.mw * 1 },
+    { time: '17:00 - 20:00', type: 'peak', typeName: getTrans('peak_period'), avgPrice: 320, action: 'sell', qty: cap.mw * 3 },
+    { time: '20:00 - 00:00', type: 'shoulder', typeName: getTrans('shoulder'), avgPrice: 55, action: 'buy', qty: cap.mw * 2 },
+  ];
+
+  // 用真实 AEMO 数据覆盖价格
+  if (typeof aemoPriceData !== 'undefined' && aemoPriceData && aemoPriceData.length > 0) {
+    const prices = aemoPriceData.map(p => p.price);
+    const chunkSize = Math.ceil(prices.length / 8);
+    slots.forEach((s, i) => {
+      const chunk = prices.slice(i * chunkSize, (i + 1) * chunkSize);
+      if (chunk.length > 0) {
+        s.avgPrice = Math.round(chunk.reduce((a, b) => a + b, 0) / chunk.length * 100) / 100;
+      }
+    });
+  }
+
+  // 计算收益
+  let totalBuyQty = 0, totalSellQty = 0, totalBuyCost = 0, totalSellRevenue = 0;
+  const currentSlotIndex = Math.min(Math.floor(hour / 3), 7);
+
+  slots.forEach((s, i) => {
+    if (s.action === 'buy') {
+      s.result = -(s.avgPrice * s.qty / 1000);
+      totalBuyQty += s.qty;
+      totalBuyCost += Math.abs(s.result);
+    } else if (s.action === 'sell' || s.action === 'partial_sell') {
+      s.result = s.avgPrice * s.qty * (station.efficiency || 0.88) / 1000;
+      totalSellQty += s.qty;
+      totalSellRevenue += s.result;
+    } else {
+      s.result = 0;
+    }
+    s.status = i < currentSlotIndex ? 'done' : (i === currentSlotIndex ? 'active' : 'planned');
+  });
+
+  return {
+    slots,
+    summary: {
+      totalBuyQty: totalBuyQty.toFixed(1),
+      totalSellQty: totalSellQty.toFixed(1),
+      totalBuyCost: totalBuyCost.toFixed(0),
+      totalSellRevenue: totalSellRevenue.toFixed(0),
+      profit: (totalSellRevenue - totalBuyCost).toFixed(0),
+      margin: totalSellRevenue > 0 ? ((totalSellRevenue - totalBuyCost) / totalSellRevenue * 100).toFixed(1) : '0'
+    }
+  };
+}
+
 function renderDispatchControlPanel(container, forceStationId) {
   const stationList = getStationsByRole();
   const targetId = forceStationId || dispatchSelectedStationId;
@@ -1862,94 +1925,236 @@ function renderDispatchControlPanel(container, forceStationId) {
     return;
   }
 
-  const strat = station.strategy || { mode: 'auto' };
+  const strat = station.strategy || { mode: 'auto', charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10 };
   const mode = strat.mode || 'auto';
-  const isManual = mode === 'manual_charge' || mode === 'manual_discharge' || mode === 'manual_idle';
+  const isAuto = mode === 'auto';
   const cap = typeof getPhysicalCapacity === 'function' ? getPhysicalCapacity(station) : { mw: MAX_MW, mwh: MAX_MWH };
-  const availEnergy = (station.soc * cap.mwh / 100).toFixed(1);
-  const dischargeDur = (station.soc * cap.mwh / 100 / cap.mw).toFixed(1);
-  const chargeDur = ((100 - station.soc) * cap.mwh / 100 / cap.mw).toFixed(1);
+  const price = typeof currentPrice !== 'undefined' ? currentPrice : 0;
+  const fc = typeof forecastPrice !== 'undefined' ? forecastPrice : price;
+  const plan = generateTradingPlan(station);
 
-  // 电站选择器（如果有多个电站）
-  const stationSelector = stationList.length > 1 ? `
-    <select id="dispatch-station-select" onchange="switchDispatchStation(this.value)" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
-      ${stationList.map(s => `<option value="${s.id}" ${s.id === station.id ? 'selected' : ''} class="bg-slate-800">${escapeHTML(s.name)}</option>`).join('')}
-    </select>
-  ` : '';
+  // 充电/放电条件
+  const chargeSoc = strat.charge_soc_limit || 90;
+  const dischargeSoc = strat.reserve_soc || 20;
+
+  // 操作按钮样式
+  const actionBtnClass = (m) => mode === m
+    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+    : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10';
+
+  // SoC 圆环 SVG
+  const socPct = station.soc;
+  const circumference = 2 * Math.PI * 70;
+  const socOffset = circumference - (socPct / 100) * circumference;
+  const socColor = socPct > 60 ? '#10b981' : socPct > 25 ? '#f59e0b' : '#ef4444';
+  const priceColor = price < 0 ? '#10b981' : price > 300 ? '#ef4444' : '#fbbf24';
+  const priceStr = price < 0 ? '-$' + Math.abs(price).toFixed(2) : '$' + price.toFixed(2);
 
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto" id="dispatch-panel" data-station-id="${station.id}">
-      <!-- 电站头部 -->
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <div class="flex items-center gap-3">
-            <h2 class="text-xl font-bold text-white">${escapeHTML(station.name)}</h2>
-            <span class="px-2 py-1 rounded text-xs font-bold ${isManual ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}">
-              ${isManual ? getTrans('dispatch_mode_manual') : getTrans('dispatch_mode_smart')}
-            </span>
+    <div id="dispatch-panel" data-station-id="${station.id}">
+      <!-- 左右分栏 -->
+      <div class="flex flex-col lg:flex-row gap-6">
+
+        <!-- 左栏：电站控制 -->
+        <div class="w-full lg:w-[380px] flex-shrink-0 space-y-4">
+          <!-- 标题 + 自动开关 -->
+          <div class="bg-white/5 rounded-xl p-5 border border-white/10">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-white">${getTrans('menu_dispatch')}</h3>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="dp-auto-toggle" ${isAuto ? 'checked' : ''} onchange="dispatchToggleAuto('${station.id}', this.checked)" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                <span class="ml-2 text-sm font-medium ${isAuto ? 'text-emerald-400' : 'text-slate-400'}" id="dp-auto-label">${isAuto ? getTrans('dispatch_mode_smart') : getTrans('dispatch_mode_manual')}</span>
+              </label>
+            </div>
+
+            <!-- SoC 圆环 + 电价 -->
+            <div class="flex justify-center py-4">
+              <div class="relative">
+                <svg width="180" height="180" viewBox="0 0 180 180">
+                  <circle cx="90" cy="90" r="70" fill="none" stroke="#1e293b" stroke-width="12"/>
+                  <circle cx="90" cy="90" r="70" fill="none" stroke="${socColor}" stroke-width="12"
+                    stroke-dasharray="${circumference}" stroke-dashoffset="${socOffset}"
+                    stroke-linecap="round" transform="rotate(-90 90 90)" class="transition-all duration-1000"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-3xl font-bold font-mono" style="color:${priceColor}" id="dp-ring-price">${priceStr}</span>
+                  <span class="text-xs text-slate-500 mt-1" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <p class="text-sm text-slate-400 mt-1">${escapeHTML(station.location)} · ${station.capacity}</p>
+
+          <!-- 设置区 -->
+          <div class="bg-white/5 rounded-xl p-5 border border-white/10">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-bold text-white">${getTrans('settings')}</span>
+            </div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs text-slate-400">⚡ ${getTrans('charge_stop_soc')}</span>
+              <span class="text-sm font-bold text-emerald-400" id="dp-charge-soc">${chargeSoc}%</span>
+            </div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs text-slate-400">🔋 ${getTrans('discharge_stop_soc')}</span>
+              <span class="text-sm font-bold text-amber-400" id="dp-discharge-soc">${dischargeSoc}%</span>
+            </div>
+
+            <!-- 充电条件 -->
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="bg-slate-800/50 rounded-lg p-3 border border-white/5">
+                <p class="text-xs font-bold text-blue-400 mb-2">${getTrans('auto_charge_rules')}</p>
+                <p class="text-xs text-slate-400">00:00-07:00 &nbsp; ${getTrans('price')}&lt;$50</p>
+              </div>
+              <div class="bg-slate-800/50 rounded-lg p-3 border border-white/5">
+                <p class="text-xs font-bold text-red-400 mb-2">${getTrans('auto_discharge_rules')}</p>
+                <p class="text-xs text-slate-400">00:00-18:00 &nbsp; ${getTrans('price')}&gt;$10k</p>
+                <p class="text-xs text-slate-400">18:00-21:00 &nbsp; ${getTrans('price')}&gt;$150</p>
+                <p class="text-xs text-slate-400">21:00-23:59 &nbsp; ${getTrans('price')}&gt;$10k</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部3个KPI -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <div class="text-2xl mb-1">🔋</div>
+              <p class="text-xs text-slate-500">${getTrans('discharge_cycles')}</p>
+              <p class="text-lg font-bold text-white font-mono" id="dp-cycles">${Math.floor(station.soc * cap.mwh / 100 / cap.mwh * 10)}</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <div class="text-2xl mb-1">⚡</div>
+              <p class="text-xs text-slate-500">${getTrans('available_kwh')}</p>
+              <p class="text-lg font-bold text-cyan-400 font-mono" id="dp-kwh">${(station.soc * cap.mwh / 100 * 1000).toFixed(0)}kWh</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <div class="text-2xl mb-1">💰</div>
+              <p class="text-xs text-slate-500">${getTrans('projected_profit')}</p>
+              <p class="text-lg font-bold text-emerald-400 font-mono" id="dp-profit">$${plan.summary.profit}</p>
+            </div>
+          </div>
+
+          <!-- 手动控制按钮 -->
+          ${!isAuto ? `
+          <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+            <p class="text-xs text-slate-500 mb-3">${getTrans('dispatch_mode_manual')}</p>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="dispatchSetMode('${station.id}', 'manual_charge')" class="py-2 rounded-lg text-xs font-bold ${mode === 'manual_charge' ? 'bg-blue-500 text-white' : 'bg-white/5 text-blue-400 border border-blue-500/30'}">⚡ ${getTrans('force_charge')}</button>
+              <button onclick="dispatchSetMode('${station.id}', 'manual_discharge')" class="py-2 rounded-lg text-xs font-bold ${mode === 'manual_discharge' ? 'bg-red-500 text-white' : 'bg-white/5 text-red-400 border border-red-500/30'}">🔋 ${getTrans('force_discharge')}</button>
+              <button onclick="dispatchSetMode('${station.id}', 'manual_idle')" class="py-2 rounded-lg text-xs font-bold ${mode === 'manual_idle' ? 'bg-slate-500 text-white' : 'bg-white/5 text-slate-400 border border-slate-500/30'}">⏸ ${getTrans('force_idle')}</button>
+            </div>
+          </div>
+          ` : ''}
         </div>
-        ${stationSelector}
+
+        <!-- 右栏：行情 -->
+        <div class="flex-1 space-y-4">
+          <!-- 4 KPI 卡片 -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <p class="text-xs text-slate-500">${getTrans('spot_price')}</p>
+              <p class="text-xl font-bold font-mono" style="color:${priceColor}" id="dp-spot">${priceStr}</p>
+              <p class="text-xs text-slate-500">($/MWh)</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <p class="text-xs text-slate-500">${getTrans('current_demand')}</p>
+              <p class="text-xl font-bold text-emerald-400 font-mono" id="dp-demand">4,454</p>
+              <p class="text-xs text-slate-500">(MW)</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <p class="text-xs text-slate-500">${getTrans('forecast_price')}</p>
+              <p class="text-xl font-bold text-amber-400 font-mono" id="dp-fc-price">$${fc.toFixed(2)}</p>
+              <p class="text-xs text-slate-500">($/MWh · NEXT 30MIN)</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <p class="text-xs text-slate-500">${getTrans('forecast_demand')}</p>
+              <p class="text-xl font-bold text-emerald-400 font-mono" id="dp-fc-demand">4,759</p>
+              <p class="text-xs text-slate-500">(MW · NEXT 30MIN)</p>
+            </div>
+          </div>
+
+          <!-- 图表区 -->
+          <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div id="dispatch-chart-container" style="height: 320px; position: relative;">
+              <canvas id="dispatch-price-chart"></canvas>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- KPI 行 -->
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-          <p class="text-xs text-slate-500">SoC</p>
-          <p class="text-2xl font-bold text-white font-mono" id="dp-soc">${station.soc.toFixed(1)}%</p>
+      <!-- 今日交易计划表 -->
+      <div class="mt-6 bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+        <div class="px-5 py-4 border-b border-white/10">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">🕐 ${getTrans('trading_plan_today')}</h3>
         </div>
-        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-          <p class="text-xs text-slate-500">${getTrans('available_energy')}</p>
-          <p class="text-2xl font-bold text-cyan-400 font-mono" id="dp-energy">${availEnergy} MWh</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-white/10">
+                <th class="px-4 py-3 text-left text-xs font-medium text-slate-400">${getTrans('time')}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-slate-400">${getTrans('price_type')}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-slate-400">${getTrans('operation')}</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-slate-400">${getTrans('price')}</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-slate-400">${getTrans('trade_qty')}</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-slate-400">${getTrans('result')}</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-slate-400">${getTrans('status')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${plan.slots.map(s => {
+                const typeColor = s.type === 'peak' ? 'text-red-400' : s.type === 'off_peak' ? 'text-emerald-400' : 'text-amber-400';
+                const actionColor = s.action === 'buy' ? 'bg-blue-500/20 text-blue-400' : s.action === 'sell' ? 'bg-red-500/20 text-red-400' : s.action === 'partial_sell' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-400';
+                const actionText = s.action === 'buy' ? getTrans('action_buy') : s.action === 'sell' ? getTrans('action_sell') : s.action === 'partial_sell' ? getTrans('action_partial_sell') : getTrans('action_hold');
+                const resultColor = s.result > 0 ? 'text-emerald-400' : s.result < 0 ? 'text-red-400' : 'text-slate-500';
+                const statusBadge = s.status === 'done' ? `<span class="px-2 py-1 rounded text-xs bg-slate-500/20 text-slate-400">${getTrans('status_done')}</span>`
+                  : s.status === 'active' ? `<span class="px-2 py-1 rounded text-xs bg-emerald-500/20 text-emerald-400 animate-pulse">${getTrans('status_active')}</span>`
+                  : `<span class="px-2 py-1 rounded text-xs bg-white/5 text-slate-500">${getTrans('status_planned')}</span>`;
+                return `<tr class="border-b border-white/5 hover:bg-white/[0.02]">
+                  <td class="px-4 py-3 text-white font-mono text-xs">${s.time}</td>
+                  <td class="px-4 py-3 ${typeColor} text-xs font-medium">${s.typeName}</td>
+                  <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-bold ${actionColor}">${actionText}</span></td>
+                  <td class="px-4 py-3 text-right text-white font-mono text-xs">$${s.avgPrice.toFixed(2)}/MWh</td>
+                  <td class="px-4 py-3 text-right text-white font-mono text-xs">${s.qty > 0 ? s.qty.toFixed(1) : '—'}</td>
+                  <td class="px-4 py-3 text-right font-mono text-xs ${resultColor}">${s.result > 0 ? '+' : ''}${s.result !== 0 ? 'A$' + s.result.toFixed(0) : 'A$0'}</td>
+                  <td class="px-4 py-3 text-right">${statusBadge}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
         </div>
-        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-          <p class="text-xs text-slate-500">${getTrans('discharge_duration')}</p>
-          <p class="text-2xl font-bold text-amber-400 font-mono" id="dp-discharge">${dischargeDur}h</p>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-          <p class="text-xs text-slate-500">${getTrans('charge_duration')}</p>
-          <p class="text-2xl font-bold text-blue-400 font-mono" id="dp-charge">${chargeDur}h</p>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-          <p class="text-xs text-slate-500">${getTrans('projected_profit')}</p>
-          <p class="text-2xl font-bold text-emerald-400 font-mono" id="dp-profit">A$${(station.projected_profit || 0).toFixed(0)}</p>
-        </div>
-      </div>
-
-      <!-- 控制按钮区 -->
-      <div class="bg-white/5 rounded-xl p-5 border border-white/10 mb-6">
-        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">${getTrans('next_action')}</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <button onclick="dispatchSetMode('${station.id}', 'auto')"
-            class="py-3 px-4 rounded-xl text-sm font-bold transition-all ${mode === 'auto' ? 'bg-emerald-500 text-white ring-2 ring-emerald-400' : 'bg-white/5 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/10'}">
-            🤖 ${getTrans('btn_resume_ai')}
-          </button>
-          <button onclick="dispatchSetMode('${station.id}', 'manual_charge')"
-            class="py-3 px-4 rounded-xl text-sm font-bold transition-all ${mode === 'manual_charge' ? 'bg-blue-500 text-white ring-2 ring-blue-400' : 'bg-white/5 text-blue-400 border border-blue-500/30 hover:bg-blue-500/10'}">
-            ⚡ ${getTrans('force_charge')}
-          </button>
-          <button onclick="dispatchSetMode('${station.id}', 'manual_discharge')"
-            class="py-3 px-4 rounded-xl text-sm font-bold transition-all ${mode === 'manual_discharge' ? 'bg-red-500 text-white ring-2 ring-red-400' : 'bg-white/5 text-red-400 border border-red-500/30 hover:bg-red-500/10'}">
-            🔋 ${getTrans('force_discharge')}
-          </button>
-          <button onclick="dispatchSetMode('${station.id}', 'manual_idle')"
-            class="py-3 px-4 rounded-xl text-sm font-bold transition-all ${mode === 'manual_idle' ? 'bg-slate-500 text-white ring-2 ring-slate-400' : 'bg-white/5 text-slate-400 border border-slate-500/30 hover:bg-slate-500/10'}">
-            ⏸ ${getTrans('force_idle')}
-          </button>
-        </div>
-      </div>
-
-      <!-- 下一动作预告 -->
-      <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-slate-500">${getTrans('next_action')}</span>
-          <span class="text-sm font-medium text-cyan-400" id="dp-next-action">${station.nextAction ? (station.nextAction.action === 'discharge' ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.time || station.nextAction.hour || '--') : getTrans('expect_charge_at').replace('{0}', station.nextAction.time || station.nextAction.hour || '--')) : '-'}</span>
+        <!-- 汇总 -->
+        <div class="grid grid-cols-3 gap-0 border-t border-white/10">
+          <div class="px-5 py-4 text-center border-r border-white/10">
+            <div class="flex items-center justify-center gap-2 mb-1">
+              <span class="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs">⬇</span>
+              <span class="text-xs text-slate-500">${getTrans('total_buy')}</span>
+            </div>
+            <p class="text-lg font-bold text-white font-mono">${plan.summary.totalBuyQty} MWh</p>
+            <p class="text-xs text-slate-500">${getTrans('cost')}: A$${plan.summary.totalBuyCost}</p>
+          </div>
+          <div class="px-5 py-4 text-center border-r border-white/10">
+            <div class="flex items-center justify-center gap-2 mb-1">
+              <span class="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center text-xs">⬆</span>
+              <span class="text-xs text-slate-500">${getTrans('total_sell')}</span>
+            </div>
+            <p class="text-lg font-bold text-white font-mono">${plan.summary.totalSellQty} MWh</p>
+            <p class="text-xs text-slate-500">${getTrans('revenue')}: A$${plan.summary.totalSellRevenue}</p>
+          </div>
+          <div class="px-5 py-4 text-center">
+            <div class="flex items-center justify-center gap-2 mb-1">
+              <span class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs">🏆</span>
+              <span class="text-xs text-slate-500">${getTrans('spread_profit')}</span>
+            </div>
+            <p class="text-lg font-bold text-emerald-400 font-mono">A$${plan.summary.profit}</p>
+            <p class="text-xs text-slate-500">${getTrans('margin')}: ${plan.summary.margin}%</p>
+          </div>
         </div>
       </div>
     </div>
   `;
   if (window.lucide) lucide.createIcons();
+
+  // 初始化调度图表
+  setTimeout(() => { initDispatchChart(); }, 100);
 }
 
 function updateDispatchPanel() {
@@ -1960,18 +2165,29 @@ function updateDispatchPanel() {
   if (!station) return;
 
   const cap = typeof getPhysicalCapacity === 'function' ? getPhysicalCapacity(station) : { mw: MAX_MW, mwh: MAX_MWH };
+  const price = typeof currentPrice !== 'undefined' ? currentPrice : 0;
+  const fc = typeof forecastPrice !== 'undefined' ? forecastPrice : price;
+  const priceColor = price < 0 ? '#10b981' : price > 300 ? '#ef4444' : '#fbbf24';
+  const priceStr = price < 0 ? '-$' + Math.abs(price).toFixed(2) : '$' + price.toFixed(2);
+
   const el = (id) => document.getElementById(id);
-  const soc = el('dp-soc'); if (soc) soc.textContent = station.soc.toFixed(1) + '%';
-  const energy = el('dp-energy'); if (energy) energy.textContent = (station.soc * cap.mwh / 100).toFixed(1) + ' MWh';
-  const discharge = el('dp-discharge'); if (discharge) discharge.textContent = (station.soc * cap.mwh / 100 / cap.mw).toFixed(1) + 'h';
-  const charge = el('dp-charge'); if (charge) charge.textContent = ((100 - station.soc) * cap.mwh / 100 / cap.mw).toFixed(1) + 'h';
-  const profit = el('dp-profit'); if (profit) profit.textContent = 'A$' + (station.projected_profit || 0).toFixed(0);
-  const nextAct = el('dp-next-action');
-  if (nextAct && station.nextAction) {
-    nextAct.textContent = station.nextAction.action === 'discharge'
-      ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.time || station.nextAction.hour || '--')
-      : getTrans('expect_charge_at').replace('{0}', station.nextAction.time || station.nextAction.hour || '--');
-  }
+  const ringPrice = el('dp-ring-price'); if (ringPrice) { ringPrice.textContent = priceStr; ringPrice.style.color = priceColor; }
+  const ringSoc = el('dp-ring-soc'); if (ringSoc) ringSoc.textContent = 'SoC ' + station.soc.toFixed(1) + '%';
+  const spot = el('dp-spot'); if (spot) { spot.textContent = priceStr; spot.style.color = priceColor; }
+  const fcPrice = el('dp-fc-price'); if (fcPrice) fcPrice.textContent = '$' + fc.toFixed(2);
+  const profit = el('dp-profit'); if (profit) profit.textContent = '$' + (station.projected_profit || 0).toFixed(0);
+  const kwh = el('dp-kwh'); if (kwh) kwh.textContent = (station.soc * cap.mwh / 100 * 1000).toFixed(0) + 'kWh';
+}
+
+function dispatchToggleAuto(stationId, isAuto) {
+  const station = stations.find(s => s.id === stationId);
+  if (!station) return;
+  station.strategy = station.strategy || {};
+  station.strategy.mode = isAuto ? 'auto' : 'manual_idle';
+  if (typeof saveStations === 'function') saveStations();
+  const container = document.getElementById('station-container');
+  if (container && activeMenuId === 'dispatch') renderDispatchControlPanel(container);
+  showToast(isAuto ? getTrans('dispatch_mode_smart') : getTrans('dispatch_mode_manual'), 'success');
 }
 
 function dispatchSetMode(stationId, mode) {
@@ -1980,25 +2196,65 @@ function dispatchSetMode(stationId, mode) {
   station.strategy = station.strategy || {};
   station.strategy.mode = mode;
   if (typeof saveStations === 'function') saveStations();
-
-  // 刷新面板
   const container = document.getElementById('station-container');
-  if (container && activeMenuId === 'dispatch') {
-    renderDispatchControlPanel(container);
-  }
-  // 刷新 AI Narrator
-  renderMarketBanner();
-  if (typeof initChart === 'function') initChart();
-  if (typeof updateChart === 'function' && typeof getPriceHistory === 'function') updateChart(getPriceHistory());
-
-  const modeName = mode === 'auto' ? getTrans('dispatch_mode_smart') : getTrans('dispatch_mode_manual');
-  showToast(`${station.name}: ${modeName}`, 'success');
+  if (container && activeMenuId === 'dispatch') renderDispatchControlPanel(container);
+  showToast(`${station.name}: ${mode}`, 'success');
 }
 
 function switchDispatchStation(stationId) {
-  // 切换调度面板到指定电站
   const container = document.getElementById('station-container');
   if (container) renderDispatchControlPanel(container, stationId);
+}
+
+// 调度中心专属图表
+let dispatchChartInstance = null;
+function initDispatchChart() {
+  const canvas = document.getElementById('dispatch-price-chart');
+  if (!canvas) return;
+  if (dispatchChartInstance) { dispatchChartInstance.destroy(); }
+
+  const history = typeof getPriceHistory === 'function' ? getPriceHistory() : [];
+  const labels = history.map(h => h.time);
+  const prices = history.map(h => h.price);
+  const forecasts = history.map(h => h.forecast);
+
+  dispatchChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: getTrans('spot_price'),
+          data: prices,
+          borderColor: '#fbbf24',
+          backgroundColor: 'rgba(251,191,36,0.1)',
+          borderWidth: 2,
+          pointRadius: 1,
+          fill: true,
+          yAxisID: 'y',
+        },
+        {
+          label: getTrans('forecast_price'),
+          data: forecasts,
+          borderColor: '#10b981',
+          borderWidth: 2,
+          pointRadius: 0,
+          borderDash: [6, 3],
+          yAxisID: 'y',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { position: 'left', ticks: { color: '#fbbf24', callback: v => '$' + v }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      }
+    }
+  });
 }
 
 function resumeSmartHosting() {
