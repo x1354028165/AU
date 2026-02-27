@@ -216,10 +216,14 @@ function simTick() {
     }
 
     previousStationStatus[station.id] = station.status;
-
-    // 动态告警检查
-    checkAndTriggerAlarms(station, currentPrice);
   });
+
+  // 动态告警检查（归口 I/O，仅在有新告警时写一次 localStorage）
+  let needSave = false;
+  stations.forEach(station => {
+    if (checkAndTriggerAlarms(station, currentPrice)) needSave = true;
+  });
+  if (needSave && typeof saveStations === 'function') saveStations();
 
   // 记录历史
   priceHistory.push({
@@ -317,46 +321,39 @@ function getDispatchLogs(operatorId) {
 let alarmIdCounter = Date.now();
 
 /**
- * 检查并触发动态告警（去重 + 持久化）
+ * 检查并触发动态告警（纯逻辑，无 I/O）
  * @param {object} station - 电站对象
  * @param {number} price - 当前电价
+ * @returns {boolean} 是否生成了新告警
  */
 function checkAndTriggerAlarms(station, price) {
-  if (station.operator_id === 'unassigned') return;
+  if (station.operator_id === 'unassigned') return false;
   if (!station.alarms) station.alarms = [];
+
+  let triggered = false;
 
   // 去重检查：同类型非 RESOLVED 告警存在则跳过
   function hasActiveAlarm(type) {
     return station.alarms.some(a => a.type === type && a.status !== 'RESOLVED');
   }
 
-  // 生成电站时区时间戳
-  const tz = station.timezone || 'Australia/Sydney';
-  const tzCity = tz.split('/')[1] || tz;
-  function stationTimeStr() {
-    return new Date().toLocaleString('en-AU', {
-      timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', second: '2-digit'
-    }) + ' (' + tzCity + ')';
-  }
+  // 生成电站本地时区时间戳
+  const city = station.timezone.split('/')[1];
+  const timeStr = new Date().toLocaleString('en-AU', { timeZone: station.timezone, hour12: false }) + ' (' + city + ')';
 
   // 规则 A：尖峰放电时高温告警（Critical, 5%概率）
   if (price > 3000 && station.status === 'DISCHARGING' && !hasActiveAlarm('HIGH_TEMP')) {
     if (Math.random() < 0.05) {
-      const alarm = {
+      station.alarms.push({
         id: 'alm_' + (++alarmIdCounter),
         type: 'HIGH_TEMP',
         severity: 'Critical',
         message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
-        timestamp: stationTimeStr(),
+        timestamp: timeStr,
         status: 'ACTIVE',
-        ack_by: null,
-        ack_at: null,
-        resolved_by: null,
-        resolved_at: null
-      };
-      station.alarms.push(alarm);
-      if (typeof saveStations === 'function') saveStations();
+        ack_by: null, ack_at: null, resolved_by: null, resolved_at: null
+      });
+      triggered = true;
       // Critical 告警弹 toast
       if (typeof showToast === 'function') {
         showToast('⚠️ CRITICAL: ' + station.name + ' — BMS High Temperature', 'error');
@@ -367,21 +364,19 @@ function checkAndTriggerAlarms(station, price) {
   // 规则 B：低电量告警（Warning, 5%概率）
   if (station.soc < 10 && !hasActiveAlarm('LOW_SOC')) {
     if (Math.random() < 0.05) {
-      const alarm = {
+      station.alarms.push({
         id: 'alm_' + (++alarmIdCounter),
         type: 'LOW_SOC',
         severity: 'Warning',
         message: 'Battery Low SoC — State of charge dropped below 10% (' + station.soc.toFixed(1) + '%)',
-        timestamp: stationTimeStr(),
+        timestamp: timeStr,
         status: 'ACTIVE',
-        ack_by: null,
-        ack_at: null,
-        resolved_by: null,
-        resolved_at: null
-      };
-      station.alarms.push(alarm);
-      if (typeof saveStations === 'function') saveStations();
-      // Warning 级别不弹 toast，只写入列表
+        ack_by: null, ack_at: null, resolved_by: null, resolved_at: null
+      });
+      triggered = true;
+      // Warning 不弹 toast
     }
   }
+
+  return triggered;
 }

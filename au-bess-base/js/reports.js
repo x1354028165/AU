@@ -517,10 +517,8 @@ function ackAlarm(stationId, alarmId) {
   alarm.status = 'ACKNOWLEDGED';
   alarm.ack_by = role;
   const ackTz = station.timezone || 'Australia/Sydney';
-  alarm.ack_at = new Date().toLocaleString('en-AU', {
-    timeZone: ackTz, year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit'
-  }) + ' (' + (ackTz.split('/')[1] || ackTz) + ')';
+  const ackCity = ackTz.split('/')[1] || ackTz;
+  alarm.ack_at = new Date().toLocaleString('en-AU', { timeZone: ackTz, hour12: false }) + ' (' + ackCity + ')';
 
   if (typeof saveStations === 'function') saveStations();
 
@@ -548,10 +546,8 @@ function resolveAlarm(stationId, alarmId) {
   alarm.status = 'RESOLVED';
   alarm.resolved_by = role;
   const resTz = station.timezone || 'Australia/Sydney';
-  alarm.resolved_at = new Date().toLocaleString('en-AU', {
-    timeZone: resTz, year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit'
-  }) + ' (' + (resTz.split('/')[1] || resTz) + ')';
+  const resCity = resTz.split('/')[1] || resTz;
+  alarm.resolved_at = new Date().toLocaleString('en-AU', { timeZone: resTz, hour12: false }) + ' (' + resCity + ')';
 
   if (typeof saveStations === 'function') saveStations();
 

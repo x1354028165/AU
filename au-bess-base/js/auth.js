@@ -586,7 +586,7 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_1', type: 'HIGH_TEMP', severity: 'Critical',
         message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
-        timestamp: new Date(Date.now() - 1000 * 60 * 15).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (Sydney)',
+        timestamp: new Date(Date.now() - 15*60*1000).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', hour12: false }) + ' (Sydney)',
         status: 'ACTIVE',
         ack_by: null, ack_at: null, resolved_by: null, resolved_at: null
       }
@@ -617,9 +617,9 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_2', type: 'LOW_SOC', severity: 'Warning',
         message: 'Battery Low SoC — State of charge dropped below 10% (8.2%)',
-        timestamp: new Date(Date.now() - 1000 * 60 * 45).toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (Melbourne)',
+        timestamp: new Date(Date.now() - 45*60*1000).toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', hour12: false }) + ' (Melbourne)',
         status: 'ACKNOWLEDGED',
-        ack_by: 'op_a', ack_at: new Date(Date.now() - 1000 * 60 * 30).toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (Melbourne)',
+        ack_by: 'op_a', ack_at: new Date(Date.now() - 30*60*1000).toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', hour12: false }) + ' (Melbourne)',
         resolved_by: null, resolved_at: null
       }
     ]
@@ -649,10 +649,10 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_3', type: 'HIGH_TEMP', severity: 'Critical',
         message: 'BMS High Temperature Warning — Cell temp exceeded 58°C during grid event',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (Brisbane)',
+        timestamp: new Date(Date.now() - 2*3600*1000).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', hour12: false }) + ' (Brisbane)',
         status: 'RESOLVED',
-        ack_by: 'op_b', ack_at: new Date(Date.now() - 1000 * 60 * 90).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (Brisbane)',
-        resolved_by: 'owner_1', resolved_at: new Date(Date.now() - 1000 * 60 * 60).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (Brisbane)'
+        ack_by: 'op_b', ack_at: new Date(Date.now() - 90*60*1000).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', hour12: false }) + ' (Brisbane)',
+        resolved_by: 'owner_1', resolved_at: new Date(Date.now() - 3600*1000).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', hour12: false }) + ' (Brisbane)'
       }
     ]
   },
@@ -682,7 +682,7 @@ const DEFAULT_STATIONS = [
 ];
 
 // ============ 数据持久化 ============
-const STATIONS_DATA_VERSION = 'v4_timezone';
+const STATIONS_DATA_VERSION = 'v5_tz_fix';
 
 let stations = loadStations();
 
