@@ -1990,28 +1990,43 @@ function renderDispatchControlPanel(container, forceStationId) {
             </div>
 
             <!-- 充电按钮 | 价格球 | 放电按钮 / 运行态球 -->
+            ${(() => {
+              const isRunning = mode === 'manual_charge' || mode === 'manual_discharge';
+              const isCharging = mode === 'manual_charge';
+              // 计算运行态信息
+              let estRemainH = 0, runCost = 0;
+              if (isRunning) {
+                const needMWh = isCharging
+                  ? Math.max(0, (90 - socPct) / 100 * cap.mwh)
+                  : Math.max(0, (socPct - 10) / 100 * cap.mwh);
+                estRemainH = needMWh / cap.mw;
+                runCost = needMWh * price;
+              }
+              if (isRunning) {
+                return `
             <div class="flex items-center justify-center gap-4 py-4" id="dp-control-area">
-              ${(mode === 'manual_charge' || mode === 'manual_discharge') ? `
-              <!-- 运行态：球显示状态，hover 显示 STOP -->
               <div class="flex-shrink-0 relative group cursor-pointer" onclick="showStopConfirm('${station.id}')" id="dp-running-ball">
                 <div class="rounded-full flex flex-col items-center justify-center transition-all duration-300"
-                  style="width: 200px; height: 200px; background: radial-gradient(circle at 38% 32%, ${mode === 'manual_charge' ? '#6ee7b7, #34d399 50%, #10b981' : '#fde68a, #fbbf24 50%, #f59e0b'} 80%);">
-                  <span class="text-3xl font-bold font-mono tracking-tight text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="dp-ring-price">${priceStr}</span>
-                  <span class="text-sm text-white/80 mt-1 font-bold">${mode === 'manual_charge' ? '⚡ ' + getTrans('charging') : '🔋 ' + getTrans('discharging')}</span>
+                  style="width: 220px; height: 220px; background: radial-gradient(circle at 38% 32%, ${isCharging ? '#6ee7b7, #34d399 50%, #10b981' : '#fde68a, #fbbf24 50%, #f59e0b'} 80%);">
+                  <span class="text-xs text-white/70 font-semibold">${isCharging ? getTrans('charging') : getTrans('discharging')}</span>
+                  <span class="text-2xl font-bold font-mono tracking-tight text-white mt-1" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="dp-ring-price">${priceStr}</span>
+                  <span class="text-xs text-white/70 mt-1">${isCharging ? getTrans('cost') : getTrans('revenue')}: A$${Math.abs(runCost).toFixed(0)}</span>
+                  <span class="text-xs text-white/70">${getTrans('est_remain')}: ${estRemainH.toFixed(1)}h</span>
                   <span class="text-xs text-white/60 mt-1" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
                 </div>
-                <!-- Hover 红色 STOP 覆盖 -->
                 <div class="absolute inset-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
                   style="background: radial-gradient(circle at 38% 32%, #fca5a5, #ef4444 50%, #dc2626 80%);">
                   <span class="text-3xl font-bold text-white tracking-wider" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);">${getTrans('stop')}</span>
                 </div>
               </div>
-              ` : `
-              <!-- 空闲态：充电 | 球 | 放电 -->
+            </div>`;
+              } else {
+                return `
+            <div class="flex items-center justify-center gap-4 py-4" id="dp-control-area">
               <button onclick="showDispatchConfirm('${station.id}', 'charge')"
                 class="px-5 py-3 rounded-full text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 flex-shrink-0"
                 style="background: linear-gradient(135deg, #34d399, #10b981);" id="dp-btn-charge">
-                ⚡ ${getTrans('force_charge')}
+                ${getTrans('force_charge')}
               </button>
               <div class="flex-shrink-0">
                 <div class="rounded-full flex flex-col items-center justify-center" style="width: 180px; height: 180px; background: radial-gradient(circle at 38% 32%, #93c5fd, #60a5fa 50%, #3b82f6 80%);">
@@ -2022,10 +2037,11 @@ function renderDispatchControlPanel(container, forceStationId) {
               <button onclick="showDispatchConfirm('${station.id}', 'discharge')"
                 class="px-5 py-3 rounded-full text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 flex-shrink-0"
                 style="background: linear-gradient(135deg, #fbbf24, #f59e0b);" id="dp-btn-discharge">
-                🔋 ${getTrans('force_discharge')}
+                ${getTrans('force_discharge')}
               </button>
-              `}
-            </div>
+            </div>`;
+              }
+            })()}
           </div>
 
 
