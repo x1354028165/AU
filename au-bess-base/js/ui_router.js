@@ -1580,6 +1580,19 @@ function handleMenuClick(menuId, viewId) {
 
   switchView(viewId);
 
+  // 调度中心 vs 电站管理：控制 market-banner 显隐
+  const marketBanner = document.getElementById('market-banner');
+  if (marketBanner) {
+    if (menuId === 'dispatch') {
+      marketBanner.classList.remove('hidden');
+      renderMarketBanner();
+      if (typeof initChart === 'function') initChart();
+      if (typeof updateChart === 'function' && typeof getPriceHistory === 'function') updateChart(getPriceHistory());
+    } else if (menuId === 'assets') {
+      marketBanner.classList.add('hidden');
+    }
+  }
+
   // 更新侧边栏高亮
   activeMenuId = menuId;
   const role = getCurrentUser();
