@@ -306,6 +306,7 @@ const TRANSLATIONS = {
     avg_soh_desc: 'Average SoH across {0} stations',
     rental_rate_desc: '{0} / {1} stations leased',
     annual_label: 'Annual: {0}',
+    date_placeholder: 'YYYY-MM-DD',
 
     // Language
     lang_switch: 'English',
@@ -583,6 +584,7 @@ const TRANSLATIONS = {
     avg_soh_desc: '{0} 个电站平均 SoH',
     rental_rate_desc: '{0} / {1} 电站已出租',
     annual_label: '年度: {0}',
+    date_placeholder: '年-月-日',
 
     // 语言
     lang_switch: '中文',

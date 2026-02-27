@@ -166,8 +166,17 @@ jsFiles.forEach(f => {
   }
 });
 
-// ========== 测试组 13: HTML 版本号更新 ==========
-console.log('📋 测试组 13: HTML 资源版本号');
+// ========== 测试组 13: 日期 placeholder 国际化 ==========
+console.log('📋 测试组 13: 日期 placeholder 国际化');
+assert(TRANSLATIONS.en.hasOwnProperty('date_placeholder'), '缺少 EN date_placeholder');
+assert(TRANSLATIONS.zh.hasOwnProperty('date_placeholder'), '缺少 ZH date_placeholder');
+assert(TRANSLATIONS.en['date_placeholder'] === 'YYYY-MM-DD', 'EN date_placeholder 应为 YYYY-MM-DD');
+assert(zhCharRe.test(TRANSLATIONS.zh['date_placeholder']), 'ZH date_placeholder 应含中文');
+const reportsCode = fs.readFileSync(path.join(__dirname, '../js/reports.js'), 'utf-8');
+assert(!reportsCode.includes('placeholder="YYYY-MM-DD"'), 'reports.js 仍有硬编码 placeholder YYYY-MM-DD');
+
+// ========== 测试组 14: HTML 版本号更新 ==========
+console.log('📋 测试组 14: HTML 资源版本号');
 ['dashboard.html', 'index.html'].forEach(f => {
   const html = fs.readFileSync(path.join(__dirname, '..', f), 'utf-8');
   const vMatches = html.match(/\?v=(\d+)/g);
