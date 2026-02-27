@@ -2157,11 +2157,27 @@ function showDispatchConfirm(stationId, action) {
   if (!station) return;
   const isCharge = action === 'charge';
   const title = isCharge ? getTrans('confirm_charge') : getTrans('confirm_discharge');
-  const actionText = isCharge ? getTrans('force_charge') : getTrans('force_discharge');
   const color = isCharge ? '#10b981' : '#f59e0b';
   const cap = getStationCapacity(station);
+  const price = typeof currentPrice !== 'undefined' ? currentPrice : 100;
+  const priceStr = '$' + price.toFixed(2);
 
-  // 创建弹窗
+  // 计算预计时间
+  const socNow = station.soc;
+  let estHours = 0;
+  let costEstimate = 0;
+  if (isCharge) {
+    // 充到 90%，需要的 MWh = (90 - socNow) / 100 * cap.mwh
+    const needMWh = Math.max(0, (90 - socNow) / 100 * cap.mwh);
+    estHours = needMWh / cap.mw;
+    costEstimate = needMWh * price; // 充电成本
+  } else {
+    // 放到 10%，可放的 MWh = (socNow - 10) / 100 * cap.mwh
+    const canMWh = Math.max(0, (socNow - 10) / 100 * cap.mwh);
+    estHours = canMWh / cap.mw;
+    costEstimate = canMWh * price * (station.efficiency || 0.88); // 放电收入
+  }
+
   const overlay = document.createElement('div');
   overlay.id = 'dispatch-confirm-overlay';
   overlay.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
@@ -2177,16 +2193,29 @@ function showDispatchConfirm(stationId, action) {
 
       <!-- Body -->
       <div class="px-8 py-6">
-        <p class="text-sm text-slate-400 mb-6">${isCharge ? getTrans('confirm_charge_desc') : getTrans('confirm_discharge_desc')}</p>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="rounded-2xl border border-white/20 p-5">
+            <p class="text-xs text-slate-500 mb-1">${getTrans('spot_price')}</p>
+            <p class="text-2xl font-bold font-mono" style="color: ${price < 0 ? '#10b981' : price > 300 ? '#ef4444' : '#fbbf24'};">${priceStr}</p>
+            <p class="text-xs text-slate-600 mt-1">$/MWh</p>
+          </div>
+          <div class="rounded-2xl border border-white/20 p-5">
+            <p class="text-xs text-slate-500 mb-1">${isCharge ? getTrans('est_charge_cost') : getTrans('est_discharge_revenue')}</p>
+            <p class="text-2xl font-bold font-mono ${isCharge ? 'text-red-400' : 'text-emerald-400'}">A$${Math.abs(costEstimate).toFixed(0)}</p>
+            <p class="text-xs text-slate-600 mt-1">${isCharge ? getTrans('cost') : getTrans('revenue')}</p>
+          </div>
+        </div>
 
         <div class="grid grid-cols-2 gap-4 mb-6">
           <div class="rounded-2xl border border-white/20 p-5">
-            <p class="text-xs text-slate-500 mb-1">${getTrans('operation')}</p>
-            <p class="text-lg font-bold" style="color: ${color};">${actionText}</p>
+            <p class="text-xs text-slate-500 mb-1">${getTrans('current_soc')}</p>
+            <p class="text-2xl font-bold text-white font-mono">${socNow.toFixed(1)}%</p>
+            <p class="text-xs text-slate-600 mt-1">${isCharge ? '→ 90%' : '→ 10%'}</p>
           </div>
           <div class="rounded-2xl border border-white/20 p-5">
-            <p class="text-xs text-slate-500 mb-1">${getTrans('station_capacity')}</p>
-            <p class="text-lg font-bold text-white">${cap.mw}MW / ${cap.mwh}MWh</p>
+            <p class="text-xs text-slate-500 mb-1">${isCharge ? getTrans('est_charge_time') : getTrans('est_discharge_time')}</p>
+            <p class="text-2xl font-bold font-mono" style="color: ${color};">${estHours.toFixed(1)}h</p>
+            <p class="text-xs text-slate-600 mt-1">${cap.mw}MW ${isCharge ? getTrans('force_charge') : getTrans('force_discharge')}</p>
           </div>
         </div>
 
