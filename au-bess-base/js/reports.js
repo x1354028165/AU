@@ -523,9 +523,12 @@ function ackAlarm(stationId, alarmId) {
 
   if (typeof saveStations === 'function') saveStations();
 
-  // 刷新列表
+  // 刷新列表（动态获取当前角色）
   const container = document.getElementById('view-reports');
-  if (container) renderAlarmsList(container, false);
+  if (container) {
+    const currentRole = getCurrentUser();
+    renderAlarmsList(container, currentRole === 'owner');
+  }
 
   if (typeof showToast === 'function') showToast(getTrans('alarm_ack_success'), 'success');
 }
@@ -550,9 +553,12 @@ function resolveAlarm(stationId, alarmId) {
 
   if (typeof saveStations === 'function') saveStations();
 
-  // 刷新列表
+  // 刷新列表（动态获取当前角色）
   const container = document.getElementById('view-reports');
-  if (container) renderAlarmsList(container, true);
+  if (container) {
+    const currentRole = getCurrentUser();
+    renderAlarmsList(container, currentRole === 'owner');
+  }
 
   if (typeof showToast === 'function') showToast(getTrans('alarm_resolved_success'), 'success');
 }

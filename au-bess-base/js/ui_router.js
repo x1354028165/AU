@@ -1423,6 +1423,7 @@ function renderStationCard(station, theme, isOwner) {
           <div class="flex items-center gap-2 mb-1">
             ${statusDot}
             ${assignmentLabel}
+            ${(station.alarms && station.alarms.some(a => a.status !== 'RESOLVED')) ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold">(ALARM)</span>' : ''}
           </div>
           <h3 class="text-base md:text-lg font-bold text-white">${escapeHTML(station.name)}</h3>
           <p class="text-sm text-slate-400 flex items-center gap-1 mt-1">
@@ -1493,6 +1494,22 @@ function updateStationCards(theme, isOwner) {
     const socText = card.querySelector('.font-mono.font-bold.text-white');
     if (socText && socText.textContent.includes('%') && !socText.getAttribute('data-soh')) {
       // This is the SoC percentage (in the bar area)
+    }
+
+    // Update alarm indicator
+    const hasAlarm = station.alarms && station.alarms.some(a => a.status !== 'RESOLVED');
+    const existingIndicator = card.querySelector('.alarm-indicator');
+    const statusRow = card.querySelector('.flex.items-center.gap-2.mb-1');
+    if (hasAlarm && !existingIndicator && statusRow) {
+      const alarmIcon = document.createElement('span');
+      alarmIcon.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold">(ALARM)</span>';
+      statusRow.appendChild(alarmIcon);
+      if (window.lucide) lucide.createIcons();
+    } else if (!hasAlarm && existingIndicator) {
+      // 移除告警指示器
+      const alarmText = existingIndicator.nextElementSibling;
+      if (alarmText && alarmText.textContent === '(ALARM)') alarmText.remove();
+      existingIndicator.remove();
     }
   });
 }
