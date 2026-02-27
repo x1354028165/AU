@@ -507,7 +507,7 @@ function renderAlarmsList(container, isOwner) {
   `;
 
   // ===== 表格 =====
-  const thClass = 'text-left px-4 py-3 text-slate-500 font-medium text-xs uppercase tracking-wide';
+  const thClass = 'text-left px-4 py-3 text-slate-500 font-medium text-xs tracking-wide whitespace-nowrap';
   const tdClass = 'px-4 py-3 text-sm';
 
   const rows = allAlarms.map((alarm, i) => {
@@ -555,14 +555,14 @@ function renderAlarmsList(container, isOwner) {
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
         <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${escapeHTML(alarm.timestamp)}</td>
-        <td class="${tdClass} text-slate-300 max-w-[250px] truncate" title="${escapeHTML(alarm.message)}">${escapeHTML(alarm.message)}</td>
-        <td class="${tdClass}">${severityBadge}</td>
-        <td class="${tdClass} text-slate-400 font-mono text-xs">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
-        <td class="${tdClass} text-white text-xs">${escapeHTML(alarm.stationName)}</td>
-        <td class="${tdClass}">${statusBadge}</td>
-        <td class="${tdClass} font-mono text-slate-400 text-xs">${resolvedTime}</td>
-        <td class="${tdClass}">${suggestion}</td>
-        <td class="${tdClass} text-right">${actionCol}</td>
+        <td class="${tdClass} text-slate-300" title="${escapeHTML(alarm.message)}">${escapeHTML(alarm.message)}</td>
+        <td class="${tdClass} whitespace-nowrap">${severityBadge}</td>
+        <td class="${tdClass} text-slate-400 font-mono text-xs whitespace-nowrap">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
+        <td class="${tdClass} text-white text-xs whitespace-nowrap">${escapeHTML(alarm.stationName)}</td>
+        <td class="${tdClass} whitespace-nowrap">${statusBadge}</td>
+        <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${resolvedTime}</td>
+        <td class="${tdClass} whitespace-nowrap">${suggestion}</td>
+        <td class="${tdClass} text-right whitespace-nowrap">${actionCol}</td>
       </tr>
     `;
   }).join('');
@@ -588,7 +588,7 @@ function renderAlarmsList(container, isOwner) {
       ${querySection}
       ${tabBar}
       <div class="bg-white/[0.02] rounded-xl border border-white/10 overflow-x-auto">
-        <table class="w-full text-sm min-w-[1000px]">
+        <table class="w-full text-sm min-w-[1200px]">
           <thead>
             <tr class="border-b border-white/10">
               <th class="${thClass}">${getTrans('alarm_col_time')}</th>
