@@ -283,6 +283,8 @@ const TRANSLATIONS = {
     cause_hardware: 'Hardware',
     cause_software: 'Software',
     cause_environment: 'Environment',
+    alarm_msg_temp: 'BMS High Temperature Warning — Cell temp exceeded {0}°C during peak discharge',
+    alarm_msg_soc: 'Battery Low SoC — State of charge dropped below 10% ({0}%)',
 
     // Language
     lang_switch: 'English',
@@ -543,6 +545,8 @@ const TRANSLATIONS = {
     cause_hardware: '硬件故障',
     cause_software: '软件缺陷',
     cause_environment: '环境因素',
+    alarm_msg_temp: 'BMS 高温告警 — 电芯温度超过 {0}°C（峰值放电期间）',
+    alarm_msg_soc: '电池低电量告警 — 荷电状态低于 10%（{0}%）',
 
     // 语言
     lang_switch: '中文',
@@ -641,7 +645,7 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_1', type: 'HIGH_TEMP', severity: 'Critical',
         fault_code: 'BESS_T01', device_id: 'pcs-01',
-        message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
+        message: 'alarm_msg_temp|55',
         timestamp: formatLocalTime(Date.now() - 15*60*1000, 'Australia/Sydney'),
         created_ms: Date.now() - 15*60*1000,
         status: 'ACTIVE',
@@ -676,7 +680,7 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_2', type: 'LOW_SOC', severity: 'Warning',
         fault_code: 'BESS_S01', device_id: 'ems-02',
-        message: 'Battery Low SoC — State of charge dropped below 10% (8.2%)',
+        message: 'alarm_msg_soc|8.2',
         timestamp: formatLocalTime(Date.now() - 45*60*1000, 'Australia/Melbourne'),
         created_ms: Date.now() - 45*60*1000,
         status: 'ACKNOWLEDGED',
@@ -711,7 +715,7 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_3', type: 'HIGH_TEMP', severity: 'Critical',
         fault_code: 'BESS_T02', device_id: 'pcs-03',
-        message: 'BMS High Temperature Warning — Cell temp exceeded 58°C during grid event',
+        message: 'alarm_msg_temp|58',
         timestamp: formatLocalTime(Date.now() - 2*3600*1000, 'Australia/Brisbane'),
         created_ms: Date.now() - 2*3600*1000,
         status: 'RESOLVED',

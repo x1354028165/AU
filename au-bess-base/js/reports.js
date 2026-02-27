@@ -359,6 +359,21 @@ function shortTime(timeStr) {
 }
 
 /**
+ * 解析告警消息（支持翻译 key: 'alarm_msg_temp|55' → 翻译后文本）
+ */
+function resolveAlarmMsg(msg) {
+  if (!msg) return '';
+  if (msg.includes('|')) {
+    const parts = msg.split('|');
+    const key = parts[0];
+    const param = parts[1] || '';
+    const tpl = getTrans(key);
+    if (tpl && tpl !== key) return tpl.replace('{0}', param);
+  }
+  return msg;
+}
+
+/**
  * 解析时间戳（剥离城市后缀后转 Date）
  */
 function parseAlarmTime(timeStr) {
@@ -535,8 +550,8 @@ function renderAlarmsList(container, isOwner) {
       : alarm.status === 'ACKNOWLEDGED' ? 'border-l-2 border-l-amber-500/50' : '';
 
     const severityBadge = isCritical
-      ? `<span class="px-2 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400">Critical</span>`
-      : `<span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-400">Warning</span>`;
+      ? `<span class="px-2 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400">${getTrans('alarm_critical')}</span>`
+      : `<span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-400">${getTrans('alarm_warning')}</span>`;
 
     let statusBadge = '';
     if (alarm.status === 'ACTIVE') {
@@ -553,7 +568,9 @@ function renderAlarmsList(container, isOwner) {
     // 建议处理 / Root Cause
     let suggestion = '-';
     if (alarm.root_cause) {
-      suggestion = `<span class="text-cyan-400 text-xs">${escapeHTML(alarm.root_cause)}</span>`;
+      let causeText = alarm.root_cause;
+      causeText = causeText.replace(/^Hardware/, getTrans('cause_hardware')).replace(/^Software/, getTrans('cause_software')).replace(/^Environment/, getTrans('cause_environment'));
+      suggestion = `<span class="text-cyan-400 text-xs">${escapeHTML(causeText)}</span>`;
     }
 
     // 操作
@@ -573,7 +590,7 @@ function renderAlarmsList(container, isOwner) {
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
         <td class="${tdClass} font-mono text-slate-400 text-xs">${shortTime(alarm.timestamp)}</td>
-        <td class="${tdClass} text-slate-300" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0;" title="${escapeHTML(alarm.message)}">${escapeHTML(alarm.message)}</td>
+        <td class="${tdClass} text-slate-300" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0;" title="${escapeHTML(resolveAlarmMsg(alarm.message))}">${escapeHTML(resolveAlarmMsg(alarm.message))}</td>
         <td class="${tdClass} whitespace-nowrap">${severityBadge}</td>
         <td class="${tdClass} text-slate-400 font-mono text-xs whitespace-nowrap">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
         <td class="${tdClass} text-white text-xs whitespace-nowrap">${escapeHTML(alarm.stationName)}</td>
@@ -759,7 +776,7 @@ function exportAlarmsCSV() {
       a.severity,
       a.status,
       a.device_id || '',
-      a.message,
+      resolveAlarmMsg(a.message),
       a.timestamp,
       calcDuration(a),
       a.ack_by ? (typeof getUserName === 'function' ? getUserName(a.ack_by) : a.ack_by) : '',
