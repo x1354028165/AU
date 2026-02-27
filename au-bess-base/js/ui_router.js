@@ -491,7 +491,7 @@ function renderStationDetail(station, theme, isOwner) {
   }
 
   container.innerHTML = `
-    <div class="max-w-[1400px] mx-auto">
+    <div class="">
       <!-- Back + Title -->
       <div class="flex items-center gap-4 mb-6">
         <button onclick="closeStationDetail()" class="p-2 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
@@ -1369,7 +1369,7 @@ function renderStationList(theme, isOwner) {
   }
 
   container.innerHTML = `
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 max-w-[1600px] mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 ">
       ${stationList.map(s => renderStationCard(s, theme, isOwner)).join('')}
     </div>
   `;

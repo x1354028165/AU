@@ -36,7 +36,7 @@ function renderReports(subView) {
 
 function renderHealthView(container) {
   container.innerHTML = `
-    <div class="max-w-[1600px] mx-auto">
+    <div class="">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -95,7 +95,7 @@ function renderLeaderboard(container) {
   rankings.sort((a, b) => b.revPerMW - a.revPerMW);
 
   container.innerHTML = `
-    <div class="max-w-[1600px] mx-auto">
+    <div class="">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
         <div>
@@ -203,7 +203,7 @@ function renderDispatchLogs(container, operatorId) {
   };
 
   container.innerHTML = `
-    <div class="max-w-[1600px] mx-auto">
+    <div class="">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
         <div>
@@ -640,7 +640,7 @@ function renderAlarmsList(container, isOwner) {
   ` : '';
 
   container.innerHTML = `
-    <div class="max-w-[1600px] mx-auto">
+    <div class="">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-bold text-white flex items-center gap-2">
           <span class="w-1 h-5 bg-emerald-400 rounded-full"></span>
