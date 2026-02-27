@@ -119,10 +119,12 @@ function initDashboard() {
       stationCont.classList.remove('hidden');
       renderDispatchControlPanel(stationCont);
     }
+    renderSidebar(role, theme); // 刷新高亮
   } else {
     activeMenuId = 'portfolio';
     renderViewToggle(theme, isOwner);
     applyStationView(theme, isOwner);
+    renderSidebar(role, theme);
   }
   closeMobileMenu();
 
@@ -155,6 +157,8 @@ function onSimUpdate(price, history) {
   // 更新电站卡片或调度面板（不重建DOM，只更新数值）
   if (activeMenuId === 'dispatch') {
     updateDispatchPanel();
+    // 更新调度图表
+    if (typeof updateDispatchChart === 'function') updateDispatchChart(history);
   } else {
     updateStationCards(theme, isOwner);
   }
@@ -2255,6 +2259,22 @@ function initDispatchChart() {
       }
     }
   });
+}
+
+function updateDispatchChart(history) {
+  if (!history || history.length === 0) return;
+  const canvas = document.getElementById('dispatch-price-chart');
+  if (!canvas) return;
+
+  if (!dispatchChartInstance) {
+    initDispatchChart();
+    return;
+  }
+
+  dispatchChartInstance.data.labels = history.map(h => h.time);
+  dispatchChartInstance.data.datasets[0].data = history.map(h => h.price);
+  dispatchChartInstance.data.datasets[1].data = history.map(h => h.forecast);
+  dispatchChartInstance.update('none');
 }
 
 function resumeSmartHosting() {
