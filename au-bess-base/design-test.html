@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计系统测试页面</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        body { padding: 20px; }
+        .test-section { margin-bottom: 40px; }
+        .test-section h2 { 
+            margin-bottom: 20px; 
+            padding-bottom: 10px; 
+            border-bottom: 2px solid var(--color-border); 
+        }
+        .component-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">AU BESS 设计系统测试</h1>
+        
+        <!-- 按钮测试 -->
+        <div class="test-section">
+            <h2 class="section-title">按钮组件</h2>
+            <div class="component-showcase">
+                <button class="btn btn-primary">主要按钮</button>
+                <button class="btn btn-secondary">次要按钮</button>
+                <button class="btn btn-accent">强调按钮</button>
+                <button class="btn btn-sm">小按钮</button>
+                <button class="btn btn-lg">大按钮</button>
+            </div>
+        </div>
+
+        <!-- 卡片测试 -->
+        <div class="test-section">
+            <h2 class="section-title">卡片组件</h2>
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>标准卡片</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>这是卡片的主要内容区域。使用统一的设计系统样式。</p>
+                    </div>
+                </div>
+                <div class="glass">
+                    <div class="card-header">
+                        <h3>玻璃态卡片</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>这是玻璃态卡片，具有背景模糊效果。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 角色卡片测试 -->
+        <div class="test-section">
+            <h2 class="section-title">角色卡片组件</h2>
+            <div class="grid grid-2">
+                <div class="role-card role-card-amber">
+                    <div class="role-glow role-glow-amber"></div>
+                    <div class="role-content">
+                        <div class="role-icon role-icon-amber">
+                            👑
+                        </div>
+                        <p class="role-subtitle role-subtitle-amber">Asset Owner</p>
+                        <h3 class="role-title">资产业主</h3>
+                        <p class="role-desc">掌控全局资产收益，审计运维表现，管理电站分配。</p>
+                        <div class="role-enter role-enter-amber">
+                            <span class="role-enter-text">进入业主门户</span>
+                            <span class="role-enter-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="role-card role-card-emerald">
+                    <div class="role-glow role-glow-emerald"></div>
+                    <div class="role-content">
+                        <div class="role-icon role-icon-emerald">
+                            ⚡
+                        </div>
+                        <p class="role-subtitle role-subtitle-emerald">Operator</p>
+                        <h3 class="role-title">运维专家</h3>
+                        <p class="role-desc">实时监控电站出力，执行自动化套利策略，优化电池寿命。</p>
+                        <div class="role-enter role-enter-emerald">
+                            <span class="role-enter-text">进入运维门户</span>
+                            <span class="role-enter-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 表单测试 -->
+        <div class="test-section">
+            <h2 class="section-title">表单组件</h2>
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-body">
+                        <div style="margin-bottom: 16px;">
+                            <label class="form-label">用户名</label>
+                            <input type="text" class="form-input" placeholder="请输入用户名">
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <label class="form-label">密码</label>
+                            <input type="password" class="form-input" placeholder="请输入密码">
+                        </div>
+                        <button class="btn btn-primary w-full">登录</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div style="margin-bottom: 16px;">
+                            <label class="form-label">电站选择</label>
+                            <select class="filter-select">
+                                <option>Hornsdale Power Reserve</option>
+                                <option>Victorian Big Battery</option>
+                                <option>Wallgrove BESS</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <label class="form-label">搜索</label>
+                            <input type="text" class="search-input" placeholder="搜索电站...">
+                        </div>
+                        <button class="btn btn-secondary w-full">搜索</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 徽章测试 -->
+        <div class="test-section">
+            <h2 class="section-title">徽章组件</h2>
+            <div class="component-showcase">
+                <span class="badge badge-success">成功</span>
+                <span class="badge badge-warning">警告</span>
+                <span class="badge badge-error">错误</span>
+                <span class="badge badge-primary">主要</span>
+                <span class="badge badge-accent">强调</span>
+            </div>
+        </div>
+
+        <!-- 表格测试 -->
+        <div class="test-section">
+            <h2 class="section-title">表格组件</h2>
+            <div class="table-wrapper">
+                <div class="table-scrollable">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>电站名称</th>
+                                <th>状态</th>
+                                <th>功率</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Hornsdale Power Reserve</td>
+                                <td><span class="badge badge-success">运行中</span></td>
+                                <td>150 MW</td>
+                                <td><button class="btn btn-sm btn-secondary">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>Victorian Big Battery</td>
+                                <td><span class="badge badge-warning">待机</span></td>
+                                <td>300 MW</td>
+                                <td><button class="btn btn-sm btn-secondary">查看</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 布局测试 -->
+        <div class="test-section">
+            <h2 class="section-title">布局系统</h2>
+            <div class="grid grid-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4>网格 1</h4>
+                        <p>三列网格布局</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4>网格 2</h4>
+                        <p>响应式设计</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4>网格 3</h4>
+                        <p>自动适配</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flexbox测试 -->
+        <div class="test-section">
+            <h2 class="section-title">Flexbox 工具</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="flex flex-between">
+                        <span>左侧内容</span>
+                        <span class="badge badge-primary">右侧徽章</span>
+                    </div>
+                    <div class="flex flex-center gap-md" style="margin-top: 16px;">
+                        <button class="btn btn-sm btn-secondary">按钮1</button>
+                        <button class="btn btn-sm btn-secondary">按钮2</button>
+                        <button class="btn btn-sm btn-primary">主要按钮</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="section-title">设计系统状态</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="flex flex-between">
+                        <div>
+                            <h4>✅ 设计系统已应用</h4>
+                            <p class="text-secondary">所有组件现在使用统一的设计规范</p>
+                        </div>
+                        <span class="badge badge-success">已完成</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .w-full { width: 100%; }
+    </style>
+</body>
+</html>

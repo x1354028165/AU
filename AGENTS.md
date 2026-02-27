@@ -63,4 +63,5 @@
 - /root/projects/aus-energy/ — 项目工作空间
 - memory/ — 项目记忆
 - /root/shared/ — 跨 Agent 共享目录
+- /root/filecloud/ — Moss 的云盘文件目录（FileBrowser），直接用 cat/read 读取，不要通过 HTTP 访问
 - （项目代码目录后续按需创建）

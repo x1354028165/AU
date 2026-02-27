@@ -10,6 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310B981'%3E%3Crect x='6' y='6' width='12' height='14' rx='2' /%3E%3Crect x='9' y='3' width='6' height='3' rx='1' /%3E%3Crect x='9' y='10' width='6' height='6' rx='0.5' fill='%23064E3B' /%3E%3C/svg%3E" />
   <script src="vendor/tailwind.js"></script>
   <script src="vendor/lucide.min.js"></script>
+  <link rel="stylesheet" href="css/design-system.css" />
   <link rel="stylesheet" href="css/main.css?v=1772202946526" />
   <script>
     tailwind.config = {
@@ -197,40 +198,40 @@
         </div>
 
         <!-- 2 Giant Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-2 gap-lg">
 
           <!-- Owner Card -->
-          <button onclick="selectRole('owner')" class="group text-left p-8 md:p-10 rounded-3xl border-2 border-amber-500/20 bg-gradient-to-br from-amber-500/10 via-amber-900/5 to-slate-900 hover:border-amber-400 hover:shadow-2xl hover:shadow-amber-500/20 hover:scale-[1.05] transition-all duration-300 cursor-pointer relative overflow-hidden">
+          <button onclick="selectRole('owner')" class="role-card role-card-amber">
             <!-- Glow effect -->
-            <div class="absolute -top-20 -right-20 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-colors"></div>
-            <div class="relative">
-              <div class="w-20 h-20 rounded-3xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <i data-lucide="crown" class="w-10 h-10 text-amber-400"></i>
+            <div class="role-glow role-glow-amber"></div>
+            <div class="role-content">
+              <div class="role-icon role-icon-amber">
+                <i data-lucide="crown" class="w-10 h-10"></i>
               </div>
-              <p id="role-owner-subtitle" class="text-amber-400/80 text-sm font-semibold uppercase tracking-wider mb-2">Asset Owner</p>
-              <h3 id="role-owner-title" class="text-2xl md:text-3xl font-bold text-white mb-4 group-hover:text-amber-400 transition-colors">资产业主</h3>
-              <p id="role-owner-desc" class="text-slate-400 text-base leading-relaxed mb-8">掌控全局资产收益，审计运维表现，管理电站分配。追踪电池健康度与长期投资回报。</p>
-              <div class="flex items-center gap-3 text-amber-400/70 group-hover:text-amber-400 transition-colors">
-                <span id="role-owner-enter" class="text-sm font-semibold">Enter Owner Portal</span>
-                <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-2 transition-transform"></i>
+              <p id="role-owner-subtitle" class="role-subtitle role-subtitle-amber">Asset Owner</p>
+              <h3 id="role-owner-title" class="role-title">资产业主</h3>
+              <p id="role-owner-desc" class="role-desc">掌控全局资产收益，审计运维表现，管理电站分配。追踪电池健康度与长期投资回报。</p>
+              <div class="role-enter role-enter-amber">
+                <span id="role-owner-enter" class="role-enter-text">Enter Owner Portal</span>
+                <i data-lucide="arrow-right" class="role-enter-arrow"></i>
               </div>
             </div>
           </button>
 
           <!-- Operator Card -->
-          <button onclick="selectRole('op_a')" class="group text-left p-8 md:p-10 rounded-3xl border-2 border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-emerald-900/5 to-slate-900 hover:border-emerald-400 hover:shadow-2xl hover:shadow-emerald-500/20 hover:scale-[1.05] transition-all duration-300 cursor-pointer relative overflow-hidden">
+          <button onclick="selectRole('op_a')" class="role-card role-card-emerald">
             <!-- Glow effect -->
-            <div class="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-colors"></div>
-            <div class="relative">
-              <div class="w-20 h-20 rounded-3xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <i data-lucide="zap" class="w-10 h-10 text-emerald-400"></i>
+            <div class="role-glow role-glow-emerald"></div>
+            <div class="role-content">
+              <div class="role-icon role-icon-emerald">
+                <i data-lucide="zap" class="w-10 h-10"></i>
               </div>
-              <p id="role-op-subtitle" class="text-emerald-400/80 text-sm font-semibold uppercase tracking-wider mb-2">Operator</p>
-              <h3 id="role-op-title" class="text-2xl md:text-3xl font-bold text-white mb-4 group-hover:text-emerald-400 transition-colors">运维专家</h3>
-              <p id="role-op-desc" class="text-slate-400 text-base leading-relaxed mb-8">实时监控电站出力，执行自动化套利策略，优化电池寿命。管理调度阈值与紧急响应。</p>
-              <div class="flex items-center gap-3 text-emerald-400/70 group-hover:text-emerald-400 transition-colors">
-                <span id="role-op-enter" class="text-sm font-semibold">Enter Operator Portal</span>
-                <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-2 transition-transform"></i>
+              <p id="role-op-subtitle" class="role-subtitle role-subtitle-emerald">Operator</p>
+              <h3 id="role-op-title" class="role-title">运维专家</h3>
+              <p id="role-op-desc" class="role-desc">实时监控电站出力，执行自动化套利策略，优化电池寿命。管理调度阈值与紧急响应。</p>
+              <div class="role-enter role-enter-emerald">
+                <span id="role-op-enter" class="role-enter-text">Enter Operator Portal</span>
+                <i data-lucide="arrow-right" class="role-enter-arrow"></i>
               </div>
             </div>
           </button>

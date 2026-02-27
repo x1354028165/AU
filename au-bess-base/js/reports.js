@@ -1450,13 +1450,10 @@ function generateSharedReportData() {
     tempRows.push({ label, idx, charge, discharge });
   });
   
-  // 第二轮：按比例调整确保总体平衡（放电量 = 充电量 × 95%）
-  const targetTotalDischarge = totalChargeActual * 0.95; // 95%效率
-  const adjustmentRatio = targetTotalDischarge / totalDischargeActual;
-  
+  // 第二轮：最简单的精确平衡 - 每行放电量 = 充电量 × 95%
   tempRows.forEach(row => {
     const charge = row.charge;
-    const discharge = +(row.discharge * adjustmentRatio).toFixed(2);
+    const discharge = +(charge * 0.95).toFixed(2); // 严格95%效率
     const idx = row.idx;
     const label = row.label;
     

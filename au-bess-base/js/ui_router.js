@@ -11,21 +11,21 @@ function escapeHTML(str) {
     }[tag]));
 }
 
-// ============ 配色方案 ============
+// ============ 配色方案 - 使用设计系统 ============
 const THEMES = {
   owner: {
     sidebar: 'bg-slate-900', sidebarText: 'text-slate-200',
     sidebarActive: 'bg-amber-500/20 text-amber-400', sidebarHover: 'hover:bg-slate-800',
-    content: 'bg-slate-950', card: 'bg-slate-800 border-slate-700',
-    accent: 'text-amber-400', accentBg: 'bg-amber-500',
-    badge: 'bg-amber-500/20 text-amber-400', header: 'text-amber-400'
+    content: 'bg-slate-950', card: 'card glass',
+    accent: 'text-amber-400', accentBg: 'btn-primary',
+    badge: 'badge badge-warning', header: 'text-amber-400'
   },
   operator: {
     sidebar: 'bg-zinc-950', sidebarText: 'text-zinc-200',
     sidebarActive: 'bg-emerald-500/20 text-emerald-400', sidebarHover: 'hover:bg-zinc-900',
-    content: 'bg-zinc-950', card: 'bg-zinc-900 border-zinc-800',
-    accent: 'text-emerald-400', accentBg: 'bg-emerald-500',
-    badge: 'bg-emerald-500/20 text-emerald-400', header: 'text-emerald-400'
+    content: 'bg-zinc-950', card: 'card glass',
+    accent: 'text-emerald-400', accentBg: 'btn-primary',
+    badge: 'badge badge-primary', header: 'text-emerald-400'
   }
 };
 
@@ -457,8 +457,8 @@ function renderListView(theme, isOwner) {
          <td class="px-4 py-3 text-right text-slate-500 text-xs">${getTrans('no_alarms')}</td>`;
 
     const actionBtn = isOwner
-      ? `<button onclick="openStationDetail('${s.id}')" class="px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-400 hover:bg-amber-500/20">${getTrans('manage')}</button>`
-      : `<button onclick="openStationDetail('${s.id}')" class="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 hover:bg-emerald-500/20">${getTrans('monitor')}</button>`;
+      ? `<button onclick="openStationDetail('${s.id}')" class="btn btn-sm badge-warning">${getTrans('manage')}</button>`
+      : `<button onclick="openStationDetail('${s.id}')" class="btn btn-sm badge-primary">${getTrans('monitor')}</button>`;
 
     return `
       <tr class="${i % 2 === 0 ? 'bg-white/[0.02]' : ''} border-b border-white/5 hover:bg-white/[0.04] transition-colors">
@@ -473,8 +473,9 @@ function renderListView(theme, isOwner) {
   }).join('');
 
   container.innerHTML = `
-    <div class="bg-white/5 rounded-xl border border-white/20 overflow-x-auto">
-      <table class="w-full text-sm min-w-[800px]">
+    <div class="table-wrapper">
+      <div class="table-scrollable">
+        <table class="data-table">
         <thead>
           <tr class="border-b border-white/20">
             <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('station_name')}</th>
@@ -627,7 +628,7 @@ function renderDetailOverview(station, theme, isOwner) {
   const strategySection = isOwner ? '' : `
     <div class="mt-6">
       <button onclick="openStrategyModal('${station.id}')"
-        class="px-6 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-sm text-emerald-400 hover:bg-emerald-500/20 transition-colors flex items-center gap-2">
+        class="btn btn-secondary flex items-center gap-2">
         <i data-lucide="settings" class="w-4 h-4"></i>
         ${getTrans('strategy_panel')}
       </button>
@@ -698,8 +699,8 @@ function renderDetailDevices(station, theme, isOwner) {
         <h3 class="text-sm font-bold text-white">${getTrans('tab_devices')} (${devices.length})</h3>
         ${addDeviceBtn}
       </div>
-      <div class="bg-white/5 rounded-xl border border-white/20 overflow-hidden">
-        <table class="w-full text-sm">
+      <div class="table-wrapper">
+        <table class="data-table">
           <thead>
             <tr class="border-b border-white/20">
               <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('device_name')}</th>
@@ -853,8 +854,8 @@ function openAddStationModal() {
         </div>
       </div>
       <div class="flex gap-3 mt-6">
-        <button onclick="closeAddStationModal()" class="flex-1 py-3 rounded-lg bg-white/5 border border-white/20 text-sm text-slate-300 hover:bg-white/10 transition-colors">${getTrans('cancel')}</button>
-        <button onclick="handleAddStation()" class="flex-1 py-3 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">${getTrans('confirm_add')}</button>
+        <button onclick="closeAddStationModal()" class="btn btn-secondary flex-1">${getTrans('cancel')}</button>
+        <button onclick="handleAddStation()" class="btn btn-primary flex-1">${getTrans('confirm_add')}</button>
       </div>
     </div>
   `;
@@ -1001,7 +1002,7 @@ function openAddDeviceModal(stationId) {
       </div>
       <div class="flex gap-3 mt-6">
         <button onclick="closeAddDeviceModal()" class="flex-1 py-3 rounded-lg bg-white/5 border border-white/20 text-sm text-slate-300 hover:bg-white/10 transition-colors">${getTrans('cancel')}</button>
-        <button onclick="handleAddDevice('${stationId}')" class="flex-1 py-3 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">${getTrans('add_device_btn')}</button>
+        <button onclick="handleAddDevice('${stationId}')" class="btn btn-primary flex-1">${getTrans('add_device_btn')}</button>
       </div>
     </div>
   `;
@@ -1862,7 +1863,7 @@ function openStrategyModal(stationId) {
 
       <!-- Save -->
       <button onclick="saveStrategy('${stationId}')"
-        class="w-full py-3 rounded-lg bg-emerald-500 text-white font-medium text-sm hover:bg-emerald-600 transition-colors mb-4">
+        class="btn btn-primary w-full mb-4">
         ${getTrans('save_strategy')}
       </button>
 

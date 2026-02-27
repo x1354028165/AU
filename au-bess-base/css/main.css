@@ -349,3 +349,217 @@ input[type="checkbox"] {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ============ 角色卡片统一样式 ============ */
+.role-card {
+  position: relative;
+  text-align: left;
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  border-radius: var(--radius-xl);
+  border: 2px solid;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  background: var(--color-bg-card);
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.role-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.role-content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.role-glow {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  blur: 60px;
+  transition: all var(--transition-normal);
+}
+
+.role-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-xl);
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+  transition: transform var(--transition-normal);
+}
+
+.role-card:hover .role-icon {
+  transform: scale(1.1);
+}
+
+.role-subtitle {
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-sm);
+  opacity: 0.8;
+}
+
+.role-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md);
+  transition: color var(--transition-normal);
+}
+
+.role-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  margin-bottom: auto;
+  margin-top: var(--spacing-sm);
+}
+
+.role-enter {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  transition: all var(--transition-normal);
+}
+
+.role-enter-text {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.role-enter-arrow {
+  width: 20px;
+  height: 20px;
+  transition: transform var(--transition-normal);
+}
+
+.role-card:hover .role-enter-arrow {
+  transform: translateX(8px);
+}
+
+/* Amber 变体 */
+.role-card-amber {
+  border-color: rgba(245, 158, 11, 0.2);
+  background: linear-gradient(135deg, 
+    rgba(245, 158, 11, 0.1) 0%, 
+    rgba(217, 119, 6, 0.05) 50%, 
+    var(--color-bg-card) 100%);
+}
+
+.role-card-amber:hover {
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2);
+}
+
+.role-glow-amber {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.role-card-amber:hover .role-glow-amber {
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.role-icon-amber {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.role-subtitle-amber {
+  color: rgba(245, 158, 11, 0.8);
+}
+
+.role-card-amber:hover .role-title {
+  color: #f59e0b;
+}
+
+.role-enter-amber {
+  color: rgba(245, 158, 11, 0.7);
+}
+
+.role-card-amber:hover .role-enter-amber {
+  color: #f59e0b;
+}
+
+/* Emerald 变体 */
+.role-card-emerald {
+  border-color: rgba(16, 185, 129, 0.2);
+  background: linear-gradient(135deg, 
+    rgba(16, 185, 129, 0.1) 0%, 
+    rgba(5, 150, 105, 0.05) 50%, 
+    var(--color-bg-card) 100%);
+}
+
+.role-card-emerald:hover {
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+}
+
+.role-glow-emerald {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.role-card-emerald:hover .role-glow-emerald {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.role-icon-emerald {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.role-subtitle-emerald {
+  color: rgba(16, 185, 129, 0.8);
+}
+
+.role-card-emerald:hover .role-title {
+  color: #10b981;
+}
+
+.role-enter-emerald {
+  color: rgba(16, 185, 129, 0.7);
+}
+
+.role-card-emerald:hover .role-enter-emerald {
+  color: #10b981;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .role-card {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    min-height: 280px;
+  }
+  
+  .role-title {
+    font-size: var(--font-size-xl);
+  }
+  
+  .role-icon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .role-icon i {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
