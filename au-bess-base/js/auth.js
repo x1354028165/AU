@@ -616,15 +616,8 @@ function getTrans(key) {
 
 function switchLang(lang) {
   localStorage.setItem('lang', lang);
-  if (typeof initDashboard === 'function') {
-    initDashboard();
-  }
-  // 重渲染告警列表（如果当前可见）
-  const reportView = document.getElementById('view-reports');
-  if (reportView && !reportView.classList.contains('hidden') && typeof renderAlarmsList === 'function') {
-    const role = typeof getCurrentUser === 'function' ? getCurrentUser() : 'owner';
-    renderAlarmsList(reportView, role === 'owner');
-  }
+  // 直接刷新页面，确保所有文案 100% 重新渲染
+  window.location.reload();
 }
 
 function toggleLang() {
