@@ -1580,17 +1580,35 @@ function handleMenuClick(menuId, viewId) {
 
   switchView(viewId);
 
-  // 调度中心 vs 电站管理：控制 market-banner 显隐
+  // 调度中心 vs 电站管理：控制各区域显隐
   const marketBanner = document.getElementById('market-banner');
-  if (marketBanner) {
-    if (menuId === 'dispatch') {
-      marketBanner.classList.remove('hidden');
-      renderMarketBanner();
-      if (typeof initChart === 'function') initChart();
-      if (typeof updateChart === 'function' && typeof getPriceHistory === 'function') updateChart(getPriceHistory());
-    } else if (menuId === 'assets') {
-      marketBanner.classList.add('hidden');
-    }
+  const viewToggle = document.getElementById('view-toggle-container');
+  const mapCont = document.getElementById('map-container');
+  const listCont = document.getElementById('list-container');
+  const stationCont = document.getElementById('station-container');
+
+  if (menuId === 'dispatch') {
+    // 调度中心：显示 AI 面板 + 图表 + 电站卡片，隐藏资产视图切换/地图/列表
+    if (marketBanner) marketBanner.classList.remove('hidden');
+    if (viewToggle) viewToggle.classList.add('hidden');
+    if (mapCont) mapCont.classList.add('hidden');
+    if (listCont) listCont.classList.add('hidden');
+    if (stationCont) stationCont.classList.remove('hidden');
+    renderMarketBanner();
+    if (typeof initChart === 'function') initChart();
+    if (typeof updateChart === 'function' && typeof getPriceHistory === 'function') updateChart(getPriceHistory());
+    const role = getCurrentUser();
+    const isOwner = role === 'owner';
+    const theme = THEMES[isOwner ? 'owner' : 'operator'];
+    renderStationList(theme, isOwner);
+  } else if (menuId === 'assets' || menuId === 'portfolio') {
+    // 电站管理：隐藏 AI 面板/图表，显示资产视图切换
+    if (marketBanner) marketBanner.classList.add('hidden');
+    if (viewToggle) viewToggle.classList.remove('hidden');
+    const role = getCurrentUser();
+    const isOwner = role === 'owner';
+    const theme = THEMES[isOwner ? 'owner' : 'operator'];
+    applyStationView(theme, isOwner);
   }
 
   // 更新侧边栏高亮
