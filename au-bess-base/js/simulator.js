@@ -64,6 +64,21 @@ function parseCapacity(capStr) {
   return { mw: parseFloat(match[1]), mwh: parseFloat(match[2]) };
 }
 
+/**
+ * 获取电站的物理容量（优先设备真实参数，降级到名义容量）
+ * @param {object} station - 电站对象
+ * @returns {{mw: number, mwh: number}}
+ */
+function getPhysicalCapacity(station) {
+  if (station.devices && station.devices.length > 0) {
+    const primary = station.devices.find(d => d.type === 'PCS') || station.devices.find(d => d.type === 'BMS');
+    if (primary && primary.rated_power > 0 && primary.rated_capacity > 0) {
+      return { mw: primary.rated_power, mwh: primary.rated_capacity };
+    }
+  }
+  return parseCapacity(station.capacity);
+}
+
 // ============ 套利引擎 ============
 
 /**
@@ -78,7 +93,7 @@ function runAutoBidder(station, price) {
     return { power: 0, revenue: 0 };
   }
 
-  const cap = parseCapacity(station.capacity);
+  const cap = getPhysicalCapacity(station);
   const intervalHours = 5 / 60; // 5 分钟 = 1/12 小时
   const strat = station.strategy || { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' };
   const minSoc = Math.max(5, strat.reserve_soc || 5);
@@ -173,7 +188,7 @@ function simTick() {
     if (station.operator_id !== 'unassigned') {
       if (isSpike && station.soc > 5) {
         // 尖峰强制放电
-        const cap = parseCapacity(station.capacity);
+        const cap = getPhysicalCapacity(station);
         const intervalHours = 5 / 60;
         const energyMWh = cap.mw * intervalHours;
         const socDecrease = (energyMWh / cap.mwh) * 100;

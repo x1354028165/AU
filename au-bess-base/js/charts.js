@@ -12,6 +12,12 @@ function initChart() {
   const container = document.getElementById('market-chart');
   if (!container) return;
 
+  // 防止内存泄漏：先销毁已有实例再重新初始化
+  if (typeof marketChart !== 'undefined' && marketChart != null) {
+    marketChart.dispose();
+    marketChart = null;
+  }
+
   marketChart = echarts.init(container, 'dark');
 
   const option = {
