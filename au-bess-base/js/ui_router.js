@@ -1280,8 +1280,6 @@ function renderSidebar(role, theme) {
   const actions = document.getElementById('nav-actions');
   if (actions) {
     actions.innerHTML = `
-      <span class="text-xs text-slate-500">${userName}</span>
-      <span class="px-2 py-0.5 rounded text-xs ${theme.badge}">${isOwner ? getTrans('role_owner') : getTrans('role_operator')}</span>
       <button onclick="switchRole()" class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-medium text-amber-400 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5" title="${getTrans('switch_role')}">
         <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
         ${getTrans('switch_role')}
