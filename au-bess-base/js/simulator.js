@@ -9,6 +9,34 @@
 const MAX_MW = 2.5;    // 额定功率 MW
 const MAX_MWH = 10;    // 额定容量 MWh
 
+// ============ AEMO 真实数据 ============
+let aemoPriceData = null;     // 从 data/aemo_prices.json 加载
+let aemoPriceIndex = 0;       // 当前回放位置
+const AEMO_REGION = 'SA1';   // 南澳（储能电站所在区域，价格波动最大）
+
+async function loadAemoPrices() {
+  try {
+    const resp = await fetch('data/aemo_prices.json?v=' + Date.now());
+    const data = await resp.json();
+    aemoPriceData = data.regions[AEMO_REGION] || data.regions['NSW1'] || [];
+    aemoPriceIndex = 0;
+    console.log(`[AEMO] Loaded ${aemoPriceData.length} real price points for ${AEMO_REGION}`);
+  } catch (e) {
+    console.warn('[AEMO] Failed to load real prices, falling back to simulation', e);
+    aemoPriceData = null;
+  }
+}
+
+/**
+ * 获取下一个 AEMO 真实价格（循环回放），没有则降级到模拟
+ */
+function getNextAemoPrice() {
+  if (!aemoPriceData || aemoPriceData.length === 0) return null;
+  const pt = aemoPriceData[aemoPriceIndex % aemoPriceData.length];
+  aemoPriceIndex++;
+  return pt.price;
+}
+
 // ============ 仿真状态 ============
 let simTime = new Date();
 let simInterval = null;
@@ -286,7 +314,15 @@ function simTick() {
   }
 
   const hour = new Date().getHours();
-  const rawPrice = generatePrice(hour);
+
+  // 优先使用 AEMO 真实价格
+  const aemoPrice = getNextAemoPrice();
+  let rawPrice;
+  if (aemoPrice !== null) {
+    rawPrice = aemoPrice;
+  } else {
+    rawPrice = generatePrice(hour);
+  }
 
   // 平滑处理：新价格 = 旧价格 × (1-α) + 原始新价格 × α
   // 尖峰价格（>$3000）不平滑，保持冲击力
@@ -383,8 +419,10 @@ function simTick() {
 /**
  * 启动仿真（每 5 秒一个 tick）
  */
-function startSimulator() {
+async function startSimulator() {
   if (simInterval) return;
+  // 加载 AEMO 真实数据
+  await loadAemoPrices();
   // 立即执行一次
   simTick();
   simInterval = setInterval(simTick, 5000);
