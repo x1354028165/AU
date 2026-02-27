@@ -440,7 +440,7 @@ function renderAlarmsList(container, isOwner) {
   // ===== 查询条件区（参考 SCADA：label 等宽对齐，两行平铺） =====
   const lblClass = 'text-xs text-slate-500 whitespace-nowrap w-[70px] text-right shrink-0';
   const querySection = `
-    <table class="w-full mb-5" style="border-spacing:8px 6px;border-collapse:separate;">
+    <table class="w-full mb-6" style="border-spacing:10px 12px;border-collapse:separate;">
       <tr>
         <td class="${lblClass}">${getTrans('alarm_col_station')}:</td>
         <td>
@@ -508,7 +508,7 @@ function renderAlarmsList(container, isOwner) {
 
   // ===== 表格 =====
   const thClass = 'text-left px-4 py-3 text-slate-500 font-medium text-xs tracking-wide whitespace-nowrap';
-  const tdClass = 'px-4 py-3 text-sm';
+  const tdClass = 'px-4 py-5 text-sm';
 
   const rows = allAlarms.map((alarm, i) => {
     const isCritical = alarm.severity === 'Critical';
