@@ -50,6 +50,58 @@ const TRANSLATIONS = {
     owner_subtitle: 'Manage your energy storage portfolio',
     operator_subtitle: 'Your assigned stations',
 
+    // KPI
+    kpi_total_cap: 'Total Capacity',
+    kpi_month_rev: 'Monthly Rental',
+    kpi_avg_soh: 'Average SoH',
+    kpi_unassigned: 'Unassigned',
+    kpi_managed_cap: 'Managed Cap.',
+    kpi_today_rev: "Today's Revenue",
+    kpi_avg_soc: 'Avg SoC',
+    kpi_current_price: 'Spot Price',
+
+    // Strategy
+    strategy_panel: 'Dispatch Strategy',
+    charge_at: 'Charge when <',
+    discharge_at: 'Discharge when >',
+    reserve_soc: 'Reserve SoC',
+    strategy_mode: 'Mode',
+    mode_auto: 'Auto',
+    mode_manual_charge: 'Force Charge',
+    mode_manual_discharge: 'Force Discharge',
+    mode_manual_idle: 'Force Idle',
+    manual_override: 'Manual Override',
+    save_strategy: 'Save',
+    strategy_saved: 'Strategy updated',
+    emergency_charge: '⚡ Force Charge',
+    emergency_discharge: '🔋 Force Discharge',
+    emergency_idle: '⏸ Emergency Stop',
+
+    // SoH Trend
+    soh_trend: 'SoH Degradation Trend (30 Days)',
+    soh_trend_hint: 'Battery health trajectory across all stations',
+    simulated_data_hint: '* Simulated historical data for demonstration purposes',
+    invalid_thresholds: 'Charge threshold must be lower than discharge threshold',
+    mfa_demo_hint: 'Demo: enter any 6 digits (e.g., 123456)',
+    strategy_warning_high_reserve: 'Warning: Reserve SoC is higher than current SoC',
+    switch_role: 'Switch Role',
+    login_success_owner: 'Login successful. Entering as Owner...',
+    login_success_operator: 'Login successful. Entering as Operator...',
+    select_role: 'Select Your Identity',
+    select_role_hint: 'Choose how you want to access the AU BESS Platform',
+    role_owner_title: 'Pacific Energy Group',
+    role_owner_subtitle: 'Asset Owner',
+    role_owner_label: 'Asset Owner',
+    role_owner_desc: 'Control global asset returns, audit operator performance, manage station allocation. Track battery health and long-term ROI.',
+    role_owner_enter: 'Enter Owner Portal',
+    role_operator_title: 'Operator',
+    role_operator_subtitle: 'Operator',
+    role_operator_label: 'Dispatch Expert',
+    role_operator_desc: 'Monitor station output in real-time, execute automated arbitrage strategies, optimize battery lifespan. Manage dispatch thresholds and emergency response.',
+    role_operator_enter: 'Enter Operator Portal',
+    role_select_title: 'Select Your Identity',
+    role_select_as: 'Enter Portal',
+
     // Reports
     export_csv: 'Export CSV',
     leaderboard: 'Operator Leaderboard',
@@ -118,11 +170,58 @@ const TRANSLATIONS = {
     no_stations: 'No stations assigned',
     no_stations_hint: 'Contact the asset owner for access',
 
+    // View toggle
+    view_map: 'Asset Map',
+    view_cards: 'Asset Cards',
+    view_list: 'Asset List',
+    add_station: 'Add Station',
+    add_device: 'Add Device',
+    station_name: 'Station Name',
+    power_capacity: 'Power / Capacity',
+    power_mw: 'Power (MW)',
+    capacity_mwh: 'Capacity (MWh)',
+    select_timezone: 'Timezone',
+    select_region: 'Region',
+    latitude: 'Latitude',
+    longitude: 'Longitude',
+    cancel: 'Cancel',
+    confirm_add: 'Create Station',
+    device_name: 'Device Name',
+    device_type: 'Device Type',
+    device_version: 'Version',
+    add_device_btn: 'Add',
+    sync_from_device: 'Sync from Device',
+    sync_success: 'Synced from device',
+    sync_no_device: 'No PCS/BMS device to sync from',
+    contract_capacity: 'Contract Capacity',
+    live_capacity: 'Live Capacity',
+    capacity_mismatch: '⚠ Capacity mismatch >5%',
+    rated_power: 'Rated Power',
+    rated_capacity: 'Rated Capacity',
+    manage: 'Manage',
+    monitor: 'Monitor',
+    alarm: 'Alarms',
+    today_revenue: "Today's Revenue",
+    lease_expiry: 'Lease Expiry',
+    no_alarms: 'No Alarms',
+
+    // Station detail
+    tab_overview: 'Overview',
+    tab_devices: 'Devices',
+    tab_history: 'History',
+    tab_reports: 'Reports',
+    energy_flow: 'Energy Flow',
+    grid_label: 'Grid',
+    bess_label: 'BESS',
+    load_label: 'Load',
+    back_to_list: 'Back',
+
     // Mobile
     menu: 'Menu',
 
     // Language
-    lang_switch: 'CN',
+    lang_switch: 'English',
+    demo_accounts_hint: 'Demo accounts: admin / op_a / op_b',
   },
   zh: {
     // 登录
@@ -168,6 +267,58 @@ const TRANSLATIONS = {
     assets_overview: '资产概览',
     owner_subtitle: '管理您的储能资产组合',
     operator_subtitle: '您负责运维的电站',
+
+    // KPI
+    kpi_total_cap: '总资产容量',
+    kpi_month_rev: '月租金收入',
+    kpi_avg_soh: '平均健康度',
+    kpi_unassigned: '待分配',
+    kpi_managed_cap: '管理容量',
+    kpi_today_rev: '今日收益',
+    kpi_avg_soc: '平均 SoC',
+    kpi_current_price: '现货电价',
+
+    // 策略
+    strategy_panel: '调度策略面板',
+    charge_at: '充电阈值 <',
+    discharge_at: '放电阈值 >',
+    reserve_soc: '储备 SoC',
+    strategy_mode: '模式',
+    mode_auto: '自动',
+    mode_manual_charge: '强制充电',
+    mode_manual_discharge: '强制放电',
+    mode_manual_idle: '强制停机',
+    manual_override: '手动接管',
+    save_strategy: '保存',
+    strategy_saved: '策略已更新',
+    emergency_charge: '⚡ 强制充电',
+    emergency_discharge: '🔋 强制放电',
+    emergency_idle: '⏸ 紧急停机',
+
+    // SoH 趋势
+    soh_trend: '电池健康度 30 天衰减趋势',
+    soh_trend_hint: '全部电站的健康度变化轨迹',
+    simulated_data_hint: '* 演示环境下的模拟历史数据',
+    invalid_thresholds: '充电阈值必须低于放电阈值',
+    mfa_demo_hint: '演示：请随意输入 6 位数字（如 123456）',
+    strategy_warning_high_reserve: '提醒：储备 SoC 设置高于当前实际值',
+    switch_role: '切换角色',
+    login_success_owner: '登录成功，正在以管理员身份进入系统...',
+    login_success_operator: '登录成功，正在以操作员身份进入系统...',
+    select_role: '选择访问身份',
+    select_role_hint: '选择您要以何种身份进入 AU BESS 平台',
+    role_owner_title: 'Pacific Energy Group',
+    role_owner_subtitle: '资产业主',
+    role_owner_label: '资产业主',
+    role_owner_desc: '掌控全局资产收益，审计运维表现，管理电站分配。追踪电池健康度与长期投资回报。',
+    role_owner_enter: '进入业主门户',
+    role_operator_title: '运维方',
+    role_operator_subtitle: '运维方',
+    role_operator_label: '运维专家',
+    role_operator_desc: '实时监控电站出力，执行自动化套利策略，优化电池寿命。管理调度阈值与紧急响应。',
+    role_operator_enter: '进入运维门户',
+    role_select_title: '选择访问身份',
+    role_select_as: '进入门户',
 
     // 报表
     export_csv: '导出 CSV',
@@ -237,11 +388,58 @@ const TRANSLATIONS = {
     no_stations: '暂无分配电站',
     no_stations_hint: '请联系资产业主获取权限',
 
+    // 视图切换
+    view_map: '资产分布图',
+    view_cards: '资产卡片',
+    view_list: '资产列表',
+    add_station: '添加电站',
+    add_device: '添加设备',
+    station_name: '电站名称',
+    power_capacity: '功率 / 容量',
+    power_mw: '功率 (MW)',
+    capacity_mwh: '容量 (MWh)',
+    select_timezone: '时区',
+    select_region: '区域',
+    latitude: '纬度',
+    longitude: '经度',
+    cancel: '取消',
+    confirm_add: '创建电站',
+    device_name: '设备名称',
+    device_type: '设备类型',
+    device_version: '版本号',
+    add_device_btn: '添加',
+    sync_from_device: '从设备同步',
+    sync_success: '已从设备同步',
+    sync_no_device: '无可同步的 PCS/BMS 设备',
+    contract_capacity: '合同容量',
+    live_capacity: '实际容量',
+    capacity_mismatch: '⚠ 容量偏差超过5%',
+    rated_power: '额定功率',
+    rated_capacity: '额定容量',
+    manage: '管理',
+    monitor: '监控',
+    alarm: '告警',
+    today_revenue: '今日收益',
+    lease_expiry: '租约到期',
+    no_alarms: '无告警',
+
+    // 电站详情
+    tab_overview: '总览',
+    tab_devices: '设备',
+    tab_history: '历史',
+    tab_reports: '报表',
+    energy_flow: '能量流',
+    grid_label: '电网',
+    bess_label: '储能',
+    load_label: '负载',
+    back_to_list: '返回',
+
     // 移动端
     menu: '菜单',
 
     // 语言
-    lang_switch: 'EN',
+    lang_switch: '中文',
+    demo_accounts_hint: '演示账号：admin / op_a / op_b',
   }
 };
 
@@ -319,10 +517,19 @@ const DEFAULT_STATIONS = [
     soh: 99.98,
     capacity: '5MW/10MWh',
     location: 'Newcastle, NSW',
+    lat: -32.9283,
+    lng: 151.7817,
+    timezone: 'Australia/Sydney',
+    region: 'NSW',
     lease_start: '2025-01-01',
     lease_end: '2028-12-31',
     annual_fee: 850000,
-    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0
+    lease_status: 'Leased',
+    devices: [
+      { id: 'ems-01', name: 'EMS Controller', type: 'EMS', version: 'v1.0.2' },
+      { id: 'pcs-01', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 5, rated_capacity: 10 }
+    ],
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
   },
   {
     id: 'st_02',
@@ -332,10 +539,19 @@ const DEFAULT_STATIONS = [
     soh: 99.95,
     capacity: '2.5MW/5MWh',
     location: 'Geelong, VIC',
+    lat: -38.1499,
+    lng: 144.3617,
+    timezone: 'Australia/Melbourne',
+    region: 'VIC',
     lease_start: '2024-06-01',
     lease_end: '2027-05-31',
     annual_fee: 420000,
-    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0
+    lease_status: 'Leased',
+    devices: [
+      { id: 'ems-02', name: 'EMS Controller', type: 'EMS', version: 'v1.0.2' },
+      { id: 'pcs-02', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 2.5, rated_capacity: 5 }
+    ],
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
   },
   {
     id: 'st_03',
@@ -345,10 +561,19 @@ const DEFAULT_STATIONS = [
     soh: 99.99,
     capacity: '10MW/20MWh',
     location: 'Sunshine Coast, QLD',
+    lat: -26.6500,
+    lng: 153.0667,
+    timezone: 'Australia/Brisbane',
+    region: 'QLD',
     lease_start: '2025-02-15',
     lease_end: '2030-02-14',
     annual_fee: 1200000,
-    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0
+    lease_status: 'Leased',
+    devices: [
+      { id: 'ems-03', name: 'EMS Controller', type: 'EMS', version: 'v1.0.2' },
+      { id: 'pcs-03', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 10, rated_capacity: 20 }
+    ],
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
   },
   {
     id: 'st_04',
@@ -358,10 +583,19 @@ const DEFAULT_STATIONS = [
     soh: 100.0,
     capacity: '5MW/10MWh',
     location: 'Adelaide, SA',
+    lat: -34.9285,
+    lng: 138.6007,
+    timezone: 'Australia/Adelaide',
+    region: 'SA',
     lease_start: '-',
     lease_end: '-',
     annual_fee: 0,
-    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0
+    lease_status: 'Idle',
+    devices: [
+      { id: 'ems-04', name: 'EMS Controller', type: 'EMS', version: 'v1.0.2' },
+      { id: 'pcs-04', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 5, rated_capacity: 10 }
+    ],
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
   }
 ];
 
@@ -385,6 +619,153 @@ function resetStations() {
   localStorage.removeItem('stations');
   stations = JSON.parse(JSON.stringify(DEFAULT_STATIONS));
 }
+
+// ============ Station CRUD ============
+
+/**
+ * 获取单个电站
+ * @param {string} stationId
+ * @returns {object|null}
+ */
+function getStation(stationId) {
+  return stations.find(s => s.id === stationId) || null;
+}
+
+/**
+ * 更新电站字段（合并式更新）
+ * @param {string} stationId
+ * @param {object} fields - 要更新的字段键值对
+ * @returns {boolean}
+ */
+function updateStation(stationId, fields) {
+  const station = stations.find(s => s.id === stationId);
+  if (!station) return false;
+  Object.assign(station, fields);
+  saveStations();
+  return true;
+}
+
+/**
+ * 添加设备到电站
+ * @param {string} stationId
+ * @param {object} device - { id, name, type, version }
+ * @returns {boolean}
+ */
+function addDeviceToStation(stationId, device) {
+  const station = stations.find(s => s.id === stationId);
+  if (!station) return false;
+  if (!station.devices) station.devices = [];
+  // 防止重复 ID
+  if (station.devices.some(d => d.id === device.id)) return false;
+  station.devices.push(device);
+  saveStations();
+  return true;
+}
+
+/**
+ * 从电站移除设备
+ * @param {string} stationId
+ * @param {string} deviceId
+ * @returns {boolean}
+ */
+function removeDeviceFromStation(stationId, deviceId) {
+  const station = stations.find(s => s.id === stationId);
+  if (!station || !station.devices) return false;
+  const idx = station.devices.findIndex(d => d.id === deviceId);
+  if (idx === -1) return false;
+  station.devices.splice(idx, 1);
+  saveStations();
+  return true;
+}
+
+/**
+ * 添加新电站
+ * @param {object} stationData - 完整电站对象
+ * @returns {object} 新建的电站
+ */
+function addStation(stationData) {
+  const newStation = Object.assign({
+    id: 'st_' + String(stations.length + 1).padStart(2, '0'),
+    owner: 'owner_1',
+    operator_id: 'unassigned',
+    soh: 100.0,
+    lease_start: '-',
+    lease_end: '-',
+    annual_fee: 0,
+    lease_status: 'Idle',
+    devices: [],
+    soc: 50,
+    efficiency: 0.88,
+    revenue_today: 0,
+    status: 'IDLE',
+    cumulative_mwh: 0,
+    strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
+  }, stationData);
+  stations.push(newStation);
+  saveStations();
+  return newStation;
+}
+
+/**
+ * 从电站设备中获取主设备的额定参数
+ * @param {Array} devices
+ * @returns {{rated_power: number, rated_capacity: number}|null}
+ */
+function getDeviceRatedParams(devices) {
+  if (!devices || !devices.length) return null;
+  // 优先 PCS，其次 BMS
+  const primary = devices.find(d => d.type === 'PCS') || devices.find(d => d.type === 'BMS');
+  if (!primary || !primary.rated_power || !primary.rated_capacity) return null;
+  return { rated_power: primary.rated_power, rated_capacity: primary.rated_capacity };
+}
+
+/**
+ * 获取电站的 Live Capacity（设备实际读数）
+ * @param {object} station
+ * @returns {{live_mw: number, live_mwh: number}|null}
+ */
+function getStationLiveCapacity(station) {
+  const params = getDeviceRatedParams(station.devices);
+  if (!params) return null;
+  return { live_mw: params.rated_power, live_mwh: params.rated_capacity };
+}
+
+/**
+ * 检查合同容量与设备容量是否偏差超过阈值
+ * @param {object} station
+ * @param {number} threshold - 百分比，默认 5
+ * @returns {{mismatch: boolean, contract_mw: number, contract_mwh: number, live_mw: number, live_mwh: number, deviation_pct: number}|null}
+ */
+function checkCapacityMismatch(station, threshold) {
+  threshold = threshold || 5;
+  const contract = parseCapacity(station.capacity);
+  const live = getStationLiveCapacity(station);
+  if (!live) return null;
+
+  const devMW = Math.abs(contract.mw - live.live_mw) / contract.mw * 100;
+  const devMWh = Math.abs(contract.mwh - live.live_mwh) / contract.mwh * 100;
+  const maxDev = Math.max(devMW, devMWh);
+
+  return {
+    mismatch: maxDev > threshold,
+    contract_mw: contract.mw,
+    contract_mwh: contract.mwh,
+    live_mw: live.live_mw,
+    live_mwh: live.live_mwh,
+    deviation_pct: Math.round(maxDev * 10) / 10
+  };
+}
+
+// ============ 澳洲时区列表 ============
+const AU_TIMEZONES = [
+  { value: 'Australia/Sydney', label: 'AEST/AEDT - Sydney, NSW', region: 'NSW' },
+  { value: 'Australia/Melbourne', label: 'AEST/AEDT - Melbourne, VIC', region: 'VIC' },
+  { value: 'Australia/Brisbane', label: 'AEST - Brisbane, QLD', region: 'QLD' },
+  { value: 'Australia/Adelaide', label: 'ACST/ACDT - Adelaide, SA', region: 'SA' },
+  { value: 'Australia/Perth', label: 'AWST - Perth, WA', region: 'WA' },
+  { value: 'Australia/Hobart', label: 'AEST/AEDT - Hobart, TAS', region: 'TAS' },
+  { value: 'Australia/Darwin', label: 'ACST - Darwin, NT', region: 'NT' }
+];
 
 // ============ 角色获取 ============
 
@@ -425,6 +806,9 @@ function assignStation(stationId, targetOpId) {
     station.lease_start = today.toISOString().split('T')[0];
     station.lease_end = endDate.toISOString().split('T')[0];
     station.annual_fee = 500000;
+    station.lease_status = 'Leased';
+  } else if (targetOpId === 'unassigned') {
+    station.lease_status = 'Idle';
   }
 
   saveStations();

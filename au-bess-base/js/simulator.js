@@ -80,42 +80,64 @@ function runAutoBidder(station, price) {
 
   const cap = parseCapacity(station.capacity);
   const intervalHours = 5 / 60; // 5 分钟 = 1/12 小时
+  const strat = station.strategy || { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' };
+  const minSoc = Math.max(5, strat.reserve_soc || 5);
   let power = 0;
   let revenue = 0;
   let energyMWh = 0;
 
-  if (price < 50 && station.soc < 95) {
-    // 充电
-    power = -cap.mw; // 负表示充电
-    energyMWh = cap.mw * intervalHours;
-    const socIncrease = (energyMWh / cap.mwh) * 100;
-    station.soc = Math.min(95, station.soc + socIncrease);
-    station.status = 'CHARGING';
-    // 充电成本（负收益）
-    revenue = -(energyMWh * price);
-  } else if (price > 200 && station.soc > 5) {
-    // 放电
-    power = cap.mw; // 正表示放电
-    energyMWh = cap.mw * intervalHours;
-    const socDecrease = (energyMWh / cap.mwh) * 100;
-    station.soc = Math.max(5, station.soc - socDecrease);
-    station.status = 'DISCHARGING';
-    // 放电收益（乘往返效率）
-    revenue = energyMWh * price * station.efficiency;
-  } else {
+  // 手动模式优先
+  if (strat.mode === 'manual_charge') {
+    if (station.soc < 95) {
+      power = -cap.mw;
+      energyMWh = cap.mw * intervalHours;
+      station.soc = Math.min(95, station.soc + (energyMWh / cap.mwh) * 100);
+      station.status = 'CHARGING';
+      revenue = -(energyMWh * price);
+    } else {
+      station.status = 'IDLE';
+    }
+  } else if (strat.mode === 'manual_discharge') {
+    if (station.soc > minSoc) {
+      power = cap.mw;
+      energyMWh = cap.mw * intervalHours;
+      station.soc = Math.max(minSoc, station.soc - (energyMWh / cap.mwh) * 100);
+      station.status = 'DISCHARGING';
+      revenue = energyMWh * price * station.efficiency;
+    } else {
+      station.status = 'IDLE';
+    }
+  } else if (strat.mode === 'manual_idle') {
     station.status = 'IDLE';
+  } else {
+    // Auto 模式：使用动态阈值
+    const chargeAt = strat.charge_threshold || 50;
+    const dischargeAt = strat.discharge_threshold || 200;
+
+    if (price < chargeAt && station.soc < 95) {
+      power = -cap.mw;
+      energyMWh = cap.mw * intervalHours;
+      station.soc = Math.min(95, station.soc + (energyMWh / cap.mwh) * 100);
+      station.status = 'CHARGING';
+      revenue = -(energyMWh * price);
+    } else if (price > dischargeAt && station.soc > minSoc) {
+      power = cap.mw;
+      energyMWh = cap.mw * intervalHours;
+      station.soc = Math.max(minSoc, station.soc - (energyMWh / cap.mwh) * 100);
+      station.status = 'DISCHARGING';
+      revenue = energyMWh * price * station.efficiency;
+    } else {
+      station.status = 'IDLE';
+    }
   }
 
-  // SoH 损耗：每 1MWh 累计充放电 → SoH 降 0.001%
+  // SoH 损耗
   if (energyMWh > 0) {
     station.cumulative_mwh = (station.cumulative_mwh || 0) + energyMWh;
-    const sohLoss = energyMWh * 0.001;
-    station.soh = Math.max(0, station.soh - sohLoss);
+    station.soh = Math.max(0, station.soh - energyMWh * 0.001);
   }
 
-  // 累计今日收益
   station.revenue_today = (station.revenue_today || 0) + revenue;
-
   return { power, revenue };
 }
 

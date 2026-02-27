@@ -6,18 +6,56 @@
 /**
  * 渲染报表视图（根据角色自动切换内容）
  */
-function renderReports() {
+// Track which report sub-view to show
+let reportSubView = 'default'; // 'default' | 'health'
+
+function renderReports(subView) {
   const container = document.getElementById('view-reports');
   if (!container) return;
+
+  if (subView) reportSubView = subView;
 
   const role = getCurrentUser();
   const isOwner = role === 'owner';
 
-  if (isOwner) {
+  // Dispose SoH chart first
+  if (typeof disposeSohChart === 'function') disposeSohChart();
+
+  if (isOwner && reportSubView === 'health') {
+    renderHealthView(container);
+  } else if (isOwner) {
     renderLeaderboard(container);
   } else {
     renderDispatchLogs(container, role);
   }
+}
+
+// ============ 业主：Health 视图 (SoH趋势 + 排行榜) ============
+
+function renderHealthView(container) {
+  container.innerHTML = `
+    <div class="max-w-[1600px] mx-auto">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="heart-pulse" class="w-5 h-5 text-red-400"></i>
+            ${getTrans('soh_trend')}
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">${getTrans('soh_trend_hint')}</p>
+        </div>
+      </div>
+      <div class="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
+        <div id="soh-chart" style="width:100%;height:350px;"></div>
+        <p class="text-xs text-slate-600 mt-2 text-center italic">${getTrans('simulated_data_hint')}</p>
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) lucide.createIcons();
+  // Init chart after DOM is ready
+  setTimeout(() => {
+    if (typeof initSohChart === 'function') initSohChart();
+  }, 100);
 }
 
 // ============ 业主：运维方绩效排行榜 ============

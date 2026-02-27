@@ -194,6 +194,32 @@ input[type="checkbox"] {
   50% { border-color: rgba(239, 68, 68, 0.8); box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
 }
 
+/* ============ Leaflet Map 覆盖 ============ */
+#station-map {
+  z-index: 1;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+.leaflet-popup-tip {
+  background: #1e293b !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px !important;
+}
+
+.leaflet-popup-close-button {
+  color: #94a3b8 !important;
+}
+
 /* ============ 响应式：移动端 ============ */
 @media (max-width: 768px) {
   .sidebar-panel {

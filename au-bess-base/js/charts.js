@@ -148,3 +148,106 @@ function disposeChart() {
     marketChart = null;
   }
 }
+
+// ============ SoH 趋势图 ============
+
+let sohChart = null;
+
+/**
+ * 初始化 SoH 30天趋势图
+ */
+function initSohChart() {
+  const container = document.getElementById('soh-chart');
+  if (!container) return;
+
+  if (sohChart) sohChart.dispose();
+  sohChart = echarts.init(container, 'dark');
+
+  const colors = ['#fbbf24', '#34d399', '#60a5fa', '#f87171'];
+
+  // 生成 30 天模拟数据：从当前 SoH 倒推
+  const days = 30;
+  const dates = [];
+  const now = new Date();
+  const langTag = getLang() === 'zh' ? 'zh-CN' : 'en-AU';
+  for (let i = days; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    dates.push(d.toLocaleDateString(langTag, { month: 'short', day: 'numeric' }));
+  }
+
+  const series = stations.map((station, idx) => {
+    const currentSoh = station.soh;
+    const data = [];
+    // 倒推：每天衰减约 0.001-0.003%（随机波动）
+    let soh = currentSoh;
+    const dailyLoss = (100 - currentSoh) / days; // 平均日损耗
+    const values = [currentSoh];
+
+    for (let i = 1; i <= days; i++) {
+      const noise = (Math.random() - 0.3) * 0.002;
+      soh = currentSoh + (dailyLoss + noise) * i;
+      values.unshift(Math.min(100, soh));
+    }
+
+    return {
+      name: station.name,
+      type: 'line',
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 4,
+      lineStyle: { color: colors[idx % colors.length], width: 2 },
+      itemStyle: { color: colors[idx % colors.length] },
+      data: values.map(v => Math.round(v * 10000) / 10000)
+    };
+  });
+
+  const option = {
+    backgroundColor: 'transparent',
+    grid: { top: 50, right: 30, bottom: 30, left: 60, containLabel: true },
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: 'rgba(255,255,255,0.1)',
+      textStyle: { color: '#e2e8f0', fontSize: 12 },
+      formatter: function(params) {
+        let html = `<div class="font-mono">${params[0].axisValue}</div>`;
+        params.forEach(p => {
+          html += `<div style="color:${p.color}">${p.seriesName}: ${p.value.toFixed(4)}%</div>`;
+        });
+        return html;
+      }
+    },
+    legend: {
+      data: stations.map(s => s.name),
+      textStyle: { color: '#94a3b8', fontSize: 11 },
+      top: 5
+    },
+    xAxis: {
+      type: 'category',
+      data: dates,
+      axisLabel: { color: '#64748b', fontSize: 10 },
+      axisLine: { lineStyle: { color: '#334155' } }
+    },
+    yAxis: {
+      type: 'value',
+      name: 'SoH %',
+      min: 99.5,
+      max: 100.0,
+      nameTextStyle: { color: '#94a3b8', fontSize: 10 },
+      axisLabel: {
+        color: '#94a3b8', fontSize: 10,
+        formatter: v => v.toFixed(2) + '%'
+      },
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
+    },
+    series: series
+  };
+
+  sohChart.setOption(option);
+  window.addEventListener('resize', () => { if (sohChart) sohChart.resize(); });
+}
+
+function disposeSohChart() {
+  if (sohChart) { sohChart.dispose(); sohChart = null; }
+}
