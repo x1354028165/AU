@@ -1989,29 +1989,42 @@ function renderDispatchControlPanel(container, forceStationId) {
               </label>
             </div>
 
-            <!-- 充电按钮 | 价格球 | 放电按钮 -->
-            <div class="flex items-center justify-center gap-4 py-4">
-              <!-- 左：充电胶囊按钮 -->
+            <!-- 充电按钮 | 价格球 | 放电按钮 / 运行态球 -->
+            <div class="flex items-center justify-center gap-4 py-4" id="dp-control-area">
+              ${(mode === 'manual_charge' || mode === 'manual_discharge') ? `
+              <!-- 运行态：球显示状态，hover 显示 STOP -->
+              <div class="flex-shrink-0 relative group cursor-pointer" onclick="showStopConfirm('${station.id}')" id="dp-running-ball">
+                <div class="rounded-full flex flex-col items-center justify-center transition-all duration-300"
+                  style="width: 200px; height: 200px; background: radial-gradient(circle at 38% 32%, ${mode === 'manual_charge' ? '#6ee7b7, #34d399 50%, #10b981' : '#fde68a, #fbbf24 50%, #f59e0b'} 80%);">
+                  <span class="text-3xl font-bold font-mono tracking-tight text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="dp-ring-price">${priceStr}</span>
+                  <span class="text-sm text-white/80 mt-1 font-bold">${mode === 'manual_charge' ? '⚡ ' + getTrans('charging') : '🔋 ' + getTrans('discharging')}</span>
+                  <span class="text-xs text-white/60 mt-1" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
+                </div>
+                <!-- Hover 红色 STOP 覆盖 -->
+                <div class="absolute inset-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+                  style="background: radial-gradient(circle at 38% 32%, #fca5a5, #ef4444 50%, #dc2626 80%);">
+                  <span class="text-3xl font-bold text-white tracking-wider" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);">${getTrans('stop')}</span>
+                </div>
+              </div>
+              ` : `
+              <!-- 空闲态：充电 | 球 | 放电 -->
               <button onclick="showDispatchConfirm('${station.id}', 'charge')"
                 class="px-5 py-3 rounded-full text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 flex-shrink-0"
-                style="background: linear-gradient(135deg, #34d399, #10b981);">
+                style="background: linear-gradient(135deg, #34d399, #10b981);" id="dp-btn-charge">
                 ⚡ ${getTrans('force_charge')}
               </button>
-
-              <!-- 中：价格实心球 -->
               <div class="flex-shrink-0">
                 <div class="rounded-full flex flex-col items-center justify-center" style="width: 180px; height: 180px; background: radial-gradient(circle at 38% 32%, #93c5fd, #60a5fa 50%, #3b82f6 80%);">
                   <span class="text-3xl font-bold font-mono tracking-tight text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="dp-ring-price">${priceStr}</span>
                   <span class="text-xs text-white/70 mt-1 font-medium" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
                 </div>
               </div>
-
-              <!-- 右：放电胶囊按钮 -->
               <button onclick="showDispatchConfirm('${station.id}', 'discharge')"
                 class="px-5 py-3 rounded-full text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 flex-shrink-0"
-                style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+                style="background: linear-gradient(135deg, #fbbf24, #f59e0b);" id="dp-btn-discharge">
                 🔋 ${getTrans('force_discharge')}
               </button>
+              `}
             </div>
           </div>
 
@@ -2237,6 +2250,42 @@ function showDispatchConfirm(stationId, action) {
     </div>
   `;
   document.body.appendChild(overlay);
+}
+
+// 停止确认弹窗
+function showStopConfirm(stationId) {
+  const station = stations.find(s => s.id === stationId);
+  if (!station) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'dispatch-confirm-overlay';
+  overlay.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+  overlay.innerHTML = `
+    <div class="bg-slate-900 border border-white/20 rounded-3xl w-full max-w-sm p-0 overflow-hidden">
+      <div class="px-8 pt-8 pb-4 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center">
+          <span class="text-2xl">🛑</span>
+        </div>
+        <h2 class="text-xl font-bold text-white">${getTrans('confirm_stop')}</h2>
+      </div>
+      <div class="px-8 py-6">
+        <p class="text-sm text-slate-400">${getTrans('confirm_stop_desc')}</p>
+      </div>
+      <div class="px-8 pb-8 flex gap-4">
+        <button onclick="closeDispatchConfirm()" class="flex-1 py-3.5 rounded-2xl border border-white/20 text-sm font-bold text-slate-300 hover:bg-white/5 transition-colors">
+          ${getTrans('cancel')}
+        </button>
+        <button onclick="confirmStop('${stationId}')" class="flex-1 py-3.5 rounded-2xl text-sm font-bold text-white transition-all hover:scale-[1.02] bg-red-500">
+          ${getTrans('confirm_stop')}
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function confirmStop(stationId) {
+  closeDispatchConfirm();
+  dispatchSetMode(stationId, 'manual_idle');
 }
 
 function closeDispatchConfirm() {
