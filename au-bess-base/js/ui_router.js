@@ -1716,9 +1716,9 @@ function setManualMode(stationId, mode) {
 function switchRole() {
   if (typeof stopSimulator === 'function') stopSimulator();
   if (typeof disposeChart === 'function') disposeChart();
-  // 只清角色，保留登录状态 → 直接进角色选择页
+  // 只清角色，保留登录状态和电站数据 → 直接进角色选择页
+  // 注意：不调用 resetStations()，确保告警/收益等数据跨角色保留
   localStorage.removeItem('role');
-  if (typeof resetStations === 'function') resetStations();
   window.location.href = 'index.html?jump=role-select';
 }
 

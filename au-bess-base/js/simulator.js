@@ -216,6 +216,9 @@ function simTick() {
     }
 
     previousStationStatus[station.id] = station.status;
+
+    // 动态告警检查
+    checkAndTriggerAlarms(station, currentPrice);
   });
 
   // 记录历史
@@ -307,4 +310,68 @@ function getDispatchLogs(operatorId) {
     return dispatchLogs.filter(l => l.operatorId === operatorId);
   }
   return [...dispatchLogs];
+}
+
+// ============ 动态告警触发 ============
+
+let alarmIdCounter = Date.now();
+
+/**
+ * 检查并触发动态告警（去重 + 持久化）
+ * @param {object} station - 电站对象
+ * @param {number} price - 当前电价
+ */
+function checkAndTriggerAlarms(station, price) {
+  if (station.operator_id === 'unassigned') return;
+  if (!station.alarms) station.alarms = [];
+
+  // 去重检查：同类型非 RESOLVED 告警存在则跳过
+  function hasActiveAlarm(type) {
+    return station.alarms.some(a => a.type === type && a.status !== 'RESOLVED');
+  }
+
+  // 规则 A：尖峰放电时高温告警（Critical, 5%概率）
+  if (price > 3000 && station.status === 'DISCHARGING' && !hasActiveAlarm('HIGH_TEMP')) {
+    if (Math.random() < 0.05) {
+      const alarm = {
+        id: 'alm_' + (++alarmIdCounter),
+        type: 'HIGH_TEMP',
+        severity: 'Critical',
+        message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
+        timestamp: new Date().toLocaleString('en-AU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        status: 'ACTIVE',
+        ack_by: null,
+        ack_at: null,
+        resolved_by: null,
+        resolved_at: null
+      };
+      station.alarms.push(alarm);
+      if (typeof saveStations === 'function') saveStations();
+      // Critical 告警弹 toast
+      if (typeof showToast === 'function') {
+        showToast('⚠️ CRITICAL: ' + station.name + ' — BMS High Temperature', 'error');
+      }
+    }
+  }
+
+  // 规则 B：低电量告警（Warning, 5%概率）
+  if (station.soc < 10 && !hasActiveAlarm('LOW_SOC')) {
+    if (Math.random() < 0.05) {
+      const alarm = {
+        id: 'alm_' + (++alarmIdCounter),
+        type: 'LOW_SOC',
+        severity: 'Warning',
+        message: 'Battery Low SoC — State of charge dropped below 10% (' + station.soc.toFixed(1) + '%)',
+        timestamp: new Date().toLocaleString('en-AU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        status: 'ACTIVE',
+        ack_by: null,
+        ack_at: null,
+        resolved_by: null,
+        resolved_at: null
+      };
+      station.alarms.push(alarm);
+      if (typeof saveStations === 'function') saveStations();
+      // Warning 级别不弹 toast，只写入列表
+    }
+  }
 }
