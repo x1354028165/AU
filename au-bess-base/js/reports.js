@@ -515,7 +515,7 @@ function renderAlarmsList(container, isOwner) {
       </tr>
       <tr>
         <td class="${lblClass}">${getTrans('alarm_col_time')}:</td>
-        <td colspan="3">
+        <td>
           <div class="flex items-center gap-2">
             <input type="date" value="${alarmFilterDateFrom}" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
               class="${selClass} flex-1 dark-date-input" />
@@ -524,7 +524,7 @@ function renderAlarmsList(container, isOwner) {
               class="${selClass} flex-1 dark-date-input" />
           </div>
         </td>
-        <td colspan="2" class="text-right">
+        <td colspan="4" class="text-right">
           <div class="flex items-center justify-end gap-2">
             <button onclick="alarmFilterStation='all';alarmFilterDevice='all';alarmFilterSeverity='all';alarmFilterTab='all';alarmFilterDateFrom='';alarmFilterDateTo='';renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
               class="px-5 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-slate-400 hover:text-white transition-colors">${getTrans('alarm_filter_reset')}</button>
