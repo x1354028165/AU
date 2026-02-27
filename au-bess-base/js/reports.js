@@ -385,87 +385,89 @@ function renderAlarmsList(container, isOwner) {
     return;
   }
 
-  const rows = allAlarms.map((alarm, i) => {
+  // 使用卡片布局替代表格，解决列对齐问题
+  const cards = allAlarms.map((alarm, i) => {
     const isCritical = alarm.severity === 'Critical';
 
     // 级别标签
     const levelBadge = isCritical
-      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400">
-          <i data-lucide="alert-circle" class="w-3 h-3"></i> ${getTrans('alarm_critical')}
-        </span>`
-      : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-400">
-          <i data-lucide="alert-triangle" class="w-3 h-3"></i> ${getTrans('alarm_warning')}
-        </span>`;
+      ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/20">● ${getTrans('alarm_critical')}</span>`
+      : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/20">▲ ${getTrans('alarm_warning')}</span>`;
 
     // 状态标签
     let statusBadge = '';
     if (alarm.status === 'ACTIVE') {
-      statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-red-500/10 text-red-400 animate-pulse">● ${getTrans('status_active')}</span>`;
+      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse">● ${getTrans('status_active')}</span>`;
     } else if (alarm.status === 'ACKNOWLEDGED') {
-      statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-500/10 text-amber-400">◉ ${getTrans('status_ack')}</span>`;
+      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">◉ ${getTrans('status_ack')}</span>`;
     } else {
-      statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400">✓ ${getTrans('status_resolved')}</span>`;
+      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✓ ${getTrans('status_resolved')}</span>`;
     }
 
-    // 审计信息
-    let auditInfo = '';
-    if (alarm.ack_by) {
-      auditInfo += `<span class="text-xs text-slate-500">ACK: ${escapeHTML(typeof getUserName === 'function' ? getUserName(alarm.ack_by) : alarm.ack_by)}</span>`;
-    }
-    if (alarm.resolved_by) {
-      auditInfo += `<span class="text-xs text-slate-500 ml-2">Fix: ${escapeHTML(typeof getUserName === 'function' ? getUserName(alarm.resolved_by) : alarm.resolved_by)}</span>`;
-    }
-
-    // 操作列
-    let actionCol = '';
+    // 操作按钮
+    let actionBtn = '';
     if (alarm.status === 'ACTIVE') {
       if (isOwner) {
-        // 业主：直接 Resolve（跳过 ACK）
-        actionCol = `<button onclick="resolveAlarm('${alarm.stationId}', '${alarm.id}')"
-          class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors flex items-center gap-1.5">
-          <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> ${getTrans('btn_resolve')}
+        actionBtn = `<button onclick="resolveAlarm('${alarm.stationId}', '${alarm.id}')"
+          class="px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors inline-flex items-center gap-1.5">
+          ✓ ${getTrans('btn_resolve')}
         </button>`;
       } else {
-        // 运维：可 ACK
-        actionCol = `<button onclick="ackAlarm('${alarm.stationId}', '${alarm.id}')"
-          class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-medium text-amber-400 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5">
-          <i data-lucide="eye" class="w-3.5 h-3.5"></i> ${getTrans('btn_ack')}
+        actionBtn = `<button onclick="ackAlarm('${alarm.stationId}', '${alarm.id}')"
+          class="px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-medium text-amber-400 hover:bg-amber-500/20 transition-colors inline-flex items-center gap-1.5">
+          ◉ ${getTrans('btn_ack')}
         </button>`;
       }
     } else if (alarm.status === 'ACKNOWLEDGED') {
       if (isOwner) {
-        // 业主：Resolve
-        actionCol = `<button onclick="resolveAlarm('${alarm.stationId}', '${alarm.id}')"
-          class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors flex items-center gap-1.5">
-          <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> ${getTrans('btn_resolve')}
+        actionBtn = `<button onclick="resolveAlarm('${alarm.stationId}', '${alarm.id}')"
+          class="px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors inline-flex items-center gap-1.5">
+          ✓ ${getTrans('btn_resolve')}
         </button>`;
       } else {
-        // 运维：已 ACK，等待业主
-        actionCol = `<span class="px-2 py-1 rounded text-xs font-medium text-amber-400 bg-amber-500/10">${getTrans('awaiting_resolve')}</span>`;
+        actionBtn = `<span class="px-3 py-1.5 rounded-lg text-xs font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20">${getTrans('awaiting_resolve')}</span>`;
       }
-    } else {
-      // RESOLVED
-      actionCol = `<span class="text-xs text-slate-500 font-mono">${alarm.resolved_at || '-'}</span>`;
     }
 
-    // 行左侧彩色边框
-    const rowBorder = alarm.status === 'ACTIVE' && isCritical ? 'border-l-2 border-l-red-500'
-      : alarm.status === 'ACTIVE' ? 'border-l-2 border-l-amber-500'
-      : alarm.status === 'ACKNOWLEDGED' ? 'border-l-2 border-l-amber-500/50'
-      : '';
+    // 左侧边框颜色
+    const borderColor = alarm.status === 'ACTIVE' && isCritical ? 'border-l-red-500'
+      : alarm.status === 'ACTIVE' ? 'border-l-amber-500'
+      : alarm.status === 'ACKNOWLEDGED' ? 'border-l-amber-500/50'
+      : 'border-l-emerald-500/30';
+
+    // 审计信息区域（独立行，清晰分隔）
+    let auditHtml = '';
+    if (alarm.ack_by || alarm.resolved_by) {
+      const items = [];
+      if (alarm.ack_by) {
+        items.push(`<div class="flex items-center gap-2"><span class="text-slate-600 text-xs w-12">ACK:</span><span class="text-slate-400 text-xs">${escapeHTML(typeof getUserName === 'function' ? getUserName(alarm.ack_by) : alarm.ack_by)}</span><span class="text-slate-600 text-xs font-mono">${alarm.ack_at || ''}</span></div>`);
+      }
+      if (alarm.resolved_by) {
+        items.push(`<div class="flex items-center gap-2"><span class="text-slate-600 text-xs w-12">Fix:</span><span class="text-slate-400 text-xs">${escapeHTML(typeof getUserName === 'function' ? getUserName(alarm.resolved_by) : alarm.resolved_by)}</span><span class="text-slate-600 text-xs font-mono">${alarm.resolved_at || ''}</span></div>`);
+      }
+      auditHtml = `<div class="mt-3 pt-3 border-t border-white/5 space-y-1">${items.join('')}</div>`;
+    }
 
     return `
-      <tr class="${i % 2 === 0 ? 'bg-white/[0.02]' : ''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
-        <td class="px-4 py-3 text-white font-medium text-sm">${escapeHTML(alarm.stationName)}</td>
-        <td class="px-4 py-3">${levelBadge}</td>
-        <td class="px-4 py-3 text-slate-300 text-sm max-w-[300px]">${escapeHTML(alarm.message)}</td>
-        <td class="px-4 py-3 font-mono text-slate-400 text-xs">${escapeHTML(alarm.timestamp)}</td>
-        <td class="px-4 py-3">
-          ${statusBadge}
-          ${auditInfo ? `<div class="mt-1">${auditInfo}</div>` : ''}
-        </td>
-        <td class="px-4 py-3 text-right">${actionCol}</td>
-      </tr>
+      <div class="rounded-xl bg-white/[0.03] border border-white/10 border-l-4 ${borderColor} p-4 hover:bg-white/[0.05] transition-colors">
+        <!-- 顶部行：电站名 + 级别 + 状态 -->
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-3">
+            <h4 class="text-white font-semibold text-sm">${escapeHTML(alarm.stationName)}</h4>
+            ${levelBadge}
+            ${statusBadge}
+          </div>
+          <div class="text-right">
+            ${actionBtn}
+          </div>
+        </div>
+        <!-- 描述 -->
+        <p class="text-slate-300 text-sm leading-relaxed">${escapeHTML(alarm.message)}</p>
+        <!-- 时间 -->
+        <p class="text-slate-500 text-xs font-mono mt-2">${escapeHTML(alarm.timestamp)}</p>
+        <!-- 审计记录 -->
+        ${auditHtml}
+      </div>
     `;
   }).join('');
 
@@ -474,28 +476,15 @@ function renderAlarmsList(container, isOwner) {
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400"></i>
-            ${getTrans('alarm_title')}
+            ⚠️ ${getTrans('alarm_title')}
             ${unresolvedCount > 0 ? `<span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-400">${unresolvedCount} Open</span>` : `<span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400">All Clear</span>`}
           </h2>
           <p class="text-sm text-slate-400 mt-1">${isOwner ? getTrans('alarm_hint_owner') : getTrans('alarm_hint_operator')}</p>
         </div>
       </div>
 
-      <div class="bg-white/5 rounded-xl border border-white/10 overflow-x-auto">
-        <table class="w-full text-sm min-w-[900px]">
-          <thead>
-            <tr class="border-b border-white/10">
-              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_station')}</th>
-              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_level')}</th>
-              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_desc')}</th>
-              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_time')}</th>
-              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_status')}</th>
-              <th class="text-right px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_action')}</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
+      <div class="space-y-3">
+        ${cards}
       </div>
     </div>
   `;
