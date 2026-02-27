@@ -1355,6 +1355,15 @@ function toggleLangAndRefresh() {
   } else {
     switchView(savedView);
   }
+  
+  // 语言切换后重新渲染AI面板（如果存在）
+  const aiPanel = document.getElementById('ai-decision-panel');
+  if (aiPanel) {
+    const stationId = aiPanel.getAttribute('data-station-id');
+    if (stationId) {
+      renderAIDecisionPanel(stationId);
+    }
+  }
 }
 
 // ============ 电站卡片 ============
