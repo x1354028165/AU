@@ -549,6 +549,7 @@ function renderAlarmsList(container, isOwner) {
         <span onclick="alarmFilterTab='RESOLVED';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('RESOLVED')}">${getTrans('status_resolved')} (${countResolved})</span>
         <span onclick="alarmFilterTab='all';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('all')}">${getTrans('alarm_filter_all')} (${countAll})</span>
       </div>
+      ${alarmFilterTab === 'PENDING' ? `<button onclick="batchResolveAlarms(${isOwner})" class="px-4 py-1.5 rounded bg-amber-500 text-xs font-medium text-white hover:bg-amber-600 transition-colors mb-1">${getTrans('btn_batch_handle')}</button>` : ''}
       <button onclick="exportAlarmsCSV()" class="px-4 py-1.5 rounded bg-emerald-500 text-xs font-medium text-white hover:bg-emerald-600 transition-colors mb-1">${getTrans('export_csv')}</button>
     </div>
   `;
@@ -597,6 +598,7 @@ function renderAlarmsList(container, isOwner) {
 
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
+        ${alarmFilterTab === 'PENDING' ? `<td class="${tdClass} w-10"><input type="checkbox" class="alarm-checkbox accent-emerald-500" data-station="${alarm.stationId}" data-alarm="${alarm.id}" /></td>` : ''}
         <td class="${tdClass} font-mono text-slate-400 text-xs">${shortTime(alarm.timestamp)}</td>
         <td class="${tdClass} text-slate-300" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;" title="${escapeHTML(resolveAlarmMsg(alarm.message))}">${escapeHTML(resolveAlarmMsg(alarm.message))}</td>
         <td class="${tdClass} whitespace-nowrap">${severityBadge}</td>
@@ -632,6 +634,7 @@ function renderAlarmsList(container, isOwner) {
         <table class="w-full text-sm table-auto">
           <thead>
             <tr class="border-b border-white/10">
+              ${alarmFilterTab === 'PENDING' ? `<th class="${thClass} w-10"><input type="checkbox" onchange="toggleAllAlarmCheckbox(this.checked)" class="accent-emerald-500" /></th>` : ''}
               <th class="${thClass}">${getTrans('alarm_col_time')}</th>
               <th class="${thClass}">${getTrans('alarm_col_desc')}</th>
               <th class="${thClass}">${getTrans('alarm_col_level')}</th>
@@ -649,6 +652,27 @@ function renderAlarmsList(container, isOwner) {
 }
 
 // ============ Resolve Modal ============
+
+function toggleAllAlarmCheckbox(checked) {
+  document.querySelectorAll('.alarm-checkbox').forEach(cb => cb.checked = checked);
+}
+
+function batchResolveAlarms(isOwner) {
+  const checked = document.querySelectorAll('.alarm-checkbox:checked');
+  if (checked.length === 0) return;
+  const items = Array.from(checked).map(cb => ({ stationId: cb.dataset.station, alarmId: cb.dataset.alarm }));
+  items.forEach(({ stationId, alarmId }) => {
+    const stations = typeof getStationsByRole === 'function' ? getStationsByRole() : [];
+    const station = stations.find(s => s.id === stationId);
+    if (!station || !station.alarms) return;
+    const alarm = station.alarms.find(a => a.id === alarmId);
+    if (alarm && alarm.status !== 'RESOLVED') {
+      alarm.status = 'RESOLVED';
+      alarm.resolved_at = typeof formatLocalTime === 'function' ? formatLocalTime(new Date(), station.timezone || 'Australia/Sydney') : new Date().toLocaleString();
+    }
+  });
+  renderAlarmsList(document.getElementById('view-reports'), isOwner);
+}
 
 function showAlarmDetail(stationId, alarmId) {
   const stations = typeof getStationsByRole === 'function' ? getStationsByRole() : [];
