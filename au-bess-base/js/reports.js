@@ -363,12 +363,22 @@ function shortTime(timeStr) {
  */
 function resolveAlarmMsg(msg) {
   if (!msg) return '';
-  if (msg.includes('|')) {
+  // 新格式：'alarm_msg_temp|55'
+  if (msg.includes('|') && msg.startsWith('alarm_msg_')) {
     const parts = msg.split('|');
-    const key = parts[0];
-    const param = parts[1] || '';
-    const tpl = getTrans(key);
-    if (tpl && tpl !== key) return tpl.replace('{0}', param);
+    const tpl = getTrans(parts[0]);
+    if (tpl && tpl !== parts[0]) return tpl.replace('{0}', parts[1] || '');
+  }
+  // 兼容旧英文原文 → 自动匹配翻译
+  if (msg.includes('Cell temp exceeded')) {
+    const m = msg.match(/(\d+)°C/);
+    const tpl = getTrans('alarm_msg_temp');
+    if (tpl) return tpl.replace('{0}', m ? m[1] : '55');
+  }
+  if (msg.includes('State of charge dropped')) {
+    const m = msg.match(/([\d.]+)%\)/);
+    const tpl = getTrans('alarm_msg_soc');
+    if (tpl) return tpl.replace('{0}', m ? m[1] : '');
   }
   return msg;
 }
@@ -462,10 +472,11 @@ function renderAlarmsList(container, isOwner) {
   const stationOpts = myStations.map(s =>
     `<option value="${s.id}" ${alarmFilterStation===s.id?'selected':''}>${escapeHTML(s.name)}</option>`
   ).join('');
+  const deviceSet = new Set();
   const allDevices = [];
-  myStations.forEach(s => { if (s.devices) s.devices.forEach(d => { if (!allDevices.find(x=>x.id===d.id)) allDevices.push(d); }); });
+  myStations.forEach(s => { if (s.devices) s.devices.forEach(d => { if (!deviceSet.has(d.id)) { deviceSet.add(d.id); allDevices.push(d); } }); });
   const deviceOpts = allDevices.map(d =>
-    `<option value="${d.id}" ${alarmFilterDevice===d.id?'selected':''}>${escapeHTML(d.name || d.id)} (${d.type})</option>`
+    `<option value="${d.id}" ${alarmFilterDevice===d.id?'selected':''}>${escapeHTML(d.name || d.id)}</option>`
   ).join('');
 
   const selClass = 'px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white min-w-[140px]';
