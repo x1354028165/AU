@@ -635,18 +635,7 @@ function renderAlarmsList(container, isOwner) {
       ${querySection}
       ${tabBar}
       <div class="bg-white/[0.02] rounded-xl border border-white/10 overflow-x-auto">
-        <table class="w-full text-sm" style="min-width:1400px;table-layout:fixed;">
-          <colgroup>
-            <col style="width:140px">
-            <col style="width:300px">
-            <col style="width:75px">
-            <col style="width:70px">
-            <col style="width:140px">
-            <col style="width:75px">
-            <col style="width:140px">
-            <col style="width:110px">
-            <col style="width:90px">
-          </colgroup>
+        <table class="w-full text-sm table-auto">
           <thead>
             <tr class="border-b border-white/10">
               <th class="${thClass}">${getTrans('alarm_col_time')}</th>
