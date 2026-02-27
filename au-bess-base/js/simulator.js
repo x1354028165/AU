@@ -330,6 +330,16 @@ function checkAndTriggerAlarms(station, price) {
     return station.alarms.some(a => a.type === type && a.status !== 'RESOLVED');
   }
 
+  // 生成电站时区时间戳
+  const tz = station.timezone || 'Australia/Sydney';
+  const tzCity = tz.split('/')[1] || tz;
+  function stationTimeStr() {
+    return new Date().toLocaleString('en-AU', {
+      timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    }) + ' (' + tzCity + ')';
+  }
+
   // 规则 A：尖峰放电时高温告警（Critical, 5%概率）
   if (price > 3000 && station.status === 'DISCHARGING' && !hasActiveAlarm('HIGH_TEMP')) {
     if (Math.random() < 0.05) {
@@ -338,7 +348,7 @@ function checkAndTriggerAlarms(station, price) {
         type: 'HIGH_TEMP',
         severity: 'Critical',
         message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
-        timestamp: new Date().toLocaleString('en-AU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        timestamp: stationTimeStr(),
         status: 'ACTIVE',
         ack_by: null,
         ack_at: null,
@@ -362,7 +372,7 @@ function checkAndTriggerAlarms(station, price) {
         type: 'LOW_SOC',
         severity: 'Warning',
         message: 'Battery Low SoC — State of charge dropped below 10% (' + station.soc.toFixed(1) + '%)',
-        timestamp: new Date().toLocaleString('en-AU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        timestamp: stationTimeStr(),
         status: 'ACTIVE',
         ack_by: null,
         ack_at: null,
