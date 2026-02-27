@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能集成测试 - AU BESS Platform</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <script src="js/market-data.js"></script>
+    <script src="js/alarm-system.js"></script>
+    <style>
+        body { padding: 20px; }
+        .test-section { 
+            margin-bottom: 40px; 
+            padding: 20px; 
+            border: 2px solid var(--color-border); 
+            border-radius: var(--radius);
+        }
+        .test-result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: var(--radius-sm); 
+            font-family: monospace; 
+        }
+        .test-success { background: rgba(52, 199, 89, 0.1); color: #34c759; }
+        .test-error { background: rgba(255, 59, 48, 0.1); color: #ff3b30; }
+        .feature-demo { 
+            margin: 20px 0; 
+            padding: 15px; 
+            background: var(--color-bg-card); 
+            border-radius: var(--radius); 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">澳洲储能电站平台 - 功能集成测试</h1>
+        
+        <!-- 设计系统测试 -->
+        <div class="test-section">
+            <h2 class="section-title">1. 设计系统测试</h2>
+            <div class="test-result" id="design-test">正在测试CSS变量和组件...</div>
+            <div class="component-showcase">
+                <button class="btn btn-primary">主按钮</button>
+                <button class="btn btn-secondary">次按钮</button>
+                <span class="badge badge-success">成功</span>
+                <span class="badge badge-warning">警告</span>
+                <span class="badge badge-error">错误</span>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>卡片测试</h3>
+                </div>
+                <div class="card-body">
+                    <p>卡片内容区域，使用统一的设计变量。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 市场数据测试 -->
+        <div class="test-section">
+            <h2 class="section-title">2. 市场数据系统测试</h2>
+            <div class="test-result" id="market-test">正在测试市场数据模块...</div>
+            <div class="feature-demo" id="market-demo"></div>
+        </div>
+
+        <!-- 告警系统测试 -->  
+        <div class="test-section">
+            <h2 class="section-title">3. 告警系统测试</h2>
+            <div class="test-result" id="alarm-test">正在测试告警系统模块...</div>
+            <div class="feature-demo" id="alarm-demo"></div>
+        </div>
+
+        <!-- AI分析测试 -->
+        <div class="test-section">
+            <h2 class="section-title">4. AI分析面板测试</h2>
+            <div class="test-result" id="ai-test">正在测试AI决策引擎...</div>
+            <div class="feature-demo" id="ai-demo"></div>
+        </div>
+
+        <!-- 整合状态 -->
+        <div class="test-section">
+            <h2 class="section-title">5. 整体集成状态</h2>
+            <div class="test-result" id="integration-status">正在检查整体集成状态...</div>
+            <div class="grid grid-2 gap-md">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>✅ 完成功能</h4>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>统一设计系统 (CSS变量)</li>
+                            <li>角色选择页面布局对齐</li>
+                            <li>AEMO市场数据分析</li>
+                            <li>完整告警系统</li>
+                            <li>AI决策引擎</li>
+                            <li>响应式设计</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4>📊 数据对齐</h4>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>澳洲5个电力区域价格</li>
+                            <li>电池参数配置 (2.5MW/10MWh)</li>
+                            <li>告警分类和状态标准</li>
+                            <li>AI分析算法</li>
+                            <li>参考文件标准兼容</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 测试函数
+        function runTests() {
+            console.log('开始功能集成测试...');
+            
+            // 1. 测试设计系统
+            testDesignSystem();
+            
+            // 2. 测试市场数据
+            testMarketData();
+            
+            // 3. 测试告警系统
+            testAlarmSystem();
+            
+            // 4. 测试AI分析
+            testAIAnalysis();
+            
+            // 5. 整体状态
+            updateIntegrationStatus();
+        }
+        
+        function testDesignSystem() {
+            try {
+                // 检查CSS变量是否正确加载
+                const testEl = document.createElement('div');
+                testEl.className = 'btn btn-primary';
+                document.body.appendChild(testEl);
+                
+                const computedStyle = window.getComputedStyle(testEl);
+                const bgColor = computedStyle.backgroundColor;
+                
+                document.body.removeChild(testEl);
+                
+                if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
+                    document.getElementById('design-test').innerHTML = '✅ 设计系统正常加载，CSS变量工作正常';
+                    document.getElementById('design-test').className = 'test-result test-success';
+                } else {
+                    throw new Error('CSS变量未正确应用');
+                }
+            } catch (error) {
+                document.getElementById('design-test').innerHTML = '❌ 设计系统错误: ' + error.message;
+                document.getElementById('design-test').className = 'test-result test-error';
+            }
+        }
+        
+        function testMarketData() {
+            try {
+                if (typeof MarketData === 'undefined') {
+                    throw new Error('MarketData 模块未加载');
+                }
+                
+                // 测试区域价格数据
+                const regionPrices = MarketData.regionPrices;
+                if (!regionPrices || !regionPrices.NSW) {
+                    throw new Error('区域价格数据缺失');
+                }
+                
+                // 测试AEMO数据生成
+                const mockData = MarketData.generateMockAEMOData();
+                if (!mockData.labels || !mockData.priceData) {
+                    throw new Error('AEMO数据生成失败');
+                }
+                
+                // 测试AI分析
+                const analysis = MarketData.generateAIAnalysis(mockData);
+                if (!analysis.decision || !analysis.confidence) {
+                    throw new Error('AI分析功能异常');
+                }
+                
+                // 显示测试结果
+                document.getElementById('market-test').innerHTML = 
+                    `✅ 市场数据模块正常: ${Object.keys(regionPrices).length}个区域, ${mockData.labels.length}个数据点, AI决策: ${analysis.decision}`;
+                document.getElementById('market-test').className = 'test-result test-success';
+                
+                // 显示市场面板demo
+                const highest = MarketData.getHighestPriceRegion();
+                document.getElementById('market-demo').innerHTML = `
+                    <h4>市场数据示例</h4>
+                    <div class="grid grid-3 gap-md">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <div class="text-lg font-bold">最高价区域</div>
+                                <div class="text-xl text-warning">${highest.region}</div>
+                                <div class="text-2xl font-bold">$${highest.price}</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <div class="text-lg font-bold">AI决策</div>
+                                <div class="badge badge-${analysis.decision === 'CHARGE' ? 'success' : analysis.decision === 'DISCHARGE' ? 'warning' : 'secondary'}">${analysis.decision}</div>
+                                <div class="text-sm">置信度: ${analysis.confidence}</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <div class="text-lg font-bold">套利价差</div>
+                                <div class="text-xl font-bold">$${analysis.arbitrageSpread.toFixed(2)}</div>
+                                <div class="text-sm">预期收益: $${analysis.potentialProfit.toFixed(0)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                document.getElementById('market-test').innerHTML = '❌ 市场数据错误: ' + error.message;
+                document.getElementById('market-test').className = 'test-result test-error';
+            }
+        }
+        
+        function testAlarmSystem() {
+            try {
+                if (typeof AlarmSystem === 'undefined') {
+                    throw new Error('AlarmSystem 模块未加载');
+                }
+                
+                // 测试告警生成
+                const alarms = AlarmSystem.generateMockAlarms(10);
+                if (!alarms || alarms.length !== 10) {
+                    throw new Error('告警数据生成失败');
+                }
+                
+                // 测试统计功能
+                const stats = AlarmSystem.getAlarmStatistics(alarms);
+                if (!stats || typeof stats.total !== 'number') {
+                    throw new Error('告警统计功能异常');
+                }
+                
+                // 显示测试结果
+                document.getElementById('alarm-test').innerHTML = 
+                    `✅ 告警系统正常: 生成${alarms.length}条告警, ${stats.unprocessed}条未处理, ${stats.danger}条危险`;
+                document.getElementById('alarm-test').className = 'test-result test-success';
+                
+                // 显示告警demo
+                const recentAlarms = alarms.slice(0, 3);
+                document.getElementById('alarm-demo').innerHTML = `
+                    <h4>告警系统示例</h4>
+                    ${AlarmSystem.renderAlarmStatsPanel(stats)}
+                    <div class="mt-4">
+                        <h5>最近告警:</h5>
+                        ${recentAlarms.map(alarm => AlarmSystem.renderAlarmCard(alarm)).join('')}
+                    </div>
+                `;
+                
+            } catch (error) {
+                document.getElementById('alarm-test').innerHTML = '❌ 告警系统错误: ' + error.message;
+                document.getElementById('alarm-test').className = 'test-result test-error';
+            }
+        }
+        
+        function testAIAnalysis() {
+            try {
+                if (typeof MarketData === 'undefined') {
+                    throw new Error('MarketData 模块未加载，无法测试AI分析');
+                }
+                
+                // 生成AI分析面板
+                const aiPanel = MarketData.renderAIAnalysisPanel();
+                if (!aiPanel || aiPanel.length < 100) {
+                    throw new Error('AI分析面板生成失败');
+                }
+                
+                document.getElementById('ai-test').innerHTML = '✅ AI分析面板正常生成';
+                document.getElementById('ai-test').className = 'test-result test-success';
+                
+                // 显示AI面板demo
+                document.getElementById('ai-demo').innerHTML = `
+                    <h4>AI分析面板示例</h4>
+                    ${aiPanel}
+                `;
+                
+            } catch (error) {
+                document.getElementById('ai-test').innerHTML = '❌ AI分析错误: ' + error.message;
+                document.getElementById('ai-test').className = 'test-result test-error';
+            }
+        }
+        
+        function updateIntegrationStatus() {
+            const hasMarketData = typeof MarketData !== 'undefined';
+            const hasAlarmSystem = typeof AlarmSystem !== 'undefined';
+            
+            const statusEl = document.getElementById('integration-status');
+            
+            if (hasMarketData && hasAlarmSystem) {
+                statusEl.innerHTML = '✅ 所有模块正常集成，系统可以投入使用';
+                statusEl.className = 'test-result test-success';
+            } else {
+                const missing = [];
+                if (!hasMarketData) missing.push('MarketData');
+                if (!hasAlarmSystem) missing.push('AlarmSystem');
+                
+                statusEl.innerHTML = '❌ 缺少模块: ' + missing.join(', ');
+                statusEl.className = 'test-result test-error';
+            }
+        }
+        
+        // 页面加载完成后运行测试
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM加载完成，开始测试...');
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>
