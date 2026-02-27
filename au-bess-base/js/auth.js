@@ -682,9 +682,9 @@ const DEFAULT_STATIONS = [
 ];
 
 // ============ 数据持久化 ============
-let stations = loadStations();
-
 const STATIONS_DATA_VERSION = 'v3_alarms';
+
+let stations = loadStations();
 
 function loadStations() {
   const savedVersion = localStorage.getItem('stations_version');
