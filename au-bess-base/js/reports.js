@@ -437,50 +437,55 @@ function renderAlarmsList(container, isOwner) {
 
   const selClass = 'px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white min-w-[140px]';
 
-  // ===== 查询条件区（无边框，平铺两行，参考 SCADA 排版） =====
+  // ===== 查询条件区（参考 SCADA：label 等宽对齐，两行平铺） =====
+  const lblClass = 'text-xs text-slate-500 whitespace-nowrap w-[70px] text-right shrink-0';
   const querySection = `
-    <!-- 第一行：站点 + 设备 + 等级 -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 mb-3">
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-slate-500 whitespace-nowrap shrink-0">${getTrans('alarm_col_station')}:</span>
-        <select onchange="alarmFilterStation=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${selClass} w-full">
-          <option value="all" ${alarmFilterStation==='all'?'selected':''}>${getTrans('alarm_filter_all')}</option>
-          ${stationOpts}
-        </select>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-slate-500 whitespace-nowrap shrink-0">${getTrans('alarm_col_device')}:</span>
-        <select onchange="alarmFilterDevice=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${selClass} w-full">
-          <option value="all" ${alarmFilterDevice==='all'?'selected':''}>${getTrans('alarm_filter_all')}</option>
-          ${deviceOpts}
-        </select>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-slate-500 whitespace-nowrap shrink-0">${getTrans('alarm_col_level')}:</span>
-        <select onchange="alarmFilterSeverity=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${selClass} w-full">
-          <option value="all" ${alarmFilterSeverity==='all'?'selected':''}>${getTrans('alarm_filter_all')}</option>
-          <option value="Critical" ${alarmFilterSeverity==='Critical'?'selected':''}>${getTrans('alarm_critical')}</option>
-          <option value="Warning" ${alarmFilterSeverity==='Warning'?'selected':''}>${getTrans('alarm_warning')}</option>
-        </select>
-      </div>
-    </div>
-    <!-- 第二行：时间范围 + 清空/搜索 -->
-    <div class="flex flex-wrap items-center gap-4 mb-5">
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-slate-500 whitespace-nowrap shrink-0">${getTrans('alarm_col_time')}:</span>
-        <input type="date" value="${alarmFilterDateFrom}" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-          class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-white" />
-        <span class="text-slate-600 text-xs">→</span>
-        <input type="date" value="${alarmFilterDateTo}" onchange="alarmFilterDateTo=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-          class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-white" />
-      </div>
-      <div class="flex items-center gap-2 ml-auto">
-        <button onclick="alarmFilterStation='all';alarmFilterDevice='all';alarmFilterSeverity='all';alarmFilterTab='all';alarmFilterDateFrom='';alarmFilterDateTo='';renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-          class="px-5 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-slate-400 hover:text-white transition-colors">${getTrans('alarm_filter_reset')}</button>
-        <button onclick="renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-          class="px-5 py-1.5 rounded bg-emerald-500 text-sm font-medium text-white hover:bg-emerald-600 transition-colors">${getTrans('alarm_filter_search')}</button>
-      </div>
-    </div>
+    <table class="w-full mb-5" style="border-spacing:8px 6px;border-collapse:separate;">
+      <tr>
+        <td class="${lblClass}">${getTrans('alarm_col_station')}:</td>
+        <td>
+          <select onchange="alarmFilterStation=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${selClass} w-full">
+            <option value="all" ${alarmFilterStation==='all'?'selected':''}>${getTrans('alarm_filter_all')}</option>
+            ${stationOpts}
+          </select>
+        </td>
+        <td class="${lblClass}">${getTrans('alarm_col_device')}:</td>
+        <td>
+          <select onchange="alarmFilterDevice=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${selClass} w-full">
+            <option value="all" ${alarmFilterDevice==='all'?'selected':''}>${getTrans('alarm_filter_all')}</option>
+            ${deviceOpts}
+          </select>
+        </td>
+        <td class="${lblClass}">${getTrans('alarm_col_level')}:</td>
+        <td>
+          <select onchange="alarmFilterSeverity=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${selClass} w-full">
+            <option value="all" ${alarmFilterSeverity==='all'?'selected':''}>${getTrans('alarm_filter_all')}</option>
+            <option value="Critical" ${alarmFilterSeverity==='Critical'?'selected':''}>${getTrans('alarm_critical')}</option>
+            <option value="Warning" ${alarmFilterSeverity==='Warning'?'selected':''}>${getTrans('alarm_warning')}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="${lblClass}">${getTrans('alarm_col_time')}:</td>
+        <td colspan="3">
+          <div class="flex items-center gap-2">
+            <input type="date" value="${alarmFilterDateFrom}" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+              class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-white" />
+            <span class="text-slate-600 text-xs">→</span>
+            <input type="date" value="${alarmFilterDateTo}" onchange="alarmFilterDateTo=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+              class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-white" />
+          </div>
+        </td>
+        <td colspan="2" class="text-right">
+          <div class="flex items-center justify-end gap-2">
+            <button onclick="alarmFilterStation='all';alarmFilterDevice='all';alarmFilterSeverity='all';alarmFilterTab='all';alarmFilterDateFrom='';alarmFilterDateTo='';renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+              class="px-5 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-slate-400 hover:text-white transition-colors">${getTrans('alarm_filter_reset')}</button>
+            <button onclick="renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+              class="px-5 py-1.5 rounded bg-emerald-500 text-sm font-medium text-white hover:bg-emerald-600 transition-colors">${getTrans('alarm_filter_search')}</button>
+          </div>
+        </td>
+      </tr>
+    </table>
   `;
 
   // ===== 状态 Tab =====
