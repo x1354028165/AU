@@ -341,6 +341,17 @@ let alarmFilterDateFrom = '';
 let alarmFilterDateTo = '';
 
 /**
+ * 缩短时间显示：'27/02/2026, 13:30:32 (Sydney)' → '02-27 13:30'
+ */
+function shortTime(timeStr) {
+  if (!timeStr) return '-';
+  // 尝试提取 dd/mm/yyyy, HH:MM
+  const m = String(timeStr).match(/(\d{2})\/(\d{2})\/\d{4},?\s*(\d{2}):(\d{2})/);
+  if (m) return m[2] + '-' + m[1] + ' ' + m[3] + ':' + m[4];
+  return timeStr.replace(/\s*\(.*\)\s*$/, '').replace(/:\d{2}$/, '');
+}
+
+/**
  * 解析时间戳（剥离城市后缀后转 Date）
  */
 function parseAlarmTime(timeStr) {
@@ -554,13 +565,13 @@ function renderAlarmsList(container, isOwner) {
 
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
-        <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${escapeHTML(alarm.timestamp)}</td>
+        <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${escapeHTML(shortTime(alarm.timestamp))}</td>
         <td class="${tdClass} text-slate-300" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0;" title="${escapeHTML(alarm.message)}">${escapeHTML(alarm.message)}</td>
         <td class="${tdClass} whitespace-nowrap">${severityBadge}</td>
         <td class="${tdClass} text-slate-400 font-mono text-xs whitespace-nowrap">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
         <td class="${tdClass} text-white text-xs whitespace-nowrap">${escapeHTML(alarm.stationName)}</td>
         <td class="${tdClass} whitespace-nowrap">${statusBadge}</td>
-        <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${resolvedTime}</td>
+        <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${alarm.status === 'RESOLVED' && alarm.resolved_at ? escapeHTML(shortTime(alarm.resolved_at)) : '-'}</td>
         <td class="${tdClass} whitespace-nowrap">${suggestion}</td>
         <td class="${tdClass} text-right whitespace-nowrap">${actionCol}</td>
       </tr>
@@ -590,13 +601,13 @@ function renderAlarmsList(container, isOwner) {
       <div class="bg-white/[0.02] rounded-xl border border-white/10 overflow-x-auto">
         <table class="w-full text-sm" style="min-width:1400px;table-layout:fixed;">
           <colgroup>
-            <col style="width:195px">
-            <col style="width:280px">
+            <col style="width:110px">
+            <col style="width:320px">
             <col style="width:75px">
             <col style="width:70px">
-            <col style="width:140px">
+            <col style="width:145px">
             <col style="width:75px">
-            <col style="width:195px">
+            <col style="width:110px">
             <col style="width:110px">
             <col style="width:90px">
           </colgroup>
