@@ -104,8 +104,26 @@ function initDashboard() {
     if (typeof initChart === 'function') initChart();
   }
 
-  renderViewToggle(theme, isOwner);
-  applyStationView(theme, isOwner);
+  // 根据角色设置默认菜单并渲染
+  if (!isOwner) {
+    activeMenuId = 'dispatch';
+    // 调度中心：隐藏视图切换，显示操盘面板
+    const viewToggle = document.getElementById('view-toggle-container');
+    const mapCont = document.getElementById('map-container');
+    const listCont = document.getElementById('list-container');
+    const stationCont = document.getElementById('station-container');
+    if (viewToggle) viewToggle.classList.add('hidden');
+    if (mapCont) mapCont.classList.add('hidden');
+    if (listCont) listCont.classList.add('hidden');
+    if (stationCont) {
+      stationCont.classList.remove('hidden');
+      renderDispatchControlPanel(stationCont);
+    }
+  } else {
+    activeMenuId = 'portfolio';
+    renderViewToggle(theme, isOwner);
+    applyStationView(theme, isOwner);
+  }
   closeMobileMenu();
 
   // 仿真引擎：始终启动（运维需要实时电价，业主也需要间接收益计算）
