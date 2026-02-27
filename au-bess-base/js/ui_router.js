@@ -81,31 +81,76 @@ function switchView(viewId) {
 
 // ============ 安全翻译函数 ============
 function safeGetTrans(key) {
-  // 确保翻译系统已加载
-  if (typeof getTrans !== 'function' || typeof TRANSLATIONS === 'undefined') {
-    // 硬编码的关键翻译作为fallback
-    const fallback = {
-      'ai_panel_title': getCurrentUser() === 'owner' ? 'AI决策引擎' : 'AI Decision Engine',
-      'ai_status_analyzing': 'Analyzing market data…',
-      'ai_logic_trend_stable': 'Stable',
-      'ai_action_charge': 'CHARGE',
-      'ai_confidence_high': 'High',
-      'ai_logic_soc_low': 'Low SoC',
-      'ai_logic_forecast_stable': 'Stable',
-      'ai_decision_logic': 'Decision Logic',
-      'ai_decision_result': 'Decision Result',
-      'ai_execute_time': 'Execute At',
-      'ai_power_level': 'Power Level',
-      'ai_expected_profit': 'Expected Profit',
-      'ai_profit_this_cycle': 'This Cycle',
-      'ai_profit_today': 'Today Total',
-      'ai_last_updated': 'Last Updated',
-      'ai_seconds': 's',
-      'ai_thinking': 'AI Analysis'
-    };
-    return fallback[key] || key;
+  // 获取当前语言
+  const currentLang = (typeof getLang === 'function' ? getLang() : localStorage.getItem('lang')) || 'en';
+  
+  // 完整的AI翻译对照表
+  const translations = {
+    // 面板标题和基本元素
+    'ai_panel_title': currentLang === 'zh' ? 'AI 决策引擎' : 'AI Decision Engine',
+    'ai_thinking': currentLang === 'zh' ? 'AI 思考过程' : 'AI Analysis',
+    'ai_status_analyzing': currentLang === 'zh' ? '正在分析市场数据和价格趋势…' : 'Analyzing market data and price trends…',
+    'ai_last_updated': currentLang === 'zh' ? '上次更新' : 'Last Updated',
+    'ai_seconds': currentLang === 'zh' ? '秒' : 's',
+    'ai_decision_logic': currentLang === 'zh' ? '决策逻辑' : 'Decision Logic',
+    'ai_decision_result': currentLang === 'zh' ? '决策结果' : 'Decision Result',
+    'ai_execute_time': currentLang === 'zh' ? '执行时间' : 'Execute At',
+    'ai_power_level': currentLang === 'zh' ? '功率级别' : 'Power Level',
+    'ai_expected_profit': currentLang === 'zh' ? '预期收益' : 'Expected Profit',
+    'ai_profit_this_cycle': currentLang === 'zh' ? '本次周期收益' : 'This Cycle Profit',
+    'ai_profit_today': currentLang === 'zh' ? '今日累计' : 'Today Total',
+    'ai_confidence': currentLang === 'zh' ? '置信度' : 'Confidence',
+    'ai_planned_action': currentLang === 'zh' ? '计划操作' : 'Planned Action',
+    
+    // 价格趋势
+    'ai_logic_price_trend': currentLang === 'zh' ? '价格趋势' : 'Price Trend',
+    'ai_logic_trend_stable': currentLang === 'zh' ? '稳定' : 'Stable',
+    'ai_logic_trend_rising': currentLang === 'zh' ? '上涨' : 'Rising',
+    'ai_logic_trend_falling': currentLang === 'zh' ? '下跌' : 'Falling',
+    'ai_logic_trend_spike': currentLang === 'zh' ? '尖峰' : 'Spike',
+    
+    // 预测
+    'ai_logic_forecast': currentLang === 'zh' ? '价格预测' : 'Forecast',
+    'ai_logic_forecast_stable': currentLang === 'zh' ? '稳定' : 'Stable',
+    'ai_logic_forecast_up': currentLang === 'zh' ? '上涨' : 'Up',
+    'ai_logic_forecast_down': currentLang === 'zh' ? '下跌' : 'Down',
+    
+    // SoC状态
+    'ai_logic_soc_state': currentLang === 'zh' ? 'SoC 状态' : 'SoC State',
+    'ai_logic_soc_low': currentLang === 'zh' ? '低电量' : 'Low SoC',
+    'ai_logic_soc_high': currentLang === 'zh' ? '高电量' : 'High SoC',
+    'ai_logic_soc_optimal': currentLang === 'zh' ? '最优' : 'Optimal',
+    
+    // 价差
+    'ai_logic_spread': currentLang === 'zh' ? '套利价差' : 'Arbitrage Spread',
+    
+    // 操作
+    'ai_action_charge': currentLang === 'zh' ? '充电' : 'CHARGE',
+    'ai_action_discharge': currentLang === 'zh' ? '放电' : 'DISCHARGE',
+    'ai_action_hold': currentLang === 'zh' ? '待机' : 'HOLD',
+    'ai_action_fcas': currentLang === 'zh' ? 'FCAS' : 'FCAS',
+    
+    // 置信度
+    'ai_confidence_high': currentLang === 'zh' ? '高' : 'High',
+    'ai_confidence_medium': currentLang === 'zh' ? '中' : 'Medium',
+    'ai_confidence_low': currentLang === 'zh' ? '低' : 'Low'
+  };
+  
+  // 优先返回直接翻译
+  if (translations[key]) {
+    return translations[key];
   }
-  return getTrans(key);
+  
+  // 尝试使用原始翻译系统
+  if (typeof getTrans === 'function') {
+    const result = getTrans(key);
+    if (result && result !== key) {
+      return result;
+    }
+  }
+  
+  // 最后返回key本身
+  return key;
 }
 
 // ============ 初始化 ============
@@ -2532,8 +2577,9 @@ function updateAIDecisionPanel() {
   
   // 每次更新时重新应用翻译
   const titleEl = panel.querySelector('h3');
-  if (titleEl && titleEl.textContent.startsWith('ai_')) {
-    titleEl.textContent = safeGetTrans('ai_panel_title');
+  if (titleEl && titleEl.textContent.includes('ai_')) {
+    const currentLang = (typeof getLang === 'function' ? getLang() : localStorage.getItem('lang')) || 'en';
+    titleEl.textContent = currentLang === 'zh' ? 'AI 决策引擎' : 'AI Decision Engine';
   }
 
   const state = typeof getAIDecisionState === 'function' ? getAIDecisionState() : {};
