@@ -581,6 +581,200 @@ function getDispatchLogs(operatorId) {
   return [...dispatchLogs];
 }
 
+// ============ AI 决策引擎状态 ============
+
+let aiDecisionState = {
+  status: 'analyzing',        // analyzing | price_drop | price_rise | spike_watch | optimizing | executing | fcas
+  priceTrend: 'stable',       // rising | falling | stable | spike
+  forecastDirection: 'stable', // up | down | stable
+  socState: 'mid',            // low | mid | high
+  plannedAction: 'hold',      // charge | discharge | hold | fcas
+  executeTime: '--:--',
+  targetSoc: 50,
+  powerLevel: 0,              // MW
+  confidence: 'medium',       // high | medium | low
+  cycleProfit: 0,
+  todayProfit: 0,
+  avgSpread: 0,
+  lastUpdated: null,
+  updateCountdown: 30,
+  thinkingPhase: 0,           // 0-5 animation phase for "thinking" effect
+  analysisSteps: [],          // list of analysis steps for thinking display
+};
+
+let aiUpdateInterval = null;
+let aiDecisionCounter = 0;
+
+/**
+ * 启动 AI 决策引擎定时更新（每30秒完整决策一次，每秒更新倒计时）
+ */
+function startAIDecisionEngine() {
+  if (aiUpdateInterval) return;
+  // 立即执行一次决策
+  runAIDecision();
+  // 每秒更新倒计时和 thinking 动画
+  aiUpdateInterval = setInterval(() => {
+    aiDecisionState.updateCountdown--;
+    aiDecisionState.thinkingPhase = (aiDecisionState.thinkingPhase + 1) % 6;
+    if (aiDecisionState.updateCountdown <= 0) {
+      runAIDecision();
+      aiDecisionState.updateCountdown = 30;
+    }
+    // 触发 UI 刷新
+    if (typeof updateAIDecisionPanel === 'function') {
+      updateAIDecisionPanel();
+    }
+  }, 1000);
+}
+
+/**
+ * 停止 AI 决策引擎
+ */
+function stopAIDecisionEngine() {
+  if (aiUpdateInterval) {
+    clearInterval(aiUpdateInterval);
+    aiUpdateInterval = null;
+  }
+}
+
+/**
+ * 执行一次完整的 AI 决策分析
+ */
+function runAIDecision() {
+  aiDecisionCounter++;
+  const selectedId = typeof dispatchSelectedStationId !== 'undefined' ? dispatchSelectedStationId : null;
+  const station = selectedId ? stations.find(s => s.id === selectedId) : (stations.length > 0 ? stations[0] : null);
+  if (!station) return;
+
+  const price = currentPrice || 0;
+  const fc = forecastPrice || price;
+  const socPct = station.soc;
+  const cap = typeof getPhysicalCapacity === 'function' ? getPhysicalCapacity(station) : { mw: MAX_MW, mwh: MAX_MWH };
+  const strat = station.strategy || {};
+  const spread = optimalPlan.avgDischarge && optimalPlan.avgCharge
+    ? optimalPlan.avgDischarge - optimalPlan.avgCharge : 0;
+
+  // ---- 1. 分析价格趋势 ----
+  let priceTrend = 'stable';
+  if (priceHistory.length >= 3) {
+    const recent = priceHistory.slice(-3).map(h => h.price);
+    const diff = recent[2] - recent[0];
+    if (diff > 30) priceTrend = 'rising';
+    else if (diff < -30) priceTrend = 'falling';
+    else priceTrend = 'stable';
+  }
+  if (price > 3000) priceTrend = 'spike';
+  aiDecisionState.priceTrend = priceTrend;
+
+  // ---- 2. 分析预测方向 ----
+  let forecastDir = 'stable';
+  if (fc > price * 1.15) forecastDir = 'up';
+  else if (fc < price * 0.85) forecastDir = 'down';
+  aiDecisionState.forecastDirection = forecastDir;
+
+  // ---- 3. 分析 SoC 状态 ----
+  let socState = 'mid';
+  if (socPct < 25) socState = 'low';
+  else if (socPct > 75) socState = 'high';
+  aiDecisionState.socState = socState;
+
+  // ---- 4. 决策逻辑 ----
+  let action = 'hold';
+  let status = 'analyzing';
+  let executeTime = '--:--';
+  let targetSoc = socPct;
+  let powerLevel = 0;
+  let confidence = 'medium';
+
+  // 尖峰 → 立即放电
+  if (priceTrend === 'spike' && socPct > 10) {
+    action = 'discharge';
+    status = 'executing';
+    targetSoc = 10;
+    powerLevel = cap.mw;
+    confidence = 'high';
+    executeTime = new Date().toLocaleTimeString('en-AU', { timeZone: 'Australia/Sydney', hour: '2-digit', minute: '2-digit' });
+  }
+  // 价格极低或预测下跌 → 充电
+  else if ((price < 30 || forecastDir === 'down') && socPct < 90) {
+    action = 'charge';
+    status = 'price_drop';
+    targetSoc = 90;
+    powerLevel = cap.mw;
+    confidence = forecastDir === 'down' ? 'high' : 'medium';
+    executeTime = optimalPlan.nextChargeTime || new Date().toLocaleTimeString('en-AU', { timeZone: 'Australia/Sydney', hour: '2-digit', minute: '2-digit' });
+  }
+  // 价格高或预测上涨 → 放电
+  else if ((price > 200 || forecastDir === 'up') && socPct > 20) {
+    action = 'discharge';
+    status = 'price_rise';
+    const avgPeak = optimalPlan.avgDischarge || 300;
+    const priceRatio = price / avgPeak;
+    powerLevel = cap.mw * Math.min(1, Math.max(0.2, priceRatio));
+    targetSoc = 10;
+    confidence = priceTrend === 'rising' ? 'high' : 'medium';
+    executeTime = optimalPlan.nextDischargeTime || new Date().toLocaleTimeString('en-AU', { timeZone: 'Australia/Sydney', hour: '2-digit', minute: '2-digit' });
+  }
+  // SoC 特别低 → 强制建议充电
+  else if (socPct < 15) {
+    action = 'charge';
+    status = 'optimizing';
+    targetSoc = 50;
+    powerLevel = cap.mw * 0.5;
+    confidence = 'high';
+    executeTime = optimalPlan.nextChargeTime || '--:--';
+  }
+  // FCAS 待机
+  else if (socPct >= 20 && socPct <= 80 && price >= 30 && price <= 200) {
+    action = 'fcas';
+    status = 'fcas';
+    powerLevel = 0;
+    confidence = 'medium';
+    executeTime = optimalPlan.nextDischargeTime || optimalPlan.nextChargeTime || '--:--';
+  }
+  // 默认分析中
+  else {
+    action = 'hold';
+    status = 'optimizing';
+    confidence = 'low';
+    executeTime = optimalPlan.nextDischargeTime || optimalPlan.nextChargeTime || '--:--';
+  }
+
+  // ---- 5. 计算收益 ----
+  const cycleProfit = optimalPlan.projectedCycleProfit || 0;
+  const todayProfit = station.revenue_today || 0;
+  const avgSpread = spread;
+
+  // ---- 6. 生成分析步骤（思考过程显示） ----
+  const steps = [];
+  steps.push({ icon: '📊', text: `price_analysis|${price.toFixed(2)}|${priceTrend}` });
+  steps.push({ icon: '🔮', text: `forecast_analysis|${fc.toFixed(2)}|${forecastDir}` });
+  steps.push({ icon: '🔋', text: `soc_analysis|${socPct.toFixed(1)}|${socState}` });
+  steps.push({ icon: '📈', text: `spread_analysis|${spread.toFixed(2)}` });
+  steps.push({ icon: '🎯', text: `decision|${action}|${confidence}` });
+
+  // ---- 7. 更新状态 ----
+  aiDecisionState.status = status;
+  aiDecisionState.plannedAction = action;
+  aiDecisionState.executeTime = executeTime;
+  aiDecisionState.targetSoc = targetSoc;
+  aiDecisionState.powerLevel = Math.round(powerLevel * 10) / 10;
+  aiDecisionState.confidence = confidence;
+  aiDecisionState.cycleProfit = cycleProfit;
+  aiDecisionState.todayProfit = todayProfit;
+  aiDecisionState.avgSpread = avgSpread;
+  aiDecisionState.lastUpdated = new Date().toLocaleTimeString('en-AU', { timeZone: 'Australia/Sydney', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  aiDecisionState.analysisSteps = steps;
+  aiDecisionState.updateCountdown = 30;
+}
+
+/**
+ * 获取 AI 决策状态
+ */
+function getAIDecisionState() {
+  return aiDecisionState;
+}
+
 // ============ 动态告警触发 ============
 
 let alarmIdCounter = Date.now();

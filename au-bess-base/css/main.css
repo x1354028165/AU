@@ -258,6 +258,78 @@ input[type="checkbox"] {
   }
 }
 
+/* ============ AI 决策面板动画 ============ */
+
+/* 脑图标呼吸发光 */
+.ai-brain-icon {
+  animation: aiBrainGlow 3s ease-in-out infinite;
+}
+
+@keyframes aiBrainGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(6, 182, 212, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(168, 85, 247, 0.2); }
+}
+
+/* 脉冲圆点 */
+.ai-pulse-dot {
+  animation: aiPulse 2s ease-in-out infinite;
+}
+
+@keyframes aiPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* 旋转加载器 */
+.ai-spinner {
+  animation: aiSpin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes aiSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 步骤项淡入 */
+.ai-step-item {
+  animation: aiStepFade 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+.ai-step-item:nth-child(1) { animation-delay: 0ms; }
+.ai-step-item:nth-child(2) { animation-delay: 100ms; }
+.ai-step-item:nth-child(3) { animation-delay: 200ms; }
+.ai-step-item:nth-child(4) { animation-delay: 300ms; }
+.ai-step-item:nth-child(5) { animation-delay: 400ms; }
+
+@keyframes aiStepFade {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* AI 面板边框渐变动画 */
+#ai-decision-panel > div {
+  position: relative;
+  overflow: hidden;
+}
+
+#ai-decision-panel > div::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.5), rgba(168, 85, 247, 0.5), transparent);
+  animation: aiScanLine 4s linear infinite;
+}
+
+@keyframes aiScanLine {
+  from { left: -100%; }
+  to { left: 100%; }
+}
+
 /* UI 加固 */
 /* Station card hardening */
 .station-card {

@@ -126,8 +126,9 @@ function initDashboard() {
       renderDispatchControlPanel(stationCont);
     }
     renderSidebar(role, theme); // 刷新高亮
-  } else {
-    activeMenuId = 'portfolio';
+  }
+
+  if (isOwner) {
     renderViewToggle(theme, isOwner);
     applyStationView(theme, isOwner);
     renderSidebar(role, theme);
@@ -1282,6 +1283,10 @@ function renderSidebar(role, theme) {
   const actions = document.getElementById('nav-actions');
   if (actions) {
     actions.innerHTML = `
+      <div class="px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-400 flex items-center gap-1" title="服务器状态: nginx 生产模式">
+        <i data-lucide="server" class="w-3 h-3"></i>
+        <span class="hidden sm:inline">nginx</span>
+      </div>
       <button onclick="switchRole()" class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-medium text-amber-400 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5" title="${getTrans('switch_role')}">
         <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
         ${getTrans('switch_role')}
@@ -2127,12 +2132,88 @@ function renderDispatchControlPanel(container, forceStationId) {
         </div>
 
       </div>
+
+      <!-- ====== AI 决策面板（智能托管时显示）====== -->
+      <div id="ai-decision-panel" class="${isAuto ? '' : 'hidden'} mt-10">
+        <div class="rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 overflow-hidden">
+          <!-- 面板标题 -->
+          <div class="px-8 py-5 border-b border-cyan-500/20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="ai-brain-icon w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center">
+                <span class="text-lg">🧠</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white tracking-tight">${getTrans('ai_panel_title')}</h3>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="ai-pulse-dot w-2 h-2 rounded-full bg-cyan-400"></span>
+                  <span class="text-xs text-cyan-400 font-medium" id="ai-thinking-status">${getTrans('ai_status_analyzing')}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-slate-500" id="ai-last-update">${getTrans('ai_last_updated')}: --:--</span>
+              <div class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                <i data-lucide="timer" class="w-3.5 h-3.5 text-slate-400"></i>
+                <span class="text-xs text-slate-400 font-mono" id="ai-countdown">30${getTrans('ai_seconds')}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 面板内容：3 列 -->
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+              <!-- 列 1：AI 思考过程 -->
+              <div class="space-y-4">
+                <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                  <i data-lucide="brain" class="w-4 h-4 text-cyan-400"></i>
+                  ${getTrans('ai_thinking')}
+                </h4>
+                <div id="ai-thinking-steps" class="space-y-2">
+                  ${renderAIThinkingSteps()}
+                </div>
+              </div>
+
+              <!-- 列 2：决策逻辑 -->
+              <div class="space-y-4">
+                <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                  <i data-lucide="git-branch" class="w-4 h-4 text-purple-400"></i>
+                  ${getTrans('ai_decision_logic')}
+                </h4>
+                <div id="ai-logic-factors" class="space-y-3">
+                  ${renderAILogicFactors()}
+                </div>
+              </div>
+
+              <!-- 列 3：决策结果 + 预期收益 -->
+              <div class="space-y-4">
+                <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                  <i data-lucide="target" class="w-4 h-4 text-amber-400"></i>
+                  ${getTrans('ai_decision_result')}
+                </h4>
+                <div id="ai-decision-result" class="space-y-3">
+                  ${renderAIDecisionResult()}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   `;
   if (window.lucide) lucide.createIcons();
 
   // 初始化调度图表
   setTimeout(() => { initDispatchChart(); }, 100);
+
+  // 启动/停止 AI 决策引擎
+  if (isAuto && typeof startAIDecisionEngine === 'function') {
+    startAIDecisionEngine();
+  } else if (typeof stopAIDecisionEngine === 'function') {
+    stopAIDecisionEngine();
+  }
 }
 
 function updateDispatchPanel() {
@@ -2175,6 +2256,260 @@ function updateDispatchPanel() {
         profitEl.textContent = 'A$' + live.profit;
         profitEl.className = profitEl.className.replace(/text-(emerald|red)-400/g, '') + (parseFloat(live.profit) >= 0 ? ' text-emerald-400' : ' text-red-400');
       }
+    }
+  }
+}
+
+// ============ AI 决策面板渲染 ============
+
+/**
+ * 渲染 AI 思考步骤
+ */
+function renderAIThinkingSteps() {
+  const state = typeof getAIDecisionState === 'function' ? getAIDecisionState() : aiDecisionState || {};
+  const steps = state.analysisSteps || [];
+  const phase = state.thinkingPhase || 0;
+
+  if (steps.length === 0) {
+    // 默认初始化步骤
+    return `
+      <div class="ai-step-item flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/5">
+        <span class="ai-spinner w-5 h-5 rounded-full border-2 border-cyan-400 border-t-transparent"></span>
+        <span class="text-sm text-slate-300">${getTrans('ai_status_analyzing')}</span>
+      </div>
+    `;
+  }
+
+  return steps.map((step, i) => {
+    const isActive = i === Math.min(phase, steps.length - 1);
+    const isDone = i < phase;
+    const isPending = i > phase;
+    const borderClass = isActive ? 'border-cyan-500/40 bg-cyan-500/5' : isDone ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-white/5 bg-white/[0.02]';
+    const iconEl = isDone ? '<span class="text-emerald-400 text-sm">✓</span>' : isActive ? '<span class="ai-spinner w-4 h-4 rounded-full border-2 border-cyan-400 border-t-transparent inline-block"></span>' : '<span class="text-slate-600 text-sm">○</span>';
+    const textColor = isActive ? 'text-cyan-300' : isDone ? 'text-slate-400' : 'text-slate-600';
+
+    // Parse step text for display
+    const parsed = parseAIStepText(step.text);
+
+    return `
+      <div class="ai-step-item flex items-start gap-3 px-4 py-2.5 rounded-xl border ${borderClass} transition-all duration-300">
+        <span class="flex-shrink-0 mt-0.5">${step.icon}</span>
+        <div class="flex-1 min-w-0">
+          <span class="text-sm ${textColor}">${parsed}</span>
+        </div>
+        <span class="flex-shrink-0 mt-0.5">${iconEl}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+/**
+ * 解析 AI 步骤文本
+ */
+function parseAIStepText(text) {
+  const parts = text.split('|');
+  const type = parts[0];
+  switch (type) {
+    case 'price_analysis':
+      return `${getTrans('ai_logic_price_trend')}: $${parts[1]} — <span class="font-semibold ${parts[2] === 'rising' ? 'text-amber-400' : parts[2] === 'falling' ? 'text-emerald-400' : parts[2] === 'spike' ? 'text-red-400' : 'text-slate-400'}">${getTrans('ai_logic_trend_' + parts[2])}</span>`;
+    case 'forecast_analysis':
+      return `${getTrans('ai_logic_forecast')}: $${parts[1]} — <span class="font-semibold ${parts[2] === 'up' ? 'text-amber-400' : parts[2] === 'down' ? 'text-emerald-400' : 'text-slate-400'}">${getTrans('ai_logic_forecast_' + parts[2])}</span>`;
+    case 'soc_analysis':
+      return `${getTrans('ai_logic_soc_state')}: ${parts[1]}% — <span class="font-semibold ${parts[2] === 'low' ? 'text-red-400' : parts[2] === 'high' ? 'text-emerald-400' : 'text-slate-400'}">${getTrans('ai_logic_soc_' + parts[2])}</span>`;
+    case 'spread_analysis':
+      return `${getTrans('ai_logic_spread')}: <span class="font-semibold text-cyan-400">$${parts[1]}/MWh</span>`;
+    case 'decision':
+      return `${getTrans('ai_planned_action')}: <span class="font-bold ${parts[1] === 'charge' ? 'text-blue-400' : parts[1] === 'discharge' ? 'text-amber-400' : parts[1] === 'fcas' ? 'text-purple-400' : 'text-slate-400'}">${getTrans('ai_action_' + parts[1])}</span> (${getTrans('ai_confidence')}: ${getTrans('ai_confidence_' + parts[2])})`;
+    default:
+      return text;
+  }
+}
+
+/**
+ * 渲染决策逻辑因子
+ */
+function renderAILogicFactors() {
+  const state = typeof getAIDecisionState === 'function' ? getAIDecisionState() : {};
+  const trend = state.priceTrend || 'stable';
+  const forecast = state.forecastDirection || 'stable';
+  const soc = state.socState || 'mid';
+
+  const trendColor = trend === 'rising' ? 'text-amber-400' : trend === 'falling' ? 'text-emerald-400' : trend === 'spike' ? 'text-red-400' : 'text-slate-400';
+  const trendIcon = trend === 'rising' ? 'trending-up' : trend === 'falling' ? 'trending-down' : trend === 'spike' ? 'alert-triangle' : 'minus';
+  const trendBg = trend === 'spike' ? 'bg-red-500/10 border-red-500/30' : 'bg-white/[0.03] border-white/10';
+
+  const fcColor = forecast === 'up' ? 'text-amber-400' : forecast === 'down' ? 'text-emerald-400' : 'text-slate-400';
+  const fcIcon = forecast === 'up' ? 'arrow-up-right' : forecast === 'down' ? 'arrow-down-right' : 'arrow-right';
+
+  const socColor = soc === 'low' ? 'text-red-400' : soc === 'high' ? 'text-emerald-400' : 'text-slate-400';
+  const socIcon = soc === 'low' ? 'battery-low' : soc === 'high' ? 'battery-full' : 'battery-medium';
+
+  return `
+    <!-- 价格趋势 -->
+    <div class="px-4 py-3 rounded-xl border ${trendBg}">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="${trendIcon}" class="w-4 h-4 ${trendColor}"></i>
+          <span class="text-xs text-slate-400">${getTrans('ai_logic_price_trend')}</span>
+        </div>
+        <span class="text-sm font-bold ${trendColor}">${getTrans('ai_logic_trend_' + trend)}</span>
+      </div>
+    </div>
+
+    <!-- 价格预测 -->
+    <div class="px-4 py-3 rounded-xl border bg-white/[0.03] border-white/10">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="${fcIcon}" class="w-4 h-4 ${fcColor}"></i>
+          <span class="text-xs text-slate-400">${getTrans('ai_logic_forecast')}</span>
+        </div>
+        <span class="text-sm font-bold ${fcColor}">${getTrans('ai_logic_forecast_' + forecast)}</span>
+      </div>
+    </div>
+
+    <!-- SoC 状态 -->
+    <div class="px-4 py-3 rounded-xl border bg-white/[0.03] border-white/10">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="${socIcon}" class="w-4 h-4 ${socColor}"></i>
+          <span class="text-xs text-slate-400">${getTrans('ai_logic_soc_state')}</span>
+        </div>
+        <span class="text-sm font-bold ${socColor}">${getTrans('ai_logic_soc_' + soc)}</span>
+      </div>
+    </div>
+
+    <!-- 套利价差 -->
+    <div class="px-4 py-3 rounded-xl border bg-white/[0.03] border-white/10">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="bar-chart-3" class="w-4 h-4 text-cyan-400"></i>
+          <span class="text-xs text-slate-400">${getTrans('ai_logic_spread')}</span>
+        </div>
+        <span class="text-sm font-bold text-cyan-400">$${(state.avgSpread || 0).toFixed(1)}/MWh</span>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * 渲染决策结果
+ */
+function renderAIDecisionResult() {
+  const state = typeof getAIDecisionState === 'function' ? getAIDecisionState() : {};
+  const action = state.plannedAction || 'hold';
+  const confidence = state.confidence || 'medium';
+
+  // 动作颜色和图标
+  const actionConfig = {
+    charge: { color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30', icon: '⚡', gradient: 'from-blue-500 to-cyan-500' },
+    discharge: { color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30', icon: '🔋', gradient: 'from-amber-500 to-orange-500' },
+    hold: { color: 'text-slate-400', bg: 'bg-slate-500/10 border-slate-500/30', icon: '⏸', gradient: 'from-slate-500 to-slate-600' },
+    fcas: { color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/30', icon: '📡', gradient: 'from-purple-500 to-pink-500' },
+  };
+  const ac = actionConfig[action] || actionConfig.hold;
+
+  const confColor = confidence === 'high' ? 'text-emerald-400' : confidence === 'medium' ? 'text-amber-400' : 'text-red-400';
+  const confBar = confidence === 'high' ? 'w-full' : confidence === 'medium' ? 'w-2/3' : 'w-1/3';
+  const confBg = confidence === 'high' ? 'bg-emerald-500' : confidence === 'medium' ? 'bg-amber-500' : 'bg-red-500';
+
+  return `
+    <!-- 当前决策 -->
+    <div class="px-5 py-4 rounded-xl border ${ac.bg} text-center">
+      <span class="text-3xl">${ac.icon}</span>
+      <p class="text-2xl font-black ${ac.color} mt-2 tracking-wide">${getTrans('ai_action_' + action)}</p>
+      <div class="flex items-center justify-center gap-2 mt-2">
+        <span class="text-xs text-slate-500">${getTrans('ai_confidence')}:</span>
+        <span class="text-xs font-bold ${confColor}">${getTrans('ai_confidence_' + confidence)}</span>
+      </div>
+      <div class="w-full h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
+        <div class="${confBg} h-full rounded-full transition-all duration-500 ${confBar}"></div>
+      </div>
+    </div>
+
+    <!-- 执行详情 -->
+    <div class="grid grid-cols-2 gap-2">
+      <div class="px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+        <p class="text-[10px] text-slate-500 uppercase">${getTrans('ai_execute_time')}</p>
+        <p class="text-sm font-bold text-white font-mono mt-0.5" id="ai-execute-time">${state.executeTime || '--:--'}</p>
+      </div>
+      <div class="px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+        <p class="text-[10px] text-slate-500 uppercase">${getTrans('ai_power_level')}</p>
+        <p class="text-sm font-bold text-white font-mono mt-0.5" id="ai-power-level">${(state.powerLevel || 0).toFixed(1)} MW</p>
+      </div>
+    </div>
+
+    <!-- 预期收益 -->
+    <div class="px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20">
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+        <span class="text-xs text-slate-400">${getTrans('ai_expected_profit')}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <p class="text-[10px] text-slate-500 uppercase">${getTrans('ai_profit_this_cycle')}</p>
+          <p class="text-lg font-black text-emerald-400 font-mono" id="ai-cycle-profit">A$${(state.cycleProfit || 0).toFixed(0)}</p>
+        </div>
+        <div>
+          <p class="text-[10px] text-slate-500 uppercase">${getTrans('ai_profit_today')}</p>
+          <p class="text-lg font-black font-mono ${(state.todayProfit || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}" id="ai-today-profit">A$${(state.todayProfit || 0).toFixed(0)}</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * 实时更新 AI 决策面板（每秒调用）
+ */
+function updateAIDecisionPanel() {
+  const panel = document.getElementById('ai-decision-panel');
+  if (!panel || panel.classList.contains('hidden')) return;
+
+  const state = typeof getAIDecisionState === 'function' ? getAIDecisionState() : {};
+
+  // 更新倒计时
+  const countdown = document.getElementById('ai-countdown');
+  if (countdown) countdown.textContent = (state.updateCountdown || 0) + getTrans('ai_seconds');
+
+  // 更新最后刷新时间
+  const lastUpdate = document.getElementById('ai-last-update');
+  if (lastUpdate && state.lastUpdated) lastUpdate.textContent = getTrans('ai_last_updated') + ': ' + state.lastUpdated;
+
+  // 更新思考状态文本
+  const statusEl = document.getElementById('ai-thinking-status');
+  if (statusEl) {
+    const statusKey = 'ai_status_' + (state.status || 'analyzing');
+    statusEl.textContent = getTrans(statusKey);
+  }
+
+  // 如果刚完成决策（倒计时刚重置），重新渲染所有面板内容
+  if (state.updateCountdown >= 29) {
+    const stepsEl = document.getElementById('ai-thinking-steps');
+    if (stepsEl) stepsEl.innerHTML = renderAIThinkingSteps();
+
+    const logicEl = document.getElementById('ai-logic-factors');
+    if (logicEl) {
+      logicEl.innerHTML = renderAILogicFactors();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    const resultEl = document.getElementById('ai-decision-result');
+    if (resultEl) {
+      resultEl.innerHTML = renderAIDecisionResult();
+      if (window.lucide) lucide.createIcons();
+    }
+  } else {
+    // 只更新思考步骤动画
+    const stepsEl = document.getElementById('ai-thinking-steps');
+    if (stepsEl) stepsEl.innerHTML = renderAIThinkingSteps();
+
+    // 更新动态数值
+    const cycleEl = document.getElementById('ai-cycle-profit');
+    if (cycleEl) cycleEl.textContent = 'A$' + (state.cycleProfit || 0).toFixed(0);
+    const todayEl = document.getElementById('ai-today-profit');
+    if (todayEl) {
+      todayEl.textContent = 'A$' + (state.todayProfit || 0).toFixed(0);
+      todayEl.className = `text-lg font-black font-mono ${(state.todayProfit || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}`;
     }
   }
 }
