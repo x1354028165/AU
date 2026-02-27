@@ -131,7 +131,7 @@ function renderLeaderboard(container) {
             ${rankings.map((r, i) => `
               <tr class="${i % 2 === 0 ? 'bg-white/[0.02]' : ''} border-b border-white/5">
                 <td class="px-4 py-3 text-white font-medium">${i === 0 ? '👑 1' : i + 1}</td>
-                <td class="px-4 py-3 text-white">${r.name}</td>
+                <td class="px-4 py-3 text-white">${escapeHTML(r.name)}</td>
                 <td class="px-4 py-3 text-right font-mono ${r.totalRevenue >= 0 ? 'text-emerald-400' : 'text-red-400'}">
                   ${r.totalRevenue >= 0 ? '' : '-'}A$${Math.abs(r.totalRevenue).toFixed(2)}
                 </td>
@@ -161,7 +161,7 @@ function renderRankCard(ranking, index) {
         <div class="flex items-center gap-3">
           ${isFirst ? '<span class="text-2xl">👑</span>' : `<span class="text-lg text-slate-500 font-bold">#${index + 1}</span>`}
           <div>
-            <h3 class="text-white font-bold">${ranking.name}</h3>
+            <h3 class="text-white font-bold">${escapeHTML(ranking.name)}</h3>
             <p class="text-xs text-slate-400">${ranking.stationCount} station${ranking.stationCount > 1 ? 's' : ''} · ${ranking.totalCapMW.toFixed(1)} MW</p>
           </div>
         </div>
@@ -242,7 +242,7 @@ function renderDispatchLogs(container, operatorId) {
                 return `
                   <tr class="${i % 2 === 0 ? 'bg-white/[0.02]' : ''} border-b border-white/5">
                     <td class="px-4 py-3 font-mono text-slate-300 text-xs">${log.time}</td>
-                    <td class="px-4 py-3 text-white">${log.stationName}</td>
+                    <td class="px-4 py-3 text-white">${escapeHTML(log.stationName)}</td>
                     <td class="px-4 py-3 ${style.color} font-medium">${style.icon} ${log.action}</td>
                     <td class="px-4 py-3 text-right font-mono text-amber-400">$${log.price.toFixed(2)}</td>
                     <td class="px-4 py-3 text-right font-mono ${log.revenue >= 0 ? 'text-emerald-400' : 'text-red-400'}">

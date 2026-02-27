@@ -3,6 +3,14 @@
  * Phase 2: 澳洲储能电站管理平台
  */
 
+// ============ XSS 防御：HTML 转义工具 ============
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[tag]));
+}
+
 // ============ 配色方案 ============
 const THEMES = {
   owner: {
@@ -248,7 +256,7 @@ function renderMapView(theme, isOwner) {
     if (!station.lat || !station.lng) return;
 
     const isUnassigned = station.operator_id === 'unassigned';
-    const opName = isUnassigned ? getTrans('unassigned') : getUserName(station.operator_id);
+    const opName = isUnassigned ? getTrans('unassigned') : escapeHTML(getUserName(station.operator_id));
     const statusText = station.status === 'CHARGING' ? '⚡ ' + getTrans('charging')
       : station.status === 'DISCHARGING' ? '🔋 ' + getTrans('discharging')
       : '⏸ ' + getTrans('idle');
@@ -257,8 +265,8 @@ function renderMapView(theme, isOwner) {
 
     const popupHtml = `
       <div style="min-width:220px;font-family:Inter,sans-serif;">
-        <h3 style="margin:0 0 6px;font-size:14px;font-weight:700;">${station.name}</h3>
-        <p style="margin:2px 0;font-size:12px;color:#666;">${station.location}</p>
+        <h3 style="margin:0 0 6px;font-size:14px;font-weight:700;">${escapeHTML(station.name)}</h3>
+        <p style="margin:2px 0;font-size:12px;color:#666;">${escapeHTML(station.location)}</p>
         <p style="margin:2px 0;font-size:12px;"><b>${getTrans('capacity')}:</b> ${station.capacity}</p>
         <p style="margin:2px 0;font-size:12px;"><b>${getTrans('select_timezone')}:</b> ${station.timezone}</p>
         <p style="margin:2px 0;font-size:12px;"><b>${getTrans('soh')}:</b> ${station.soh.toFixed(4)}%</p>
@@ -340,8 +348,8 @@ function renderListView(theme, isOwner) {
 
     return `
       <tr class="${i % 2 === 0 ? 'bg-white/[0.02]' : ''} border-b border-white/5 hover:bg-white/[0.04] transition-colors">
-        <td class="px-4 py-3 text-white font-medium">${s.name}</td>
-        <td class="px-4 py-3 text-slate-400 text-sm">${s.location}</td>
+        <td class="px-4 py-3 text-white font-medium">${escapeHTML(s.name)}</td>
+        <td class="px-4 py-3 text-slate-400 text-sm">${escapeHTML(s.location)}</td>
         <td class="px-4 py-3 font-mono ${theme.accent} text-sm">${s.capacity}</td>
         <td class="px-4 py-3 ${statusColor} text-sm">${statusIcon} ${s.status}</td>
         <td class="px-4 py-3 font-mono text-white text-sm">${s.soh.toFixed(2)}%</td>
@@ -454,8 +462,8 @@ function renderStationDetail(station, theme, isOwner) {
           <i data-lucide="arrow-left" class="w-5 h-5"></i>
         </button>
         <div>
-          <h2 class="text-xl font-bold text-white">${station.name}</h2>
-          <p class="text-sm text-slate-400">${station.location} · ${station.timezone} · ${station.capacity}</p>
+          <h2 class="text-xl font-bold text-white">${escapeHTML(station.name)}</h2>
+          <p class="text-sm text-slate-400">${escapeHTML(station.location)} · ${station.timezone} · ${station.capacity}</p>
         </div>
       </div>
       <!-- Tabs -->
@@ -563,10 +571,10 @@ function renderDetailDevices(station, theme, isOwner) {
     ? `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">No devices</td></tr>`
     : devices.map((d, i) => `
         <tr class="${i % 2 === 0 ? 'bg-white/[0.02]' : ''} border-b border-white/5">
-          <td class="px-4 py-3 text-white font-medium">${d.name}</td>
-          <td class="px-4 py-3 text-slate-400">${d.type}</td>
-          <td class="px-4 py-3 font-mono text-slate-300 text-sm">${d.version}</td>
-          <td class="px-4 py-3 text-right font-mono text-xs text-slate-500">${d.id}</td>
+          <td class="px-4 py-3 text-white font-medium">${escapeHTML(d.name)}</td>
+          <td class="px-4 py-3 text-slate-400">${escapeHTML(d.type)}</td>
+          <td class="px-4 py-3 font-mono text-slate-300 text-sm">${escapeHTML(d.version)}</td>
+          <td class="px-4 py-3 text-right font-mono text-xs text-slate-500">${escapeHTML(d.id)}</td>
         </tr>
       `).join('');
 
@@ -1142,7 +1150,7 @@ function renderSidebar(role, theme) {
   const isOwner = role === 'owner';
   const menus = getMenus();
   const menuItems = isOwner ? menus.owner : menus.operator;
-  const userName = isOwner ? getUserName('owner_1') : getUserName(role);
+  const userName = escapeHTML(isOwner ? getUserName('owner_1') : getUserName(role));
 
   sidebar.className = `sidebar-panel w-64 min-h-screen ${theme.sidebar} border-r border-white/10 flex flex-col fixed md:relative z-40 transition-transform duration-300`;
   if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
@@ -1297,7 +1305,7 @@ function renderStationCard(station, theme, isOwner) {
   const isUnassigned = station.operator_id === 'unassigned';
   const leaseRemaining = getLeaseRemaining(station.lease_end);
   const operators = getOperators();
-  const currentOpName = isUnassigned ? getTrans('unassigned') : getUserName(station.operator_id);
+  const currentOpName = isUnassigned ? getTrans('unassigned') : escapeHTML(getUserName(station.operator_id));
 
   // Status
   const statusIcon = station.status === 'CHARGING' ? '⚡' : station.status === 'DISCHARGING' ? '🔋' : '⏸';
@@ -1375,7 +1383,7 @@ function renderStationCard(station, theme, isOwner) {
       <div class="flex gap-2">
         <select id="select-${station.id}" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500/50">
           <option value="">${getTrans('select_operator')}</option>
-          ${operators.map(op => `<option value="${op.id}" ${station.operator_id === op.id ? 'selected' : ''}>${op.name}</option>`).join('')}
+          ${operators.map(op => `<option value="${op.id}" ${station.operator_id === op.id ? 'selected' : ''}>${escapeHTML(op.name)}</option>`).join('')}
           ${!isUnassigned ? `<option value="unassigned">${getTrans('revoke_access')}</option>` : ''}
         </select>
         <button onclick="handleAssign('${station.id}')"
@@ -1412,10 +1420,10 @@ function renderStationCard(station, theme, isOwner) {
             ${statusDot}
             ${assignmentLabel}
           </div>
-          <h3 class="text-base md:text-lg font-bold text-white">${station.name}</h3>
+          <h3 class="text-base md:text-lg font-bold text-white">${escapeHTML(station.name)}</h3>
           <p class="text-sm text-slate-400 flex items-center gap-1 mt-1">
             <i data-lucide="map-pin" class="w-3 h-3"></i>
-            ${station.location}
+            ${escapeHTML(station.location)}
           </p>
         </div>
         <div class="text-right">
@@ -1549,7 +1557,7 @@ function showToast(msg, type = 'success') {
 
   const toast = document.createElement('div');
   toast.className = `toast fixed top-5 left-1/2 -translate-x-1/2 ${colors[type]} text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2 z-50 toast-enter`;
-  toast.innerHTML = `<i data-lucide="${icons[type]}" class="w-4 h-4"></i><span class="text-sm font-medium">${msg}</span>`;
+  toast.innerHTML = `<i data-lucide="${icons[type]}" class="w-4 h-4"></i><span class="text-sm font-medium">${escapeHTML(msg)}</span>`;
   document.body.appendChild(toast);
   if (window.lucide) lucide.createIcons();
   setTimeout(() => { toast.classList.add('toast-exit'); setTimeout(() => toast.remove(), 300); }, 2000);
@@ -1576,7 +1584,7 @@ function openStrategyModal(stationId) {
       <div class="flex items-center justify-between mb-6">
         <div>
           <h3 class="text-lg font-bold text-white">${getTrans('strategy_panel')}</h3>
-          <p class="text-sm text-slate-400">${station.name}</p>
+          <p class="text-sm text-slate-400">${escapeHTML(station.name)}</p>
         </div>
         <button onclick="closeStrategyModal()" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
