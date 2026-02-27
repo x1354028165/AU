@@ -31,10 +31,17 @@ async function loadAemoPrices() {
  * 获取下一个 AEMO 真实价格（循环回放），没有则降级到模拟
  */
 function getNextAemoPrice() {
-  if (!aemoPriceData || aemoPriceData.length === 0) return null;
-  const pt = aemoPriceData[aemoPriceIndex % aemoPriceData.length];
-  aemoPriceIndex++;
-  return pt.price;
+  // 优先用 AEMO 真实数据
+  if (aemoEnabled && aemoData && aemoData.price) {
+    return aemoData.price;
+  }
+  // fallback 旧逻辑
+  if (typeof aemoPriceData !== 'undefined' && aemoPriceData && aemoPriceData.length > 0) {
+    const pt = aemoPriceData[aemoPriceIndex % aemoPriceData.length];
+    aemoPriceIndex++;
+    return pt.price;
+  }
+  return null;
 }
 
 // ============ 今日交易累计 ============
@@ -74,6 +81,32 @@ function getTodayTradesSummary() {
     margin: margin.toFixed(1)
   };
 }
+
+// ============ AEMO 真实数据 ============
+let aemoData = null;       // { price, demand, forecast_price, forecast_demand, timestamp }
+let aemoEnabled = false;   // 是否成功拉到 AEMO 数据
+const AEMO_API = window.location.protocol + '//' + window.location.hostname + ':8081/api/aemo/nsw1';
+const AEMO_POLL_INTERVAL = 60 * 1000; // 每60秒轮询一次
+
+async function fetchAEMOData() {
+  try {
+    const res = await fetch(AEMO_API, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data.price && data.price > 0 && data.price < 20000) {
+      aemoData = data;
+      aemoEnabled = true;
+      console.log('[AEMO] Live data:', data.price, '$/MWh, demand:', data.demand, 'MW');
+    }
+  } catch (e) {
+    console.warn('[AEMO] Falling back to simulation:', e.message);
+    aemoEnabled = false;
+  }
+}
+
+// 启动 AEMO 轮询
+fetchAEMOData();
+setInterval(fetchAEMOData, AEMO_POLL_INTERVAL);
 
 // ============ 仿真状态 ============
 let simTime = new Date();

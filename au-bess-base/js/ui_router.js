@@ -2151,6 +2151,14 @@ function updateDispatchPanel() {
   const ringSoc = el('dp-ring-soc'); if (ringSoc) ringSoc.textContent = 'SoC ' + station.soc.toFixed(1) + '%';
   const spot = el('dp-spot'); if (spot) { spot.textContent = priceStr; spot.style.color = priceColor; }
   const fcPrice = el('dp-fc-price'); if (fcPrice) fcPrice.textContent = '$' + fc.toFixed(2);
+
+  // AEMO 真实数据更新
+  if (typeof aemoEnabled !== 'undefined' && aemoEnabled && typeof aemoData !== 'undefined' && aemoData) {
+    const demandEl = el('dp-demand');
+    if (demandEl && aemoData.demand) demandEl.textContent = Math.round(aemoData.demand).toLocaleString();
+    const fcDemandEl = el('dp-fc-demand');
+    if (fcDemandEl && aemoData.forecast_demand) fcDemandEl.textContent = Math.round(aemoData.forecast_demand).toLocaleString();
+  }
   const profit = el('dp-profit'); if (profit) profit.textContent = '$' + (station.projected_profit || 0).toFixed(0);
   const kwh = el('dp-kwh'); if (kwh) kwh.textContent = (station.soc * cap.mwh / 100 * 1000).toFixed(0) + 'kWh';
 

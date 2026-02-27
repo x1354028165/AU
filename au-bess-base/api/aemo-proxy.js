@@ -57,23 +57,38 @@ function parseCSV(csvText, region) {
   let price = null, demand = null;
 
   for (const line of lines) {
-    const cols = line.split(',');
-    // DISPATCHPRICE row: D,DISPATCH,PRICE,...
-    // Format: I/D, DISPATCH, REGIONSUM/PRICE, version, settlementdate, regionid, ...
-    if (cols.length > 6) {
-      const recType = cols[0].trim();
-      const table = (cols[2] || '').trim().toUpperCase();
-      const regionCol = (cols[6] || '').trim().toUpperCase();
+    // Parse CSV properly handling quoted fields
+    const cols = [];
+    let cur = '', inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { inQuote = !inQuote; continue; }
+      if (ch === ',' && !inQuote) { cols.push(cur.trim()); cur = ''; continue; }
+      cur += ch;
+    }
+    cols.push(cur.trim());
 
-      if (recType === 'D' && table === 'PRICE' && regionCol === region) {
-        // RRP is typically column index 7 or 8
-        const rrp = parseFloat(cols[7]);
-        if (!isNaN(rrp)) price = rrp;
+    if (cols.length < 6) continue;
+    const recType = cols[0];
+    const table = (cols[2] || '').toUpperCase();
+
+    // D,DISPATCH,PRICE,5,settlementdate,runno,REGIONID,dispatchinterval,intervention,RRP,...
+    if (recType === 'D' && table === 'PRICE') {
+      // Header: I,DISPATCH,PRICE,5,SETTLEMENTDATE,RUNNO,REGIONID,DISPATCHINTERVAL,INTERVENTION,RRP
+      // So REGIONID=cols[6], RRP=cols[9]
+      const rid = (cols[6] || '').toUpperCase();
+      if (rid === region && cols.length > 9) {
+        const rrp = parseFloat(cols[9]);
+        if (!isNaN(rrp) && Math.abs(rrp) < 20000) price = rrp;
       }
-      if (recType === 'D' && table === 'REGIONSUM' && regionCol === region) {
-        // TOTALDEMAND is in one of the columns after region
-        const td = parseFloat(cols[7]);
-        if (!isNaN(td)) demand = td;
+    }
+
+    // D,DISPATCH,REGIONSUM,9,settlementdate,runno,REGIONID,dispatchinterval,intervention,TOTALDEMAND,...
+    if (recType === 'D' && table === 'REGIONSUM') {
+      const rid = (cols[6] || '').toUpperCase();
+      if (rid === region && cols.length > 9) {
+        const td = parseFloat(cols[9]);
+        if (!isNaN(td) && td > 0 && td < 100000) demand = td;
       }
     }
   }
