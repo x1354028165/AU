@@ -2131,33 +2131,7 @@ function renderDispatchControlPanel(container, forceStationId) {
             </tbody>
           </table>
         </div>
-        <!-- 汇总 -->
-        <div class="grid grid-cols-3 gap-0 border-t border-white/10">
-          <div class="px-5 py-4 text-center border-r border-white/10">
-            <div class="flex items-center justify-center gap-2 mb-1">
-              <span class="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs">⬇</span>
-              <span class="text-xs text-slate-500">${getTrans('total_buy')}</span>
-            </div>
-            <p class="text-lg font-bold text-white font-mono">${plan.summary.totalBuyQty} MWh</p>
-            <p class="text-xs text-slate-500">${getTrans('cost')}: A$${plan.summary.totalBuyCost}</p>
-          </div>
-          <div class="px-5 py-4 text-center border-r border-white/10">
-            <div class="flex items-center justify-center gap-2 mb-1">
-              <span class="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center text-xs">⬆</span>
-              <span class="text-xs text-slate-500">${getTrans('total_sell')}</span>
-            </div>
-            <p class="text-lg font-bold text-white font-mono">${plan.summary.totalSellQty} MWh</p>
-            <p class="text-xs text-slate-500">${getTrans('revenue')}: A$${plan.summary.totalSellRevenue}</p>
-          </div>
-          <div class="px-5 py-4 text-center">
-            <div class="flex items-center justify-center gap-2 mb-1">
-              <span class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs">🏆</span>
-              <span class="text-xs text-slate-500">${getTrans('spread_profit')}</span>
-            </div>
-            <p class="text-lg font-bold text-emerald-400 font-mono">A$${plan.summary.profit}</p>
-            <p class="text-xs text-slate-500">${getTrans('margin')}: ${plan.summary.margin}%</p>
-          </div>
-        </div>
+
       </div>
     </div>
   `;
