@@ -618,15 +618,12 @@ function getTrans(key) {
 
 function switchLang(lang) {
   localStorage.setItem('lang', lang);
-  // 保存当前视图状态，刷新后恢复
+  // 记住当前视图，通过 hash 传递
   const rv = document.getElementById('view-reports');
-  const dv = document.getElementById('view-detail');
   if (rv && !rv.classList.contains('hidden')) {
-    localStorage.setItem('_view', 'reports');
-  } else if (dv && !dv.classList.contains('hidden')) {
-    localStorage.setItem('_view', 'detail');
+    window.location.hash = '#reports';
   } else {
-    localStorage.setItem('_view', 'dashboard');
+    window.location.hash = '';
   }
   window.location.reload();
 }
