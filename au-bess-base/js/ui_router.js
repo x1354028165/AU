@@ -1246,7 +1246,7 @@ function renderHeader(role, theme) {
       </div>
     </div>
     <div class="flex items-center gap-2 md:gap-3">
-      <span class="text-xs text-slate-500 hidden sm:inline">${new Date().toLocaleDateString(getLang() === 'zh' ? 'zh-CN' : 'en-AU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+      <span class="text-xs text-slate-500 hidden sm:inline">${new Date().toLocaleDateString(getLang() === 'zh' ? 'zh-CN' : 'en-AU', { timeZone: 'Australia/Sydney', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
       <button onclick="switchRole()" class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-medium text-amber-400 hover:bg-amber-500/20 hover:text-amber-300 transition-colors flex items-center gap-1.5" title="${getTrans('switch_role')}">
         <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
         <span class="hidden sm:inline">${getTrans('switch_role')}</span>

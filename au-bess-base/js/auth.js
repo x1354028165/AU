@@ -3,6 +3,29 @@
  * Phase 1 Enhanced v2: 澳洲储能电站管理平台
  */
 
+// ============ 全局时区工具 ============
+
+/**
+ * 统一时区格式化函数（全系统唯一入口）
+ * @param {Date|number|string} date - 日期对象、时间戳或日期字符串
+ * @param {string} timezone - IANA 时区，如 'Australia/Sydney'
+ * @returns {string} 格式化后的时间字符串，如 "27/02/2026, 14:30:00 (Sydney)"
+ */
+function formatLocalTime(date, timezone) {
+  try {
+    const city = timezone.split('/')[1] || 'Local';
+    const timeStr = new Date(date).toLocaleString('en-AU', {
+      timeZone: timezone,
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false
+    });
+    return timeStr + ' (' + city + ')';
+  } catch (e) {
+    return new Date(date).toLocaleString('en-AU');
+  }
+}
+
 // ============ i18n 多语言 ============
 const TRANSLATIONS = {
   en: {
@@ -586,7 +609,7 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_1', type: 'HIGH_TEMP', severity: 'Critical',
         message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
-        timestamp: new Date(Date.now() - 15*60*1000).toLocaleString('en-AU', { timeZone: 'Australia/Sydney', hour12: false }) + ' (Sydney)',
+        timestamp: formatLocalTime(Date.now() - 15*60*1000, 'Australia/Sydney'),
         status: 'ACTIVE',
         ack_by: null, ack_at: null, resolved_by: null, resolved_at: null
       }
@@ -617,9 +640,9 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_2', type: 'LOW_SOC', severity: 'Warning',
         message: 'Battery Low SoC — State of charge dropped below 10% (8.2%)',
-        timestamp: new Date(Date.now() - 45*60*1000).toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', hour12: false }) + ' (Melbourne)',
+        timestamp: formatLocalTime(Date.now() - 45*60*1000, 'Australia/Melbourne'),
         status: 'ACKNOWLEDGED',
-        ack_by: 'op_a', ack_at: new Date(Date.now() - 30*60*1000).toLocaleString('en-AU', { timeZone: 'Australia/Melbourne', hour12: false }) + ' (Melbourne)',
+        ack_by: 'op_a', ack_at: formatLocalTime(Date.now() - 30*60*1000, 'Australia/Melbourne'),
         resolved_by: null, resolved_at: null
       }
     ]
@@ -649,10 +672,10 @@ const DEFAULT_STATIONS = [
       {
         id: 'alm_init_3', type: 'HIGH_TEMP', severity: 'Critical',
         message: 'BMS High Temperature Warning — Cell temp exceeded 58°C during grid event',
-        timestamp: new Date(Date.now() - 2*3600*1000).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', hour12: false }) + ' (Brisbane)',
+        timestamp: formatLocalTime(Date.now() - 2*3600*1000, 'Australia/Brisbane'),
         status: 'RESOLVED',
-        ack_by: 'op_b', ack_at: new Date(Date.now() - 90*60*1000).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', hour12: false }) + ' (Brisbane)',
-        resolved_by: 'owner_1', resolved_at: new Date(Date.now() - 3600*1000).toLocaleString('en-AU', { timeZone: 'Australia/Brisbane', hour12: false }) + ' (Brisbane)'
+        ack_by: 'op_b', ack_at: formatLocalTime(Date.now() - 90*60*1000, 'Australia/Brisbane'),
+        resolved_by: 'owner_1', resolved_at: formatLocalTime(Date.now() - 3600*1000, 'Australia/Brisbane')
       }
     ]
   },
@@ -682,7 +705,7 @@ const DEFAULT_STATIONS = [
 ];
 
 // ============ 数据持久化 ============
-const STATIONS_DATA_VERSION = 'v5_tz_fix';
+const STATIONS_DATA_VERSION = 'v6_unified_tz';
 
 let stations = loadStations();
 

@@ -180,7 +180,7 @@ function simTick() {
   // 尖峰时强制触发放电判断（绕过普通阈值）
   const isSpike = currentPrice > 3000;
 
-  const timeStr = new Date().toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const timeStr = new Date().toLocaleTimeString('en-AU', { timeZone: 'Australia/Sydney', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   stations.forEach(station => {
     const prevStatus = previousStationStatus[station.id] || 'IDLE';
@@ -227,7 +227,7 @@ function simTick() {
 
   // 记录历史
   priceHistory.push({
-    time: new Date().toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    time: new Date().toLocaleTimeString('en-AU', { timeZone: 'Australia/Sydney', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     price: Math.round(currentPrice * 100) / 100,
     powers: { ...powers }
   });
@@ -337,9 +337,8 @@ function checkAndTriggerAlarms(station, price) {
     return station.alarms.some(a => a.type === type && a.status !== 'RESOLVED');
   }
 
-  // 生成电站本地时区时间戳
-  const city = station.timezone.split('/')[1];
-  const timeStr = new Date().toLocaleString('en-AU', { timeZone: station.timezone, hour12: false }) + ' (' + city + ')';
+  // 生成电站本地时区时间戳（使用全局工具函数）
+  const timeStr = formatLocalTime(new Date(), station.timezone);
 
   // 规则 A：尖峰放电时高温告警（Critical, 5%概率）
   if (price > 3000 && station.status === 'DISCHARGING' && !hasActiveAlarm('HIGH_TEMP')) {

@@ -7,7 +7,7 @@
  * 渲染报表视图（根据角色自动切换内容）
  */
 // Track which report sub-view to show
-let reportSubView = 'default'; // 'default' | 'health'
+let reportSubView = 'default'; // 'default' | 'health' | 'alarms'
 
 function renderReports(subView) {
   const container = document.getElementById('view-reports');
@@ -516,9 +516,7 @@ function ackAlarm(stationId, alarmId) {
   const role = getCurrentUser();
   alarm.status = 'ACKNOWLEDGED';
   alarm.ack_by = role;
-  const ackTz = station.timezone || 'Australia/Sydney';
-  const ackCity = ackTz.split('/')[1] || ackTz;
-  alarm.ack_at = new Date().toLocaleString('en-AU', { timeZone: ackTz, hour12: false }) + ' (' + ackCity + ')';
+  alarm.ack_at = formatLocalTime(new Date(), station.timezone || 'Australia/Sydney');
 
   if (typeof saveStations === 'function') saveStations();
 
@@ -545,9 +543,7 @@ function resolveAlarm(stationId, alarmId) {
   const role = getCurrentUser();
   alarm.status = 'RESOLVED';
   alarm.resolved_by = role;
-  const resTz = station.timezone || 'Australia/Sydney';
-  const resCity = resTz.split('/')[1] || resTz;
-  alarm.resolved_at = new Date().toLocaleString('en-AU', { timeZone: resTz, hour12: false }) + ' (' + resCity + ')';
+  alarm.resolved_at = formatLocalTime(new Date(), station.timezone || 'Australia/Sydney');
 
   if (typeof saveStations === 'function') saveStations();
 
