@@ -588,18 +588,12 @@ function renderAlarmsList(container, isOwner) {
     }
 
     // 操作：详情 + 处理
-    const detailBtn = `<button onclick="showAlarmDetail('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-blue-500/20 text-xs text-blue-400 hover:bg-blue-500/30 transition-colors">${getTrans('btn_detail')}</button>`;
+    const detailBtn = `<button onclick="showAlarmDetail('${alarm.stationId}','${alarm.id}')" class="px-2 py-1 rounded bg-blue-500/20 text-xs text-blue-400 hover:bg-blue-500/30">${getTrans('btn_detail')}</button>`;
     let handleBtn = '';
-    if (alarm.status === 'ACTIVE') {
-      handleBtn = isOwner
-        ? `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-500/30 transition-colors">${getTrans('btn_handle')}</button>`
-        : `<button onclick="ackAlarm('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-amber-500/20 text-xs text-amber-400 hover:bg-amber-500/30 transition-colors">${getTrans('btn_handle')}</button>`;
-    } else if (alarm.status === 'ACKNOWLEDGED') {
-      handleBtn = isOwner
-        ? `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-3 py-1 rounded bg-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-500/30 transition-colors">${getTrans('btn_handle')}</button>`
-        : ``;
+    if (alarm.status !== 'RESOLVED') {
+      handleBtn = `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-2 py-1 rounded bg-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-500/30">${getTrans('btn_handle')}</button>`;
     }
-    const actionCol = `<div class="flex items-center justify-end gap-2">${detailBtn}${handleBtn}</div>`;
+    const actionCol = `<div class="flex items-center justify-end gap-1 flex-nowrap">${detailBtn}${handleBtn}</div>`;
 
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
