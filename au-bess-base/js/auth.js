@@ -314,7 +314,7 @@ const TRANSLATIONS = {
   zh: {
     // 登录
     app_title: '澳洲储能管理平台',
-    app_subtitle: 'Australia Battery Energy Storage System',
+    app_subtitle: '澳洲电池储能系统',
     login_title: '账号登录',
     login_subtitle: '输入您的凭证以访问系统',
     username: '用户名',
@@ -395,7 +395,7 @@ const TRANSLATIONS = {
     login_success_operator: '登录成功，正在以操作员身份进入系统...',
     select_role: '选择访问身份',
     select_role_hint: '选择您要以何种身份进入 AU BESS 平台',
-    role_owner_title: 'Pacific Energy Group',
+    role_owner_title: '太平洋能源集团',
     role_owner_subtitle: '资产业主',
     role_owner_label: '资产业主',
     role_owner_desc: '掌控全局资产收益，审计运维表现，管理电站分配。追踪电池健康度与长期投资回报。',
