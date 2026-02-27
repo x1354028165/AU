@@ -892,8 +892,8 @@ function renderArbitrageReports(container, isOwner) {
         </div>
       </div>
 
-      <!-- 电站选择和时间维度 -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- 电站选择、时间维度和具体时间 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white/5 border border-white/20 rounded-xl p-4">
           <label class="text-sm text-slate-300 font-medium block mb-2">${getTrans('reports_station_select')}</label>
           <select id="arbitrage-station-select" onchange="updateArbitrageReport()" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500/50">
@@ -902,12 +902,25 @@ function renderArbitrageReports(container, isOwner) {
         </div>
         <div class="bg-white/5 border border-white/20 rounded-xl p-4">
           <label class="text-sm text-slate-300 font-medium block mb-2">${getTrans('reports_period')}</label>
-          <select id="arbitrage-period-select" onchange="updateArbitrageReport()" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500/50">
+          <select id="arbitrage-period-select" onchange="updatePeriodSelector()" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500/50">
             <option value="daily">${getTrans('reports_daily')}</option>
             <option value="monthly">${getTrans('reports_monthly')}</option>
             <option value="yearly">${getTrans('reports_yearly')}</option>
             <option value="cumulative">${getTrans('reports_cumulative')}</option>
           </select>
+        </div>
+        <div class="bg-white/5 border border-white/20 rounded-xl p-4">
+          <label class="text-sm text-slate-300 font-medium block mb-2" id="time-select-label">${getTrans('reports_select_date')}</label>
+          <div id="time-selector-container">
+            <input type="date" id="daily-picker" value="${new Date().toISOString().split('T')[0]}" onchange="updateArbitrageReport()" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500/50">
+            <input type="month" id="monthly-picker" value="${new Date().toISOString().slice(0,7)}" onchange="updateArbitrageReport()" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500/50 hidden">
+            <select id="yearly-picker" onchange="updateArbitrageReport()" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500/50 hidden">
+              ${Array.from({length: 5}, (_, i) => new Date().getFullYear() - i).map(year => 
+                `<option value="${year}" ${year === new Date().getFullYear() ? 'selected' : ''}>${year}</option>`
+              ).join('')}
+            </select>
+            <div id="cumulative-picker" class="text-sm text-slate-400 py-2 hidden">${getTrans('reports_all_history')}</div>
+          </div>
         </div>
       </div>
 
@@ -955,34 +968,50 @@ function renderArbitrageReports(container, isOwner) {
 
   if (window.lucide) lucide.createIcons();
   
-  // 初始化报告数据
-  updateArbitrageReport();
+  // 初始化时间选择器和报告数据
+  updatePeriodSelector();
 }
 
 // 生成套利数据（Demo版本）
-function generateArbitrageData(stationId, period) {
+function generateArbitrageData(stationId, period, selectedTime) {
   const station = getStation(stationId);
   if (!station) return { summary: {}, cycles: [], chartData: [] };
 
-  const now = new Date();
+  let baseDate = new Date();
   let days, dataPoints;
+  
+  // 根据选择的时间设置基准日期
+  if (selectedTime && selectedTime !== 'all') {
+    switch (period) {
+      case 'daily':
+        baseDate = new Date(selectedTime + 'T00:00:00');
+        break;
+      case 'monthly':
+        baseDate = new Date(selectedTime + '-01T00:00:00');
+        break;
+      case 'yearly':
+        baseDate = new Date(selectedTime + '-01-01T00:00:00');
+        break;
+    }
+  }
   
   switch (period) {
     case 'daily':
       days = 1;
-      dataPoints = 24; // hourly data
+      dataPoints = 24; // hourly data for the selected day
       break;
     case 'monthly':
       days = 30;
-      dataPoints = 30; // daily data
+      dataPoints = 30; // daily data for the selected month
       break;
     case 'yearly':
       days = 365;
-      dataPoints = 12; // monthly data
+      dataPoints = 12; // monthly data for the selected year
       break;
     case 'cumulative':
       days = 730; // 2 years
       dataPoints = 24; // monthly data
+      baseDate = new Date(); // Always use current date for cumulative
       break;
     default:
       days = 30;
@@ -998,16 +1027,21 @@ function generateArbitrageData(stationId, period) {
   let totalChargeCost = 0;
   let totalDischargeRevenue = 0;
 
-  // Generate arbitrage cycles
+  // Generate arbitrage cycles based on selected time
   for (let i = 0; i < dataPoints; i++) {
-    const date = new Date(now);
+    const date = new Date(baseDate);
+    
     if (period === 'daily') {
+      // For daily report, show hourly cycles within the selected day
       date.setHours(i);
     } else if (period === 'monthly') {
-      date.setDate(date.getDate() - i);
+      // For monthly report, show daily cycles within the selected month
+      date.setDate(date.getDate() + i);
     } else if (period === 'yearly') {
-      date.setMonth(date.getMonth() - i);
+      // For yearly report, show monthly cycles within the selected year
+      date.setMonth(date.getMonth() + i);
     } else {
+      // For cumulative, show monthly cycles going back
       date.setMonth(date.getMonth() - i);
     }
 
@@ -1071,6 +1105,51 @@ function generateArbitrageData(stationId, period) {
   };
 }
 
+// 更新时间选择器显示
+function updatePeriodSelector() {
+  const periodSelect = document.getElementById('arbitrage-period-select');
+  const label = document.getElementById('time-select-label');
+  const dailyPicker = document.getElementById('daily-picker');
+  const monthlyPicker = document.getElementById('monthly-picker');
+  const yearlyPicker = document.getElementById('yearly-picker');
+  const cumulativePicker = document.getElementById('cumulative-picker');
+  
+  if (!periodSelect || !label) return;
+
+  const period = periodSelect.value;
+  
+  // 隐藏所有选择器
+  [dailyPicker, monthlyPicker, yearlyPicker, cumulativePicker].forEach(el => {
+    if (el) el.classList.add('hidden');
+  });
+
+  // 根据周期类型显示对应选择器并更新标签
+  switch (period) {
+    case 'daily':
+      if (dailyPicker) dailyPicker.classList.remove('hidden');
+      label.textContent = getTrans('reports_select_date');
+      break;
+    case 'monthly':
+      if (monthlyPicker) monthlyPicker.classList.remove('hidden');
+      label.textContent = getTrans('reports_select_month');
+      break;
+    case 'yearly':
+      if (yearlyPicker) yearlyPicker.classList.remove('hidden');
+      label.textContent = getTrans('reports_select_year');
+      break;
+    case 'cumulative':
+      if (cumulativePicker) {
+        cumulativePicker.classList.remove('hidden');
+        cumulativePicker.textContent = getTrans('reports_all_history');
+      }
+      label.textContent = getTrans('reports_period');
+      break;
+  }
+  
+  // 更新报告
+  updateArbitrageReport();
+}
+
 // 更新套利报告
 function updateArbitrageReport() {
   const stationSelect = document.getElementById('arbitrage-station-select');
@@ -1081,7 +1160,27 @@ function updateArbitrageReport() {
   const stationId = stationSelect.value;
   const period = periodSelect.value;
   
-  const data = generateArbitrageData(stationId, period);
+  // 获取选择的具体时间
+  let selectedTime = null;
+  switch (period) {
+    case 'daily':
+      const dailyPicker = document.getElementById('daily-picker');
+      selectedTime = dailyPicker ? dailyPicker.value : null;
+      break;
+    case 'monthly':
+      const monthlyPicker = document.getElementById('monthly-picker');
+      selectedTime = monthlyPicker ? monthlyPicker.value : null;
+      break;
+    case 'yearly':
+      const yearlyPicker = document.getElementById('yearly-picker');
+      selectedTime = yearlyPicker ? yearlyPicker.value : null;
+      break;
+    case 'cumulative':
+      selectedTime = 'all';
+      break;
+  }
+  
+  const data = generateArbitrageData(stationId, period, selectedTime);
   
   // Update summary cards
   updateSummaryCards(data.summary);
@@ -1091,6 +1190,39 @@ function updateArbitrageReport() {
   
   // Update table
   updateDetailTable(data.cycles);
+  
+  // Update page title to show selected time
+  updateReportTitle(period, selectedTime);
+}
+
+// 更新报告标题显示选择的时间
+function updateReportTitle(period, selectedTime) {
+  const titleElement = document.querySelector('h2');
+  if (!titleElement || !selectedTime) return;
+  
+  let timeText = '';
+  switch (period) {
+    case 'daily':
+      timeText = ` - ${selectedTime}`;
+      break;
+    case 'monthly':
+      timeText = ` - ${selectedTime}`;
+      break;
+    case 'yearly':
+      timeText = ` - ${selectedTime}`;
+      break;
+    case 'cumulative':
+      timeText = ` - ${getTrans('reports_all_history')}`;
+      break;
+  }
+  
+  const baseTitle = getTrans('reports_title');
+  titleElement.innerHTML = `
+    <i data-lucide="bar-chart-3" class="w-5 h-5 text-cyan-400"></i>
+    ${baseTitle}${timeText}
+  `;
+  
+  if (window.lucide) lucide.createIcons();
 }
 
 // 更新汇总卡片

@@ -472,6 +472,10 @@ const TRANSLATIONS = {
     reports_vs_previous: 'vs Previous',
     reports_increase: 'Increase',
     reports_decrease: 'Decrease',
+    reports_select_date: 'Select Date',
+    reports_select_month: 'Select Month', 
+    reports_select_year: 'Select Year',
+    reports_all_history: 'All History',
 
     // Language
     lang_switch: 'English',
@@ -915,6 +919,10 @@ const TRANSLATIONS = {
     reports_vs_previous: '对比上期',
     reports_increase: '增长',
     reports_decrease: '下降',
+    reports_select_date: '选择日期',
+    reports_select_month: '选择月份',
+    reports_select_year: '选择年份',
+    reports_all_history: '全部历史数据',
 
     // 语言
     lang_switch: '中文',
