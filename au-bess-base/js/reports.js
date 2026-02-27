@@ -336,7 +336,9 @@ function downloadCSV(rows, filename) {
 let alarmFilterStation = 'all';
 let alarmFilterDevice = 'all';
 let alarmFilterSeverity = 'all';
-let alarmFilterTab = 'all'; // 'all' | 'ACTIVE' | 'ACKNOWLEDGED' | 'RESOLVED'
+let alarmFilterTab = 'all';
+let alarmFilterDateFrom = '';
+let alarmFilterDateTo = '';
 
 /**
  * 解析时间戳（剥离城市后缀后转 Date）
@@ -405,6 +407,14 @@ function renderAlarmsList(container, isOwner) {
   if (alarmFilterTab !== 'all') {
     allAlarms = allAlarms.filter(a => a.status === alarmFilterTab);
   }
+  if (alarmFilterDateFrom) {
+    const fromMs = new Date(alarmFilterDateFrom).getTime();
+    allAlarms = allAlarms.filter(a => (a.created_ms || 0) >= fromMs);
+  }
+  if (alarmFilterDateTo) {
+    const toMs = new Date(alarmFilterDateTo + 'T23:59:59').getTime();
+    allAlarms = allAlarms.filter(a => (a.created_ms || 0) <= toMs);
+  }
 
   // 排序
   const statusOrder = { 'ACTIVE': 0, 'ACKNOWLEDGED': 1, 'RESOLVED': 2 };
@@ -454,8 +464,16 @@ function renderAlarmsList(container, isOwner) {
             <option value="Warning" ${alarmFilterSeverity==='Warning'?'selected':''}>${getTrans('alarm_warning')}</option>
           </select>
         </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-500 whitespace-nowrap">${getTrans('alarm_col_time')}:</span>
+          <input type="date" value="${alarmFilterDateFrom}" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+            class="px-2 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white" />
+          <span class="text-slate-500">→</span>
+          <input type="date" value="${alarmFilterDateTo}" onchange="alarmFilterDateTo=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+            class="px-2 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white" />
+        </div>
         <div class="flex items-center gap-2 ml-auto">
-          <button onclick="alarmFilterStation='all';alarmFilterDevice='all';alarmFilterSeverity='all';alarmFilterTab='all';renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+          <button onclick="alarmFilterStation='all';alarmFilterDevice='all';alarmFilterSeverity='all';alarmFilterTab='all';alarmFilterDateFrom='';alarmFilterDateTo='';renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
             class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-400 hover:text-white transition-colors">${getTrans('alarm_filter_reset')}</button>
           <button onclick="exportAlarmsCSV()"
             class="px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-sm font-medium text-emerald-400 hover:bg-emerald-500/30 transition-colors">${getTrans('export_csv')}</button>
