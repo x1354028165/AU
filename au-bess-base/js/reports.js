@@ -541,10 +541,10 @@ function renderAlarmsList(container, isOwner) {
   const tabBar = `
     <div class="flex items-center justify-between border-b border-white/10 mb-4">
       <div class="flex items-center">
-        <span onclick="alarmFilterTab='ACTIVE';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('ACTIVE')}">${getTrans('status_active')}（${countActive}）</span>
-        <span onclick="alarmFilterTab='ACKNOWLEDGED';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('ACKNOWLEDGED')}">${getTrans('status_ack')}（${countAck}）</span>
-        <span onclick="alarmFilterTab='RESOLVED';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('RESOLVED')}">${getTrans('status_resolved')}（${countResolved}）</span>
-        <span onclick="alarmFilterTab='all';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('all')}">${getTrans('alarm_filter_all')}（${countAll}）</span>
+        <span onclick="alarmFilterTab='ACTIVE';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('ACTIVE')}">${getTrans('status_active')} (${countActive})</span>
+        <span onclick="alarmFilterTab='ACKNOWLEDGED';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('ACKNOWLEDGED')}">${getTrans('status_ack')} (${countAck})</span>
+        <span onclick="alarmFilterTab='RESOLVED';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('RESOLVED')}">${getTrans('status_resolved')} (${countResolved})</span>
+        <span onclick="alarmFilterTab='all';renderAlarmsList(document.getElementById('view-reports'),${isOwner})" class="${tabClass('all')}">${getTrans('alarm_filter_all')} (${countAll})</span>
       </div>
       <button onclick="exportAlarmsCSV()" class="px-4 py-1.5 rounded bg-emerald-500 text-xs font-medium text-white hover:bg-emerald-600 transition-colors mb-1">${getTrans('export_csv')}</button>
     </div>
