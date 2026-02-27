@@ -1939,132 +1939,140 @@ function renderDispatchControlPanel(container, forceStationId) {
 
   // 今日实际交易汇总
   const todaySummary = typeof getTodayTradesSummary === 'function' ? getTodayTradesSummary() : plan.summary;
-  const todayProfitColor = parseFloat(todaySummary.profit) >= 0 ? 'text-emerald-400' : 'text-red-400';
+  const todayProfitVal = parseFloat(todaySummary.profit);
+  const todayProfitColor = todayProfitVal >= 0 ? 'text-emerald-400' : 'text-red-400';
+  const profitGlow = todayProfitVal >= 0 ? 'shadow-emerald-500/20' : 'shadow-red-500/20';
+
+  // 大圆环参数
+  const ringSize = 260;
+  const ringR = 100;
+  const ringCirc = 2 * Math.PI * ringR;
+  const ringSocOffset = ringCirc - (socPct / 100) * ringCirc;
 
   container.innerHTML = `
     <div id="dispatch-panel" data-station-id="${station.id}">
-      <!-- 顶部：今日套利汇总 -->
-      <div class="grid grid-cols-3 gap-4 mb-6">
-        <div class="bg-white/5 rounded-xl p-5 border border-white/10">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-sm">⬇</span>
-            <span class="text-xs text-slate-400">${getTrans('total_buy')}</span>
+
+      <!-- ====== 顶部：今日套利汇总 ====== -->
+      <div class="grid grid-cols-3 gap-8 mb-10">
+        <div class="rounded-2xl p-8 border border-white/10 bg-gradient-to-br from-blue-500/10 to-transparent shadow-xl ${profitGlow}">
+          <div class="flex items-center gap-4 mb-4">
+            <span class="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-xl">⬇</span>
+            <span class="text-sm text-slate-400 tracking-wide">${getTrans('total_buy')}</span>
           </div>
-          <p class="text-2xl font-bold text-white font-mono" id="dp-summary-buy">${todaySummary.totalBuyQty} MWh</p>
-          <p class="text-xs text-slate-500 mt-1">${getTrans('cost')}: A$${todaySummary.totalBuyCost}</p>
+          <p class="text-4xl font-bold text-white font-mono tracking-tight" id="dp-summary-buy">${todaySummary.totalBuyQty} <span class="text-lg text-slate-500">MWh</span></p>
+          <p class="text-sm text-slate-500 mt-3">${getTrans('cost')}: <span class="text-white">A$${todaySummary.totalBuyCost}</span></p>
         </div>
-        <div class="bg-white/5 rounded-xl p-5 border border-white/10">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-sm">⬆</span>
-            <span class="text-xs text-slate-400">${getTrans('total_sell')}</span>
+        <div class="rounded-2xl p-8 border border-white/10 bg-gradient-to-br from-amber-500/10 to-transparent shadow-xl">
+          <div class="flex items-center gap-4 mb-4">
+            <span class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-xl">⬆</span>
+            <span class="text-sm text-slate-400 tracking-wide">${getTrans('total_sell')}</span>
           </div>
-          <p class="text-2xl font-bold text-white font-mono" id="dp-summary-sell">${todaySummary.totalSellQty} MWh</p>
-          <p class="text-xs text-slate-500 mt-1">${getTrans('revenue')}: A$${todaySummary.totalSellRevenue}</p>
+          <p class="text-4xl font-bold text-white font-mono tracking-tight" id="dp-summary-sell">${todaySummary.totalSellQty} <span class="text-lg text-slate-500">MWh</span></p>
+          <p class="text-sm text-slate-500 mt-3">${getTrans('revenue')}: <span class="text-white">A$${todaySummary.totalSellRevenue}</span></p>
         </div>
-        <div class="bg-white/5 rounded-xl p-5 border border-white/10">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm">🏆</span>
-            <span class="text-xs text-slate-400">${getTrans('spread_profit')}</span>
+        <div class="rounded-2xl p-8 border border-white/10 bg-gradient-to-br ${todayProfitVal >= 0 ? 'from-emerald-500/10' : 'from-red-500/10'} to-transparent shadow-xl ${profitGlow}">
+          <div class="flex items-center gap-4 mb-4">
+            <span class="w-12 h-12 rounded-2xl ${todayProfitVal >= 0 ? 'bg-emerald-500/20' : 'bg-red-500/20'} flex items-center justify-center text-xl">🏆</span>
+            <span class="text-sm text-slate-400 tracking-wide">${getTrans('spread_profit')}</span>
           </div>
-          <p class="text-2xl font-bold ${todayProfitColor} font-mono" id="dp-summary-profit">A$${todaySummary.profit}</p>
-          <p class="text-xs text-slate-500 mt-1">${getTrans('margin')}: ${todaySummary.margin}%</p>
+          <p class="text-4xl font-bold ${todayProfitColor} font-mono tracking-tight" id="dp-summary-profit">A$${todaySummary.profit}</p>
+          <p class="text-sm text-slate-500 mt-3">${getTrans('margin')}: <span class="${todayProfitColor}">${todaySummary.margin}%</span></p>
         </div>
       </div>
 
-      <!-- 左右分栏 -->
-      <div class="flex gap-6" style="flex-direction: row; flex-wrap: wrap;">
+      <!-- ====== 左右分栏 ====== -->
+      <div class="flex gap-10" style="flex-direction: row; flex-wrap: wrap;">
 
         <!-- 左栏：电站控制 -->
-        <div class="space-y-4" style="width: 380px; flex-shrink: 0;">
-          <!-- 标题 + 自动开关 -->
-          <div class="bg-white/5 rounded-xl p-5 border border-white/10">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-bold text-white">${getTrans('menu_dispatch')}</h3>
+        <div class="space-y-8" style="width: 440px; flex-shrink: 0;">
+
+          <!-- SoC 大圆环 -->
+          <div class="rounded-2xl p-8 border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-white tracking-tight">${getTrans('menu_dispatch')}</h3>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" id="dp-auto-toggle" ${isAuto ? 'checked' : ''} onchange="dispatchToggleAuto('${station.id}', this.checked)" class="sr-only peer">
-                <div class="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                <span class="ml-2 text-sm font-medium ${isAuto ? 'text-emerald-400' : 'text-slate-400'}" id="dp-auto-label">${isAuto ? getTrans('dispatch_mode_smart') : getTrans('dispatch_mode_manual')}</span>
+                <div class="w-14 h-7 bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-500"></div>
+                <span class="ml-3 text-sm font-semibold ${isAuto ? 'text-emerald-400' : 'text-slate-400'}" id="dp-auto-label">${isAuto ? getTrans('dispatch_mode_smart') : getTrans('dispatch_mode_manual')}</span>
               </label>
             </div>
 
-            <!-- SoC 圆环 + 电价 -->
-            <div class="flex justify-center py-4">
-              <div class="relative">
-                <svg width="180" height="180" viewBox="0 0 180 180">
-                  <circle cx="90" cy="90" r="70" fill="none" stroke="#1e293b" stroke-width="12"/>
-                  <circle cx="90" cy="90" r="70" fill="none" stroke="${socColor}" stroke-width="12"
-                    stroke-dasharray="${circumference}" stroke-dashoffset="${socOffset}"
-                    stroke-linecap="round" transform="rotate(-90 90 90)" class="transition-all duration-1000"/>
+            <div class="flex justify-center py-6">
+              <div class="relative" style="filter: drop-shadow(0 0 40px ${socColor}33);">
+                <svg width="${ringSize}" height="${ringSize}" viewBox="0 0 ${ringSize} ${ringSize}">
+                  <circle cx="${ringSize/2}" cy="${ringSize/2}" r="${ringR}" fill="none" stroke="#1e293b" stroke-width="14"/>
+                  <circle cx="${ringSize/2}" cy="${ringSize/2}" r="${ringR}" fill="none" stroke="${socColor}" stroke-width="14"
+                    stroke-dasharray="${ringCirc}" stroke-dashoffset="${ringSocOffset}"
+                    stroke-linecap="round" transform="rotate(-90 ${ringSize/2} ${ringSize/2})" class="transition-all duration-1000"/>
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="text-3xl font-bold font-mono" style="color:${priceColor}" id="dp-ring-price">${priceStr}</span>
-                  <span class="text-xs text-slate-500 mt-1" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
+                  <span class="text-4xl font-bold font-mono tracking-tight" style="color:${priceColor}" id="dp-ring-price">${priceStr}</span>
+                  <span class="text-sm text-slate-400 mt-2 font-medium" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
+                  <span class="text-xs text-slate-600 mt-1">${station.status || 'Standby'}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 底部3个KPI -->
-          <div class="grid grid-cols-3 gap-3">
-            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
-              <div class="text-2xl mb-1">🔋</div>
-              <p class="text-xs text-slate-500">${getTrans('discharge_cycles')}</p>
-              <p class="text-lg font-bold text-white font-mono" id="dp-cycles">${Math.floor(station.soc * cap.mwh / 100 / cap.mwh * 10)}</p>
+          <!-- 3个 KPI -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+              <p class="text-sm text-slate-400 mb-2">${getTrans('discharge_cycles')}</p>
+              <p class="text-3xl font-bold text-white font-mono" id="dp-cycles">${Math.floor(station.soc * cap.mwh / 100 / cap.mwh * 10)}</p>
             </div>
-            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
-              <div class="text-2xl mb-1">⚡</div>
-              <p class="text-xs text-slate-500">${getTrans('available_kwh')}</p>
-              <p class="text-lg font-bold text-cyan-400 font-mono" id="dp-kwh">${(station.soc * cap.mwh / 100 * 1000).toFixed(0)}kWh</p>
+            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+              <p class="text-sm text-slate-400 mb-2">${getTrans('available_kwh')}</p>
+              <p class="text-3xl font-bold text-cyan-400 font-mono" id="dp-kwh">${(station.soc * cap.mwh / 100 * 1000).toFixed(0)}<span class="text-lg">kWh</span></p>
             </div>
-            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
-              <div class="text-2xl mb-1">💰</div>
-              <p class="text-xs text-slate-500">${getTrans('projected_profit')}</p>
-              <p class="text-lg font-bold text-emerald-400 font-mono" id="dp-profit">$${plan.summary.profit}</p>
+            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+              <p class="text-sm text-slate-400 mb-2">${getTrans('projected_profit')}</p>
+              <p class="text-3xl font-bold text-emerald-400 font-mono" id="dp-profit">$${plan.summary.profit}</p>
             </div>
           </div>
 
-          <!-- 手动控制按钮 -->
+          <!-- 手动控制 -->
           ${!isAuto ? `
-          <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-            <p class="text-xs text-slate-500 mb-3">${getTrans('dispatch_mode_manual')}</p>
-            <div class="grid grid-cols-3 gap-2">
-              <button onclick="dispatchSetMode('${station.id}', 'manual_charge')" class="py-2 rounded-lg text-xs font-bold ${mode === 'manual_charge' ? 'bg-blue-500 text-white' : 'bg-white/5 text-blue-400 border border-blue-500/30'}">⚡ ${getTrans('force_charge')}</button>
-              <button onclick="dispatchSetMode('${station.id}', 'manual_discharge')" class="py-2 rounded-lg text-xs font-bold ${mode === 'manual_discharge' ? 'bg-red-500 text-white' : 'bg-white/5 text-red-400 border border-red-500/30'}">🔋 ${getTrans('force_discharge')}</button>
-              <button onclick="dispatchSetMode('${station.id}', 'manual_idle')" class="py-2 rounded-lg text-xs font-bold ${mode === 'manual_idle' ? 'bg-slate-500 text-white' : 'bg-white/5 text-slate-400 border border-slate-500/30'}">⏸ ${getTrans('force_idle')}</button>
+          <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03]">
+            <p class="text-sm text-slate-400 mb-4 font-medium">${getTrans('dispatch_mode_manual')}</p>
+            <div class="grid grid-cols-3 gap-3">
+              <button onclick="dispatchSetMode('${station.id}', 'manual_charge')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_charge' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-white/5 text-blue-400 border border-blue-500/30 hover:bg-blue-500/10'}">⚡ ${getTrans('force_charge')}</button>
+              <button onclick="dispatchSetMode('${station.id}', 'manual_discharge')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_discharge' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-white/5 text-red-400 border border-red-500/30 hover:bg-red-500/10'}">🔋 ${getTrans('force_discharge')}</button>
+              <button onclick="dispatchSetMode('${station.id}', 'manual_idle')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_idle' ? 'bg-slate-500 text-white shadow-lg shadow-slate-500/30' : 'bg-white/5 text-slate-400 border border-slate-500/30 hover:bg-slate-500/10'}">⏸ ${getTrans('force_idle')}</button>
             </div>
           </div>
           ` : ''}
         </div>
 
         <!-- 右栏：行情 -->
-        <div class="flex-1 space-y-4">
-          <!-- 4 KPI 卡片 -->
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
-              <p class="text-xs text-slate-500">${getTrans('spot_price')}</p>
-              <p class="text-xl font-bold font-mono" style="color:${priceColor}" id="dp-spot">${priceStr}</p>
-              <p class="text-xs text-slate-500">($/MWh)</p>
+        <div class="flex-1 space-y-8">
+
+          <!-- 4 KPI -->
+          <div class="grid grid-cols-4 gap-4">
+            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+              <p class="text-sm text-slate-400 mb-2">${getTrans('spot_price')}</p>
+              <p class="text-3xl font-bold font-mono tracking-tight" style="color:${priceColor}" id="dp-spot">${priceStr}</p>
+              <p class="text-xs text-slate-600 mt-1">$/MWh</p>
             </div>
-            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
-              <p class="text-xs text-slate-500">${getTrans('current_demand')}</p>
-              <p class="text-xl font-bold text-emerald-400 font-mono" id="dp-demand">4,454</p>
-              <p class="text-xs text-slate-500">(MW)</p>
+            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+              <p class="text-sm text-slate-400 mb-2">${getTrans('current_demand')}</p>
+              <p class="text-3xl font-bold text-emerald-400 font-mono tracking-tight" id="dp-demand">4,454</p>
+              <p class="text-xs text-slate-600 mt-1">MW</p>
             </div>
-            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
-              <p class="text-xs text-slate-500">${getTrans('forecast_price')}</p>
-              <p class="text-xl font-bold text-amber-400 font-mono" id="dp-fc-price">$${fc.toFixed(2)}</p>
-              <p class="text-xs text-slate-500">($/MWh · NEXT 30MIN)</p>
+            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+              <p class="text-sm text-slate-400 mb-2">${getTrans('forecast_price')}</p>
+              <p class="text-3xl font-bold text-amber-400 font-mono tracking-tight" id="dp-fc-price">$${fc.toFixed(2)}</p>
+              <p class="text-xs text-slate-600 mt-1">$/MWh · 30min</p>
             </div>
-            <div class="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
-              <p class="text-xs text-slate-500">${getTrans('forecast_demand')}</p>
-              <p class="text-xl font-bold text-emerald-400 font-mono" id="dp-fc-demand">4,759</p>
-              <p class="text-xs text-slate-500">(MW · NEXT 30MIN)</p>
+            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+              <p class="text-sm text-slate-400 mb-2">${getTrans('forecast_demand')}</p>
+              <p class="text-3xl font-bold text-emerald-400 font-mono tracking-tight" id="dp-fc-demand">4,759</p>
+              <p class="text-xs text-slate-600 mt-1">MW · 30min</p>
             </div>
           </div>
 
-          <!-- 图表区 -->
-          <div class="bg-white/5 rounded-xl p-4 border border-white/10">
-            <div id="dispatch-chart-container" style="height: 320px; position: relative;">
+          <!-- 图表 -->
+          <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03]">
+            <div id="dispatch-chart-container" style="height: 400px; position: relative;">
               <canvas id="dispatch-price-chart"></canvas>
             </div>
           </div>
@@ -2072,40 +2080,40 @@ function renderDispatchControlPanel(container, forceStationId) {
       </div>
 
       <!-- 今日交易计划表 -->
-      <div class="mt-6 bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-        <div class="px-5 py-4 border-b border-white/10">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2">🕐 ${getTrans('trading_plan_today')}</h3>
+      <div class="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden">
+        <div class="px-8 py-6 border-b border-white/10">
+          <h3 class="text-lg font-bold text-white tracking-tight">${getTrans('trading_plan_today')}</h3>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-sm">
+          <table class="w-full">
             <thead>
-              <tr class="border-b border-white/10">
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-400">${getTrans('time')}</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-400">${getTrans('price_type')}</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-400">${getTrans('operation')}</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-slate-400">${getTrans('price')}</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-slate-400">${getTrans('trade_qty')}</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-slate-400">${getTrans('result')}</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-slate-400">${getTrans('status')}</th>
+              <tr class="bg-white/[0.03]">
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-400">${getTrans('time')}</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-400">${getTrans('price_type')}</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-400">${getTrans('operation')}</th>
+                <th class="px-6 py-4 text-right text-sm font-semibold text-slate-400">${getTrans('price')}</th>
+                <th class="px-6 py-4 text-right text-sm font-semibold text-slate-400">${getTrans('trade_qty')}</th>
+                <th class="px-6 py-4 text-right text-sm font-semibold text-slate-400">${getTrans('result')}</th>
+                <th class="px-6 py-4 text-right text-sm font-semibold text-slate-400">${getTrans('status')}</th>
               </tr>
             </thead>
             <tbody>
               ${plan.slots.map(s => {
                 const typeColor = s.type === 'peak' ? 'text-red-400' : s.type === 'off_peak' ? 'text-emerald-400' : 'text-amber-400';
-                const actionColor = s.action === 'buy' ? 'bg-blue-500/20 text-blue-400' : s.action === 'sell' ? 'bg-red-500/20 text-red-400' : s.action === 'partial_sell' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-400';
+                const actionColor = s.action === 'buy' ? 'bg-blue-500/20 text-blue-300' : s.action === 'sell' ? 'bg-red-500/20 text-red-300' : s.action === 'partial_sell' ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-500/20 text-slate-400';
                 const actionText = s.action === 'buy' ? getTrans('action_buy') : s.action === 'sell' ? getTrans('action_sell') : s.action === 'partial_sell' ? getTrans('action_partial_sell') : getTrans('action_hold');
-                const resultColor = s.result > 0 ? 'text-emerald-400' : s.result < 0 ? 'text-red-400' : 'text-slate-500';
-                const statusBadge = s.status === 'done' ? `<span class="px-2 py-1 rounded text-xs bg-slate-500/20 text-slate-400">${getTrans('status_done')}</span>`
-                  : s.status === 'active' ? `<span class="px-2 py-1 rounded text-xs bg-emerald-500/20 text-emerald-400 animate-pulse">${getTrans('status_active')}</span>`
-                  : `<span class="px-2 py-1 rounded text-xs bg-white/5 text-slate-500">${getTrans('status_planned')}</span>`;
-                return `<tr class="border-b border-white/5 hover:bg-white/[0.02]">
-                  <td class="px-4 py-3 text-white font-mono text-xs">${s.time}</td>
-                  <td class="px-4 py-3 ${typeColor} text-xs font-medium">${s.typeName}</td>
-                  <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-bold ${actionColor}">${actionText}</span></td>
-                  <td class="px-4 py-3 text-right text-white font-mono text-xs">$${s.avgPrice.toFixed(2)}/MWh</td>
-                  <td class="px-4 py-3 text-right text-white font-mono text-xs">${s.qty > 0 ? s.qty.toFixed(1) : '—'}</td>
-                  <td class="px-4 py-3 text-right font-mono text-xs ${resultColor}">${s.result > 0 ? '+' : ''}${s.result !== 0 ? 'A$' + s.result.toFixed(0) : 'A$0'}</td>
-                  <td class="px-4 py-3 text-right">${statusBadge}</td>
+                const resultColor = s.result > 0 ? 'text-emerald-400' : s.result < 0 ? 'text-red-400' : 'text-slate-600';
+                const statusBadge = s.status === 'done' ? `<span class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-500/20 text-slate-300">${getTrans('status_done')}</span>`
+                  : s.status === 'active' ? `<span class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 animate-pulse">${getTrans('status_active')}</span>`
+                  : `<span class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-500">${getTrans('status_planned')}</span>`;
+                return `<tr class="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                  <td class="px-6 py-5 text-white font-mono text-sm">${s.time}</td>
+                  <td class="px-6 py-5 ${typeColor} text-sm font-semibold">${s.typeName}</td>
+                  <td class="px-6 py-5"><span class="px-3 py-1.5 rounded-lg text-sm font-bold ${actionColor}">${actionText}</span></td>
+                  <td class="px-6 py-5 text-right text-white font-mono text-sm">$${s.avgPrice.toFixed(2)}</td>
+                  <td class="px-6 py-5 text-right text-white font-mono text-sm">${s.qty > 0 ? s.qty.toFixed(1) + ' MWh' : '—'}</td>
+                  <td class="px-6 py-5 text-right font-mono text-sm font-semibold ${resultColor}">${s.result > 0 ? '+' : ''}${s.result !== 0 ? 'A$' + s.result.toFixed(0) : '—'}</td>
+                  <td class="px-6 py-5 text-right">${statusBadge}</td>
                 </tr>`;
               }).join('')}
             </tbody>
