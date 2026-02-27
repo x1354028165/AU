@@ -1984,7 +1984,7 @@ function renderDispatchControlPanel(container, forceStationId) {
       <div class="flex gap-10" style="flex-direction: row; flex-wrap: wrap;">
 
         <!-- 左栏：电站控制 -->
-        <div class="space-y-8" style="width: 440px; flex-shrink: 0;">
+        <div class="space-y-8" style="width: 480px; flex-shrink: 0;">
 
           <!-- 电站管理标题 + 智能托管 -->
           <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-b from-white/[0.03] to-transparent">
@@ -2008,7 +2008,7 @@ function renderDispatchControlPanel(container, forceStationId) {
 
               <!-- 中：价格实心球 -->
               <div class="flex-shrink-0">
-                <div class="rounded-full flex flex-col items-center justify-center" style="width: 220px; height: 220px; background: radial-gradient(circle at 40% 35%, #7dd3fc, #38bdf8 60%, #0ea5e9);">
+                <div class="rounded-full flex flex-col items-center justify-center" style="width: 240px; height: 240px; background: radial-gradient(circle at 38% 32%, #93c5fd, #60a5fa 50%, #3b82f6 80%);">
                   <span class="text-4xl font-bold font-mono tracking-tight text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="dp-ring-price">${priceStr}</span>
                   <span class="text-sm text-white/70 mt-2 font-medium" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
                 </div>
@@ -2126,7 +2126,7 @@ function updateDispatchPanel() {
   const priceStr = price < 0 ? '-$' + Math.abs(price).toFixed(2) : '$' + price.toFixed(2);
 
   const el = (id) => document.getElementById(id);
-  const ringPrice = el('dp-ring-price'); if (ringPrice) { ringPrice.textContent = priceStr; ringPrice.style.color = priceColor; }
+  const ringPrice = el('dp-ring-price'); if (ringPrice) { ringPrice.textContent = priceStr; }
   const ringSoc = el('dp-ring-soc'); if (ringSoc) ringSoc.textContent = 'SoC ' + station.soc.toFixed(1) + '%';
   const spot = el('dp-spot'); if (spot) { spot.textContent = priceStr; spot.style.color = priceColor; }
   const fcPrice = el('dp-fc-price'); if (fcPrice) fcPrice.textContent = '$' + fc.toFixed(2);
