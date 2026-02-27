@@ -442,6 +442,72 @@ function calcDuration(alarm) {
  * 渲染告警列表（SCADA 风格：查询条件 + Tab + 表格）
  */
 function renderAlarmsList(container, isOwner) {
+  // 使用新的告警系统
+  if (typeof AlarmSystem !== 'undefined') {
+    const allAlarms = AlarmSystem.generateMockAlarms(50);
+    const stats = AlarmSystem.getAlarmStatistics(allAlarms);
+    
+    container.innerHTML = `
+      <div class="container">
+        <div class="page-header">
+          <h1 class="page-title">故障告警</h1>
+          <button onclick="exportAlarmsCSV()" class="btn btn-secondary">导出告警</button>
+        </div>
+        
+        <!-- 告警统计面板 -->
+        ${AlarmSystem.renderAlarmStatsPanel(stats)}
+        
+        <!-- 过滤器 -->
+        <div class="filter-section">
+          <select id="stationFilter" class="filter-select">
+            <option value="">全部电站</option>
+            <option value="Hornsdale Power Reserve">Hornsdale Power Reserve</option>
+            <option value="Victorian Big Battery">Victorian Big Battery</option>
+            <option value="Wallgrove BESS">Wallgrove BESS</option>
+          </select>
+          
+          <select id="levelFilter" class="filter-select">
+            <option value="">全部等级</option>
+            <option value="danger">危险</option>
+            <option value="warning">警告</option>
+            <option value="info">信息</option>
+          </select>
+          
+          <select id="statusFilter" class="filter-select">
+            <option value="">全部状态</option>
+            <option value="unprocessed">未处理</option>
+            <option value="processed">已处理</option>
+            <option value="recovered">已恢复</option>
+          </select>
+          
+          <div class="filter-actions">
+            <button class="btn btn-primary" onclick="applyAlarmFilters()">查询</button>
+            <button class="btn btn-secondary" onclick="resetAlarmFilters()">重置</button>
+          </div>
+        </div>
+        
+        <!-- 告警列表 -->
+        <div class="alarm-list">
+          ${allAlarms.map(alarm => AlarmSystem.renderAlarmCard(alarm)).join('')}
+        </div>
+        
+        <!-- 分页 -->
+        <div class="pagination-section">
+          <div class="pagination-info">显示 1-${Math.min(20, allAlarms.length)} 共 ${allAlarms.length} 条告警</div>
+          <div class="pagination-controls">
+            <button class="btn btn-sm btn-secondary">上一页</button>
+            <span class="badge badge-primary">1</span>
+            <button class="btn btn-sm btn-secondary">下一页</button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  // 原有的告警渲染逻辑作为备用
   const myStations = getStationsByRole();
 
   // 收集全量告警
@@ -831,6 +897,58 @@ function ackAlarm(stationId, alarmId) {
   }
 
   if (typeof showToast === 'function') showToast(getTrans('alarm_ack_success'), 'success');
+}
+
+// ============ 告警过滤器功能 ============
+
+function applyAlarmFilters() {
+  // 获取过滤条件
+  const stationFilter = document.getElementById('stationFilter')?.value || '';
+  const levelFilter = document.getElementById('levelFilter')?.value || '';
+  const statusFilter = document.getElementById('statusFilter')?.value || '';
+  
+  if (typeof AlarmSystem !== 'undefined') {
+    // 生成新的告警数据并应用过滤器
+    let alarms = AlarmSystem.generateMockAlarms(50);
+    
+    if (stationFilter) {
+      alarms = alarms.filter(alarm => alarm.station === stationFilter);
+    }
+    if (levelFilter) {
+      alarms = alarms.filter(alarm => alarm.level === levelFilter);
+    }
+    if (statusFilter) {
+      alarms = alarms.filter(alarm => alarm.status === statusFilter);
+    }
+    
+    // 更新告警列表
+    const alarmList = document.querySelector('.alarm-list');
+    if (alarmList) {
+      alarmList.innerHTML = alarms.map(alarm => AlarmSystem.renderAlarmCard(alarm)).join('');
+    }
+    
+    // 更新统计
+    const stats = AlarmSystem.getAlarmStatistics(alarms);
+    // 这里可以更新统计面板，暂时跳过复杂更新逻辑
+    
+    if (typeof showToast === 'function') {
+      showToast('过滤器已应用', 'success');
+    }
+  }
+}
+
+function resetAlarmFilters() {
+  // 重置所有过滤器
+  const stationFilter = document.getElementById('stationFilter');
+  const levelFilter = document.getElementById('levelFilter');
+  const statusFilter = document.getElementById('statusFilter');
+  
+  if (stationFilter) stationFilter.selectedIndex = 0;
+  if (levelFilter) levelFilter.selectedIndex = 0;
+  if (statusFilter) statusFilter.selectedIndex = 0;
+  
+  // 重新加载告警列表
+  applyAlarmFilters();
 }
 
 /**

@@ -16,6 +16,89 @@
   <script src="vendor/leaflet.min.js"></script>
   <link rel="stylesheet" href="css/design-system.css" />
   <link rel="stylesheet" href="css/main.css?v=1772202946526" />
+  <style>
+    /* 告警系统样式增强 */
+    .alarm-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+      margin: var(--spacing-lg) 0;
+    }
+    
+    .alarm-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .alarm-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .filter-section {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin: var(--spacing-lg) 0;
+      padding: var(--spacing-lg);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+    }
+    
+    .pagination-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-lg);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-bg-card);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+    
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+    
+    /* AI分析面板样式 */
+    .ai-analysis-panel {
+      background: linear-gradient(135deg, rgba(0,255,136,0.05), rgba(0,170,255,0.05));
+      border: 1px solid rgba(0,255,136,0.2);
+    }
+    
+    .analysis-item {
+      background: rgba(255,255,255,0.03);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .analysis-schedule {
+      background: rgba(0,255,136,0.1);
+      border: 1px solid rgba(0,255,136,0.2);
+      border-radius: var(--radius-sm);
+      padding: var(--spacing-md);
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .pagination-section {
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
+      
+      .pagination-controls {
+        justify-content: center;
+      }
+    }
+  </style>
   <script>
     tailwind.config = {
       theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] } } }
@@ -73,6 +156,8 @@
   <script src="js/auth.js?v=1772202946526"></script>
   <script src="js/simulator.js?v=1772202946526"></script>
   <script src="js/charts.js?v=1772202946526"></script>
+  <script src="js/market-data.js"></script>
+  <script src="js/alarm-system.js"></script>
   <script src="js/reports.js?v=1772202946526"></script>
   <script src="js/ui_router.js?v=1772202946526"></script>
   <script>

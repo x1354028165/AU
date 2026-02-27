@@ -1,0 +1,740 @@
+/* ============================================
+   SOLFACIL - Batch Operations Styles
+   Toolbar, Checkboxes, Mode Buttons, Modals
+   ============================================ */
+
+/* ============================================
+   Batch Toolbar
+   ============================================ */
+.batch-toolbar {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-2xl);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--gap-2xl);
+    border: 2px solid var(--color-border);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.batch-toolbar.has-selection {
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(55, 48, 163, 0.1);
+}
+
+.batch-toolbar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--gap-lg);
+    padding-bottom: var(--gap-md);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.batch-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+}
+
+.batch-checkbox-wrapper {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.batch-checkbox-wrapper input[type="checkbox"] {
+    display: none;
+}
+
+.batch-checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--color-border-muted);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.batch-checkbox-wrapper input[type="checkbox"]:checked + .batch-checkmark {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.batch-checkbox-wrapper input[type="checkbox"]:checked + .batch-checkmark::after {
+    content: '\2713';
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+}
+
+.batch-checkmark.indeterminate {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.batch-checkmark.indeterminate::after {
+    content: '\2014';
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+}
+
+.batch-label {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    cursor: pointer;
+}
+
+.batch-count {
+    font-size: var(--font-size-md);
+    color: var(--color-text-light);
+}
+
+.batch-count strong {
+    color: var(--color-primary);
+    font-size: var(--font-size-2xl);
+}
+
+.batch-divider {
+    color: var(--color-border);
+    font-size: 1.2rem;
+}
+
+.batch-reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.batch-reset-btn:hover:not(:disabled) {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+.batch-reset-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.batch-reset-btn .material-icons {
+    font-size: var(--font-size-xl);
+}
+
+/* ============================================
+   Mode Button Group
+   ============================================ */
+.batch-toolbar-body {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-lg);
+    margin-bottom: var(--gap-lg);
+}
+
+.mode-label {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.mode-btn-group {
+    display: flex;
+    gap: var(--gap-md);
+    flex: 1;
+}
+
+.mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-border);
+    background: var(--color-bg-card);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.mode-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.mode-btn .material-icons {
+    font-size: var(--font-size-7xl);
+    opacity: 0.6;
+}
+
+.mode-btn-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.mode-btn-title {
+    font-weight: 600;
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+}
+
+.mode-btn-desc {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-lighter);
+}
+
+/* Mode button active states */
+.mode-btn.active.mode-self-consumption {
+    border-color: var(--color-success);
+    background: var(--color-success-bg);
+}
+.mode-btn.active.mode-self-consumption .material-icons {
+    color: var(--color-success);
+    opacity: 1;
+}
+
+.mode-btn.active.mode-peak-valley {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+.mode-btn.active.mode-peak-valley .material-icons {
+    color: var(--color-primary);
+    opacity: 1;
+}
+
+.mode-btn.active.mode-peak-shaving {
+    border-color: var(--color-warning);
+    background: var(--color-warning-bg);
+}
+.mode-btn.active.mode-peak-shaving .material-icons {
+    color: var(--color-warning);
+    opacity: 1;
+}
+
+/* ============================================
+   Batch Dispatch Button
+   ============================================ */
+.batch-toolbar-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--gap-md);
+    align-items: center;
+}
+
+.batch-dispatch-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    padding: 0.75rem 2rem;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.batch-dispatch-btn:hover:not(:disabled) {
+    background: var(--gradient-primary-hover);
+    box-shadow: var(--shadow-primary-lg);
+    transform: translateY(-1px);
+}
+
+.batch-dispatch-btn:disabled {
+    background: var(--color-border-muted);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.batch-dispatch-btn .material-icons {
+    font-size: 1.2rem;
+}
+
+/* ============================================
+   Batch Confirm Modal
+   ============================================ */
+.modal-batch-confirm {
+    max-width: 580px;
+}
+
+.modal-batch-progress {
+    max-width: 580px;
+}
+
+.batch-change-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    margin: var(--gap-lg) 0;
+}
+
+.batch-change-item {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    padding: 0.5rem 0.75rem;
+    background: var(--color-bg-subtle);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+}
+
+.batch-change-item .material-icons {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+}
+
+.batch-change-arrow {
+    color: var(--color-primary);
+    font-size: var(--font-size-xl);
+}
+
+.batch-impact-box {
+    padding: 0.75rem 1rem;
+    background: var(--color-warning-bg);
+    border: 1px solid var(--color-warning-border);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    color: var(--color-warning-dark);
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+}
+
+.batch-impact-box .material-icons {
+    font-size: var(--font-size-2xl);
+}
+
+/* ============================================
+   Batch Progress Modal
+   ============================================ */
+.overall-progress {
+    margin-bottom: 1.25rem;
+    font-size: var(--font-size-md);
+    color: var(--color-text-muted);
+}
+
+.overall-progress-bar {
+    margin-top: var(--gap-sm);
+    height: 10px;
+}
+
+.overall-progress-fill {
+    transition: width var(--transition-slow);
+}
+
+.dispatch-progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+}
+
+.dispatch-progress-item {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    padding: var(--gap-md);
+    background: var(--color-bg-subtle);
+    border-radius: var(--radius-lg);
+    transition: background var(--transition-base);
+}
+
+.dispatch-progress-item.success { background: var(--color-success-bg); }
+.dispatch-progress-item.failed { background: var(--color-danger-bg); }
+
+.progress-status-icon {
+    font-size: var(--font-size-7xl);
+    flex-shrink: 0;
+}
+
+.progress-status-icon.spinning {
+    animation: spin 1s linear infinite;
+    color: var(--color-primary);
+}
+
+.progress-status-icon.status-success { color: var(--color-success); }
+.progress-status-icon.status-failed { color: var(--color-danger); }
+.progress-status-icon.status-waiting { color: var(--color-text-lighter); }
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.dispatch-item-info {
+    flex: 1;
+}
+
+.dispatch-item-name {
+    font-weight: 600;
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+}
+
+.dispatch-item-detail {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.dispatch-item-progress {
+    width: 80px;
+}
+
+.dispatch-item-progress .progress-bar {
+    height: 6px;
+}
+
+.progress-status-text {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Dispatch result summary */
+.dispatch-result-summary {
+    display: flex;
+    gap: var(--gap-2xl);
+    margin-bottom: var(--gap-lg);
+    padding: 0.75rem 1rem;
+    background: var(--color-bg-subtle);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+}
+
+.result-success-count {
+    color: var(--color-success);
+}
+
+.result-failed-count {
+    color: var(--color-danger);
+}
+
+/* ============================================
+   DR Test Button & Metrics
+   ============================================ */
+.dr-test-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.dr-test-btn:hover {
+    opacity: 0.85;
+}
+
+.dispatch-dr-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.375rem;
+}
+
+.dr-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.75rem;
+}
+
+.dr-metric strong {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.dr-aggregate-summary {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 0.5rem;
+}
+
+/* ============================================
+   Energy Flow State Colors
+   ============================================ */
+:root {
+    --ef-pv: #f59e0b;
+    --ef-bat-charging: #3b82f6;
+    --ef-bat-discharging: #10b981;
+    --ef-bat-idle: #9ca3af;
+    --ef-grid-import: #ef4444;
+    --ef-grid-export: #059669;
+    --ef-load: #8b5cf6;
+    --ef-line-width-min: 2px;
+    --ef-line-width-max: 6px;
+}
+
+/* ============================================
+   Diamond Energy Flow Container
+   ============================================ */
+.energy-flow-panel {
+    padding: 0.75rem;
+    background: transparent;
+    border-radius: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.energy-flow-diamond {
+    display: grid;
+    grid-template-columns: 1fr 28px 1fr 28px 1fr;
+    grid-template-rows: auto 28px auto 28px auto;
+    gap: 0;
+    align-items: center;
+    justify-items: center;
+    min-height: 150px;
+}
+
+.ef-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.5rem;
+    background: rgba(55, 48, 163, 0.04);
+    border: 1px solid rgba(55, 48, 163, 0.15);
+    min-width: 70px;
+    text-align: center;
+}
+
+.ef-node-icon { font-size: 1.1rem; }
+.ef-node-label { font-size: 0.65rem; color: var(--text-muted, #9ca3af); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.ef-node-value { font-size: 0.85rem; font-weight: 700; }
+.ef-node-sub   { font-size: 0.65rem; color: var(--text-muted, #9ca3af); }
+
+/* Grid positioning */
+.ef-pv       { grid-column: 3; grid-row: 1; }
+.ef-battery  { grid-column: 1; grid-row: 3; }
+.ef-center   { grid-column: 3; grid-row: 3; display: flex; align-items: center; justify-content: center; }
+.ef-load     { grid-column: 5; grid-row: 3; }
+.ef-grid     { grid-column: 3; grid-row: 5; }
+
+/* Connecting line cells */
+.ef-line-top    { grid-column: 3; grid-row: 2; width: 2px; height: 100%; align-self: stretch; justify-self: center; }
+.ef-line-left   { grid-column: 2; grid-row: 3; height: 2px; width: 100%; justify-self: stretch; align-self: center; }
+.ef-line-right  { grid-column: 4; grid-row: 3; height: 2px; width: 100%; justify-self: stretch; align-self: center; }
+.ef-line-bottom { grid-column: 3; grid-row: 4; width: 2px; height: 100%; align-self: stretch; justify-self: center; }
+
+/* Node color themes */
+.ef-pv       .ef-node-value { color: var(--ef-pv); }
+.ef-battery  .ef-node-value { color: var(--ef-bat-idle); }
+.ef-battery.charging   .ef-node-value { color: var(--ef-bat-charging); }
+.ef-battery.discharging .ef-node-value { color: var(--ef-bat-discharging); }
+.ef-load     .ef-node-value { color: var(--ef-load); }
+.ef-grid.importing .ef-node-value { color: var(--ef-grid-import); }
+.ef-grid.exporting .ef-node-value { color: var(--ef-grid-export); }
+
+/* ============================================
+   Animated Flow Lines
+   ============================================ */
+.ef-center-hub {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(55, 48, 163, 0.3);
+    position: relative;
+}
+
+.ef-line {
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(55, 48, 163, 0.7) 0px,
+        rgba(55, 48, 163, 0.7) 8px,
+        transparent 8px,
+        transparent 14px
+    );
+    height: 3px;
+    animation: flow-line 1s linear infinite;
+}
+
+.ef-line-vertical {
+    background: repeating-linear-gradient(
+        180deg,
+        rgba(55, 48, 163, 0.7) 0px,
+        rgba(55, 48, 163, 0.7) 8px,
+        transparent 8px,
+        transparent 14px
+    );
+    width: 3px;
+    animation: flow-line-v 1s linear infinite;
+}
+
+@keyframes flow-line {
+    0%   { background-position: 0 0; }
+    100% { background-position: 24px 0; }
+}
+
+@keyframes flow-line-v {
+    0%   { background-position: 0 0; }
+    100% { background-position: 0 24px; }
+}
+
+/* Pulse animation for active flow */
+@keyframes flow-pulse {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1.0; }
+}
+
+.ef-node.active {
+    animation: flow-pulse 1.5s ease-in-out infinite;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================
+   Device Health Row
+   ============================================ */
+.device-health-row {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(55, 48, 163, 0.04);
+    border: 1px solid rgba(55, 48, 163, 0.12);
+    border-radius: 0.375rem;
+    margin: 0.25rem 0;
+    flex-wrap: wrap;
+}
+
+.health-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 56px;
+    flex: 1;
+}
+
+.health-metric-label {
+    font-size: 0.6rem;
+    color: var(--text-muted, #9ca3af);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.15rem;
+}
+
+.health-metric-value {
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* SOC progress bar */
+.soc-bar-wrapper {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin-top: 0.2rem;
+    overflow: hidden;
+}
+
+.soc-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+/* SOC color states */
+.soc-bar-fill.soc-high   { background: #10b981; }
+.soc-bar-fill.soc-medium { background: #f59e0b; }
+.soc-bar-fill.soc-low    { background: #ef4444; }
+
+/* Health metric warning states */
+.health-metric-value.warning { color: #ef4444; }
+.health-metric-value.caution { color: #f59e0b; }
+.health-metric-value.good    { color: #10b981; }
+
+/* ============================================
+   Collapsible Financial Section
+   ============================================ */
+.financial-collapsible {
+    border-top: 1px solid var(--color-border, #e2e8f0);
+    margin-top: 0.5rem;
+}
+
+.financial-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #64748b);
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.financial-toggle:hover {
+    color: var(--color-text-primary, #1e293b);
+}
+
+.financial-toggle-icon {
+    transition: transform 0.25s ease;
+    font-size: 1rem;
+}
+
+.financial-collapsible.open .financial-toggle-icon {
+    transform: rotate(90deg);
+}
+
+.financial-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.financial-collapsible.open .financial-details {
+    max-height: 120px;
+    opacity: 1;
+}
+
+.financial-details-inner {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem 0.75rem;
+    flex-wrap: wrap;
+}
+
+.fin-metric {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 70px;
+    align-items: center;
+}
+
+.fin-metric-label {
+    font-size: 0.6rem;
+    color: var(--text-muted, #9ca3af);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.fin-metric-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #10b981;
+}

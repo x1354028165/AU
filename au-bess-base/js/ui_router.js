@@ -154,6 +154,103 @@ function safeGetTrans(key) {
   return key;
 }
 
+// ============ 增强功能 ============
+
+// 渲染市场数据增强面板
+function renderEnhancedMarketPanel() {
+  if (typeof MarketData === 'undefined') return '';
+  
+  const highest = MarketData.getHighestPriceRegion();
+  const mockData = MarketData.generateMockAEMOData();
+  const aiAnalysis = MarketData.generateAIAnalysis(mockData);
+  
+  return `
+    <div class="grid grid-2 gap-md mb-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="flex flex-between">
+            <div>
+              <div class="text-sm text-secondary">最高价区域</div>
+              <div class="text-lg font-bold">${highest.region}</div>
+              <div class="text-xl font-bold text-warning">$${highest.price.toFixed(2)}/MWh</div>
+            </div>
+            <span class="text-2xl">⚡</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-body">
+          <div class="flex flex-between">
+            <div>
+              <div class="text-sm text-secondary">AI决策</div>
+              <div class="text-lg font-bold">${aiAnalysis.decision}</div>
+              <div class="text-sm text-secondary">置信度: ${aiAnalysis.confidence}</div>
+            </div>
+            <span class="text-2xl">${aiAnalysis.decision === 'CHARGE' ? '🔋' : aiAnalysis.decision === 'DISCHARGE' ? '⚡' : '⏸️'}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 渲染告警面板
+function renderAlarmsPanel() {
+  if (typeof AlarmSystem === 'undefined') return '';
+  
+  const alarms = AlarmSystem.generateMockAlarms(6);
+  const stats = AlarmSystem.getAlarmStatistics(alarms);
+  
+  const recentAlarms = alarms.slice(0, 3).map(alarm => `
+    <div class="flex items-center justify-between p-3 bg-white/5 rounded border-l-4 ${alarm.level === 'danger' ? 'border-red-500' : alarm.level === 'warning' ? 'border-yellow-500' : 'border-blue-500'}">
+      <div>
+        <div class="text-sm font-medium">${alarm.name}</div>
+        <div class="text-xs text-secondary">${alarm.station}</div>
+      </div>
+      <div class="text-right">
+        ${AlarmSystem.renderAlarmBadge(alarm.level)}
+        <div class="text-xs text-secondary mt-1">${alarm.alarmTime.toLocaleTimeString()}</div>
+      </div>
+    </div>
+  `).join('');
+  
+  return `
+    <div class="card">
+      <div class="card-header">
+        <div class="flex flex-between">
+          <h3 class="section-title">系统告警</h3>
+          <span class="badge ${stats.unprocessed > 0 ? 'badge-warning' : 'badge-success'}">${stats.unprocessed} 未处理</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-3 gap-md mb-4">
+          <div class="text-center">
+            <div class="text-lg font-bold text-error">${stats.danger}</div>
+            <div class="text-sm text-secondary">危险</div>
+          </div>
+          <div class="text-center">
+            <div class="text-lg font-bold text-warning">${stats.warning}</div>
+            <div class="text-sm text-secondary">警告</div>
+          </div>
+          <div class="text-center">
+            <div class="text-lg font-bold text-accent">${stats.today}</div>
+            <div class="text-sm text-secondary">今日</div>
+          </div>
+        </div>
+        
+        <div class="space-y-2">
+          ${recentAlarms}
+        </div>
+        
+        <div class="mt-4 text-center">
+          <button class="btn btn-secondary btn-sm" onclick="switchView('reports')">查看全部告警</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // ============ 初始化 ============
 
 function initDashboard() {
@@ -174,9 +271,17 @@ function initDashboard() {
     // 业主：不显示市场电价，显示资产健康概览
     renderOwnerPortfolioBanner();
   } else {
-    // 运维：保留市场电价横幅 + 图表
+    // 运维：保留市场电价横幅 + 图表 + 增强功能面板
     renderMarketBanner();
     if (typeof initChart === 'function') initChart();
+    
+    // 在市场横幅后添加增强功能面板
+    const marketBanner = document.getElementById('market-banner');
+    if (marketBanner) {
+      const enhancedPanel = document.createElement('div');
+      enhancedPanel.innerHTML = renderEnhancedMarketPanel();
+      marketBanner.appendChild(enhancedPanel);
+    }
   }
 
   // 根据角色设置默认菜单并渲染
@@ -2313,6 +2418,11 @@ function renderDispatchControlPanel(container, forceStationId) {
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- 告警面板 -->
+      <div class="mt-10">
+        ${renderAlarmsPanel()}
       </div>
 
     </div>
