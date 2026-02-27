@@ -353,8 +353,8 @@ function shortTime(timeStr) {
   const m = String(timeStr).match(/(\d{2})\/(\d{2})\/\d{4},?\s*(\d{2}):(\d{2})/);
   const city = String(timeStr).match(/\((\w+)\)/);
   const gmt = city && tzGmtMap[city[1]] ? ' ' + tzGmtMap[city[1]] : '';
-  if (m) return m[2] + '-' + m[1] + ' ' + m[3] + ':' + m[4] + gmt;
-  return timeStr.replace(/\s*\(.*\)\s*$/, '').replace(/:\d{2}$/, '') + gmt;
+  if (m) return m[2] + '-' + m[1] + ' ' + m[3] + ':' + m[4] + (gmt ? '<br><span class="text-slate-600 text-[10px]">（' + gmt + '）</span>' : '');
+  return timeStr.replace(/\s*\(.*\)\s*$/, '').replace(/:\d{2}$/, '') + (gmt ? '<br><span class="text-slate-600 text-[10px]">（' + gmt + '）</span>' : '');
 }
 
 /**
@@ -571,13 +571,13 @@ function renderAlarmsList(container, isOwner) {
 
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
-        <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${escapeHTML(shortTime(alarm.timestamp))}</td>
+        <td class="${tdClass} font-mono text-slate-400 text-xs">${shortTime(alarm.timestamp)}</td>
         <td class="${tdClass} text-slate-300" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0;" title="${escapeHTML(alarm.message)}">${escapeHTML(alarm.message)}</td>
         <td class="${tdClass} whitespace-nowrap">${severityBadge}</td>
         <td class="${tdClass} text-slate-400 font-mono text-xs whitespace-nowrap">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
         <td class="${tdClass} text-white text-xs whitespace-nowrap">${escapeHTML(alarm.stationName)}</td>
         <td class="${tdClass} whitespace-nowrap">${statusBadge}</td>
-        <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${alarm.status === 'RESOLVED' && alarm.resolved_at ? escapeHTML(shortTime(alarm.resolved_at)) : '-'}</td>
+        <td class="${tdClass} font-mono text-slate-400 text-xs">${alarm.status === 'RESOLVED' && alarm.resolved_at ? shortTime(alarm.resolved_at) : '-'}</td>
         <td class="${tdClass} whitespace-nowrap">${suggestion}</td>
         <td class="${tdClass} text-right whitespace-nowrap">${actionCol}</td>
       </tr>
