@@ -555,7 +555,7 @@ function renderAlarmsList(container, isOwner) {
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
         <td class="${tdClass} font-mono text-slate-400 text-xs whitespace-nowrap">${escapeHTML(alarm.timestamp)}</td>
-        <td class="${tdClass} text-slate-300" title="${escapeHTML(alarm.message)}">${escapeHTML(alarm.message)}</td>
+        <td class="${tdClass} text-slate-300 overflow-hidden text-ellipsis" title="${escapeHTML(alarm.message)}">${escapeHTML(alarm.message)}</td>
         <td class="${tdClass} whitespace-nowrap">${severityBadge}</td>
         <td class="${tdClass} text-slate-400 font-mono text-xs whitespace-nowrap">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
         <td class="${tdClass} text-white text-xs whitespace-nowrap">${escapeHTML(alarm.stationName)}</td>
@@ -588,7 +588,18 @@ function renderAlarmsList(container, isOwner) {
       ${querySection}
       ${tabBar}
       <div class="bg-white/[0.02] rounded-xl border border-white/10 overflow-x-auto">
-        <table class="w-full text-sm min-w-[1200px]">
+        <table class="w-full text-sm" style="min-width:1400px;table-layout:fixed;">
+          <colgroup>
+            <col style="width:200px">
+            <col style="width:auto">
+            <col style="width:80px">
+            <col style="width:80px">
+            <col style="width:130px">
+            <col style="width:80px">
+            <col style="width:200px">
+            <col style="width:120px">
+            <col style="width:100px">
+          </colgroup>
           <thead>
             <tr class="border-b border-white/10">
               <th class="${thClass}">${getTrans('alarm_col_time')}</th>
