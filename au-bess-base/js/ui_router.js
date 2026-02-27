@@ -1094,7 +1094,23 @@ function updateOwnerPortfolioBanner() {
 function renderMarketBanner() {
   const banner = document.getElementById('market-banner');
   if (!banner) return;
+
+  // 判断是否有手动接管的电站
+  const hasManual = stations.some(s => s.strategy && (s.strategy.mode === 'manual_charge' || s.strategy.mode === 'manual_discharge' || s.strategy.mode === 'manual_idle'));
+
   banner.innerHTML = `
+    <div id="ai-narrator" class="mb-4 px-4 py-3 rounded-xl border ${hasManual ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-500/10 border-emerald-500/30'}">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🤖</span>
+          <span id="ai-narrator-text" class="text-sm font-medium ${hasManual ? 'text-amber-400' : 'text-emerald-400'}">${hasManual ? getTrans('ai_narrator_manual') : getTrans('ai_narrator_idle')}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="dispatch-mode-badge" class="px-2 py-1 rounded text-xs font-bold ${hasManual ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}">${hasManual ? getTrans('dispatch_mode_manual') : getTrans('dispatch_mode_smart')}</span>
+          ${hasManual ? `<button onclick="resumeSmartHosting()" class="px-3 py-1 rounded bg-emerald-500 text-xs font-bold text-white hover:bg-emerald-600 transition-colors animate-pulse">${getTrans('btn_resume_ai')}</button>` : ''}
+        </div>
+      </div>
+    </div>
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
       <div class="flex items-center gap-4">
         <div id="price-display" class="flex items-center gap-2">
@@ -1115,6 +1131,35 @@ function updateMarketBanner(price) {
   const priceEl = document.getElementById('price-value');
   const spikeBadge = document.getElementById('spike-badge');
   if (!priceEl) return;
+
+  // AI Narrator 更新
+  const narratorEl = document.getElementById('ai-narrator-text');
+  const narratorBox = document.getElementById('ai-narrator');
+  const modeBadge = document.getElementById('dispatch-mode-badge');
+  const hasManual = stations.some(s => s.strategy && (s.strategy.mode === 'manual_charge' || s.strategy.mode === 'manual_discharge' || s.strategy.mode === 'manual_idle'));
+  if (narratorEl) {
+    if (hasManual) {
+      narratorEl.textContent = getTrans('ai_narrator_manual');
+      narratorEl.className = 'text-sm font-medium text-amber-400';
+      if (narratorBox) { narratorBox.className = 'mb-4 px-4 py-3 rounded-xl border bg-amber-500/10 border-amber-500/30'; }
+      if (modeBadge) { modeBadge.textContent = getTrans('dispatch_mode_manual'); modeBadge.className = 'px-2 py-1 rounded text-xs font-bold bg-amber-500/20 text-amber-400'; }
+    } else {
+      const fc = typeof getForecastPrice === 'function' ? getForecastPrice() : price;
+      const trend = fc - price;
+      if (trend > 30 || price > 500) {
+        narratorEl.textContent = getTrans('ai_narrator_discharging');
+        narratorEl.className = 'text-sm font-medium text-red-400';
+      } else if (trend < -30 || price < 50) {
+        narratorEl.textContent = getTrans('ai_narrator_charging');
+        narratorEl.className = 'text-sm font-medium text-blue-400';
+      } else {
+        narratorEl.textContent = getTrans('ai_narrator_idle');
+        narratorEl.className = 'text-sm font-medium text-emerald-400';
+      }
+      if (narratorBox) { narratorBox.className = 'mb-4 px-4 py-3 rounded-xl border bg-emerald-500/10 border-emerald-500/30'; }
+      if (modeBadge) { modeBadge.textContent = getTrans('dispatch_mode_smart'); modeBadge.className = 'px-2 py-1 rounded text-xs font-bold bg-emerald-500/20 text-emerald-400'; }
+    }
+  }
 
   const formatted = price < 0
     ? '-$' + Math.abs(price).toFixed(2)
@@ -1444,17 +1489,17 @@ function renderStationCard(station, theme, isOwner) {
 
       <div class="mt-4 grid grid-cols-3 gap-2 md:gap-4">
         <div class="bg-white/5 rounded-lg p-2 md:p-3">
-          <p class="text-xs text-slate-500">${getTrans('soh')}</p>
-          <p class="text-base md:text-lg font-bold text-white font-mono" data-soh="${station.id}">${station.soh.toFixed(4)}%</p>
+          <p class="text-xs text-slate-500">${getTrans('available_energy')}</p>
+          <p class="text-base md:text-lg font-bold text-cyan-400 font-mono" data-energy="${station.id}">${(station.soc * MAX_MWH / 100).toFixed(1)} MWh</p>
         </div>
         <div class="bg-white/5 rounded-lg p-2 md:p-3">
-          <p class="text-xs text-slate-500">${getTrans('operator')}</p>
-          <p class="text-xs md:text-sm font-medium text-white mt-1">${currentOpName}</p>
+          <p class="text-xs text-slate-500">${getTrans('discharge_duration')}</p>
+          <p class="text-base md:text-lg font-bold text-amber-400 font-mono" data-discharge="${station.id}">${(station.soc * MAX_MWH / 100 / MAX_MW).toFixed(1)}h</p>
         </div>
         ${revenueDisplay || `
         <div class="bg-white/5 rounded-lg p-2 md:p-3">
-          <p class="text-xs text-slate-500">${getTrans('station_id')}</p>
-          <p class="text-xs md:text-sm font-mono text-slate-300 mt-1">${station.id}</p>
+          <p class="text-xs text-slate-500">${getTrans('operator')}</p>
+          <p class="text-xs md:text-sm font-medium text-white mt-1">${currentOpName}</p>
         </div>`}
       </div>
 
@@ -1474,9 +1519,11 @@ function updateStationCards(theme, isOwner) {
     const card = document.querySelector(`[data-station-id="${station.id}"]`);
     if (!card) return;
 
-    // Update SoH
-    const sohEl = card.querySelector(`[data-soh="${station.id}"]`);
-    if (sohEl) sohEl.textContent = station.soh.toFixed(4) + '%';
+    // Update Available Energy & Discharge Duration
+    const energyEl = card.querySelector(`[data-energy="${station.id}"]`);
+    if (energyEl) energyEl.textContent = (station.soc * MAX_MWH / 100).toFixed(1) + ' MWh';
+    const dischargeEl = card.querySelector(`[data-discharge="${station.id}"]`);
+    if (dischargeEl) dischargeEl.textContent = (station.soc * MAX_MWH / 100 / MAX_MW).toFixed(1) + 'h';
 
     // Update Revenue
     const revEl = card.querySelector(`[data-revenue="${station.id}"]`);
@@ -1718,6 +1765,18 @@ function saveStrategy(stationId) {
   if (reserveVal > station.soc) {
     setTimeout(() => showToast(getTrans('strategy_warning_high_reserve'), 'warning'), 500);
   }
+}
+
+function resumeSmartHosting() {
+  stations.forEach(s => {
+    if (s.strategy) s.strategy.mode = 'auto';
+  });
+  if (typeof saveStations === 'function') saveStations();
+  showToast(getTrans('btn_resume_ai') + ' ✅', 'success');
+  // 刷新 banner 显示
+  renderMarketBanner();
+  if (typeof initChart === 'function') initChart();
+  if (typeof updateChart === 'function' && typeof getPriceHistory === 'function') updateChart(getPriceHistory());
 }
 
 function setManualMode(stationId, mode) {

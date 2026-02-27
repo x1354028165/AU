@@ -37,7 +37,7 @@ function initChart() {
       axisPointer: { type: 'cross' }
     },
     legend: {
-      data: [getTrans('market_price'), getTrans('power_output')],
+      data: [getTrans('market_price'), getTrans('forecast_price'), getTrans('power_output')],
       textStyle: { color: '#94a3b8', fontSize: 11 },
       top: 5,
       right: 10
@@ -89,6 +89,16 @@ function initChart() {
         }
       },
       {
+        name: getTrans('forecast_price'),
+        type: 'line',
+        yAxisIndex: 0,
+        data: [],
+        smooth: true,
+        symbol: 'none',
+        lineStyle: { color: '#86efac', width: 2, type: 'dashed' },
+        itemStyle: { color: '#86efac' }
+      },
+      {
         name: getTrans('power_output'),
         type: 'bar',
         yAxisIndex: 1,
@@ -121,6 +131,7 @@ function updateChart(history) {
 
   const times = history.map(h => h.time);
   const prices = history.map(h => h.price);
+  const forecasts = history.map(h => h.forecast || h.price);
 
   // 合计所有电站的功率（用于柱状图）
   const totalPowers = history.map(h => {
@@ -129,13 +140,17 @@ function updateChart(history) {
 
   marketChart.setOption({
     legend: {
-      data: [getTrans('market_price'), getTrans('power_output')]
+      data: [getTrans('market_price'), getTrans('forecast_price'), getTrans('power_output')]
     },
     xAxis: { data: times },
     series: [
       {
         name: getTrans('market_price'),
         data: prices
+      },
+      {
+        name: getTrans('forecast_price'),
+        data: forecasts
       },
       {
         name: getTrans('power_output'),

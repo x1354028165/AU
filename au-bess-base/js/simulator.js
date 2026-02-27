@@ -5,14 +5,21 @@
  * 模拟 AEMO NEM 现货电价，每 5 秒代表 5 分钟
  */
 
+// ============ 物理常数 ============
+const MAX_MW = 2.5;    // 额定功率 MW
+const MAX_MWH = 10;    // 额定容量 MWh
+
 // ============ 仿真状态 ============
 let simTime = new Date();
 let simInterval = null;
 let currentPrice = 100;   // $/MWh
 let previousPrice = 100;  // 上一轮电价（用于平滑）
-let priceHistory = [];     // [{time, price, powers: {st_01: MW, ...}}]
+let forecastPrice = 100;  // 预测电价（平滑虚线）
+let prevForecast = 100;   // 上一轮预测价（移动平均用）
+let priceHistory = [];     // [{time, price, forecast, powers: {st_01: MW, ...}}]
 const MAX_HISTORY = 12;    // 保留 1 小时（12 × 5 分钟）
 const SMOOTHING_FACTOR = 0.3;
+const FORECAST_SMOOTH = 0.4;  // 预测线平滑系数
 let dispatchLogs = [];         // [{time, stationName, stationId, operatorId, action, price, revenue}]
 const MAX_LOGS = 100;
 let previousStationStatus = {}; // 记录上一轮状态用于检测变化
@@ -174,6 +181,13 @@ function simTick() {
   }
   previousPrice = currentPrice;
 
+  // 预测价格：当前价 + 趋势偏移 + 噪声，移动平均平滑
+  const trendBias = (currentPrice - previousPrice) * 0.5;
+  const noise = (Math.random() - 0.5) * 30;
+  const rawForecast = currentPrice + trendBias + noise;
+  forecastPrice = prevForecast * (1 - FORECAST_SMOOTH) + rawForecast * FORECAST_SMOOTH;
+  prevForecast = forecastPrice;
+
   const powers = {};
 
   // 对所有已分配的电站执行套利
@@ -229,6 +243,7 @@ function simTick() {
   priceHistory.push({
     time: new Date().toLocaleTimeString('en-AU', { timeZone: 'Australia/Sydney', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     price: Math.round(currentPrice * 100) / 100,
+    forecast: Math.round(forecastPrice * 100) / 100,
     powers: { ...powers }
   });
 
@@ -270,6 +285,13 @@ function stopSimulator() {
  */
 function getCurrentPrice() {
   return currentPrice;
+}
+
+/**
+ * 获取预测电价
+ */
+function getForecastPrice() {
+  return forecastPrice;
 }
 
 /**
