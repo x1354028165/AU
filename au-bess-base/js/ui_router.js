@@ -47,6 +47,7 @@ function getMenus() {
     operator: [
       { id: 'dispatch', labelKey: 'menu_dispatch', icon: 'zap', view: 'dashboard' },
       { id: 'assets', labelKey: 'menu_assets', icon: 'battery-charging', view: 'dashboard' },
+      { id: 'reports', labelKey: 'menu_reports', icon: 'bar-chart-3', view: 'reports' },
       { id: 'logs', labelKey: 'menu_logs', icon: 'scroll-text', view: 'reports' },
       { id: 'alarms', labelKey: 'menu_alarms', icon: 'alert-triangle', view: 'reports' }
     ]
@@ -1705,6 +1706,8 @@ function handleMenuClick(menuId, viewId) {
     reportSubView = 'health';
   } else if (menuId === 'alarms') {
     reportSubView = 'alarms';
+  } else if (menuId === 'reports') {
+    reportSubView = 'arbitrage';
   } else if (menuId === 'lease' || menuId === 'logs') {
     reportSubView = 'default';
   }

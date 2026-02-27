@@ -23,6 +23,8 @@ function renderReports(subView) {
 
   if (reportSubView === 'alarms') {
     renderAlarmsList(container, isOwner);
+  } else if (reportSubView === 'arbitrage') {
+    renderArbitrageReports(container, isOwner);
   } else if (isOwner && reportSubView === 'health') {
     renderHealthView(container);
   } else if (isOwner) {
@@ -864,4 +866,490 @@ function exportAlarmsCSV() {
   });
 
   downloadCSV(rows, 'au-bess-alarms.csv');
+}
+
+// ============ 套利报告 ============
+
+function renderArbitrageReports(container, isOwner) {
+  const stations = getStationsByRole();
+  
+  container.innerHTML = `
+    <div class="space-y-6">
+      <!-- 标题和控制器 -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 text-cyan-400"></i>
+            ${getTrans('reports_title')}
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">Peak-valley arbitrage performance analysis</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="exportArbitrageExcel()" class="px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-sm font-medium hover:bg-emerald-500/20 transition-colors flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            ${getTrans('reports_export_excel')}
+          </button>
+        </div>
+      </div>
+
+      <!-- 电站选择和时间维度 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white/5 border border-white/20 rounded-xl p-4">
+          <label class="text-sm text-slate-300 font-medium block mb-2">${getTrans('reports_station_select')}</label>
+          <select id="arbitrage-station-select" onchange="updateArbitrageReport()" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500/50">
+            ${stations.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="bg-white/5 border border-white/20 rounded-xl p-4">
+          <label class="text-sm text-slate-300 font-medium block mb-2">${getTrans('reports_period')}</label>
+          <select id="arbitrage-period-select" onchange="updateArbitrageReport()" class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500/50">
+            <option value="daily">${getTrans('reports_daily')}</option>
+            <option value="monthly">${getTrans('reports_monthly')}</option>
+            <option value="yearly">${getTrans('reports_yearly')}</option>
+            <option value="cumulative">${getTrans('reports_cumulative')}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 套利概览卡片 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="arbitrage-summary-cards">
+        <!-- Dynamic content will be inserted here -->
+      </div>
+
+      <!-- 收益趋势图表 -->
+      <div class="bg-white/5 border border-white/20 rounded-xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">${getTrans('reports_trend_chart')}</h3>
+        <div id="arbitrage-trend-chart" style="height: 400px;"></div>
+      </div>
+
+      <!-- 详细数据表格 -->
+      <div class="bg-white/5 border border-white/20 rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-white">Arbitrage Cycles Detail</h3>
+          <div class="flex items-center gap-2 text-sm text-slate-400">
+            <span>${getTrans('reports_vs_previous')}:</span>
+            <span id="trend-indicator" class="font-medium">Loading...</span>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-white/20">
+                <th class="text-left text-xs text-slate-400 font-medium py-3 px-2">${getTrans('reports_date')}</th>
+                <th class="text-left text-xs text-slate-400 font-medium py-3 px-2">${getTrans('reports_charge_energy')} (MWh)</th>
+                <th class="text-left text-xs text-slate-400 font-medium py-3 px-2">${getTrans('reports_discharge_energy')} (MWh)</th>
+                <th class="text-left text-xs text-slate-400 font-medium py-3 px-2">${getTrans('reports_charge_cost')}</th>
+                <th class="text-left text-xs text-slate-400 font-medium py-3 px-2">${getTrans('reports_discharge_revenue')}</th>
+                <th class="text-left text-xs text-slate-400 font-medium py-3 px-2">${getTrans('reports_net_profit')}</th>
+                <th class="text-left text-xs text-slate-400 font-medium py-3 px-2">${getTrans('reports_efficiency')}</th>
+              </tr>
+            </thead>
+            <tbody id="arbitrage-detail-table">
+              <!-- Dynamic content will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) lucide.createIcons();
+  
+  // 初始化报告数据
+  updateArbitrageReport();
+}
+
+// 生成套利数据（Demo版本）
+function generateArbitrageData(stationId, period) {
+  const station = getStation(stationId);
+  if (!station) return { summary: {}, cycles: [], chartData: [] };
+
+  const now = new Date();
+  let days, dataPoints;
+  
+  switch (period) {
+    case 'daily':
+      days = 1;
+      dataPoints = 24; // hourly data
+      break;
+    case 'monthly':
+      days = 30;
+      dataPoints = 30; // daily data
+      break;
+    case 'yearly':
+      days = 365;
+      dataPoints = 12; // monthly data
+      break;
+    case 'cumulative':
+      days = 730; // 2 years
+      dataPoints = 24; // monthly data
+      break;
+    default:
+      days = 30;
+      dataPoints = 30;
+  }
+
+  const cycles = [];
+  const chartData = [];
+  let totalProfit = 0;
+  let totalCycles = 0;
+  let totalChargeEnergy = 0;
+  let totalDischargeEnergy = 0;
+  let totalChargeCost = 0;
+  let totalDischargeRevenue = 0;
+
+  // Generate arbitrage cycles
+  for (let i = 0; i < dataPoints; i++) {
+    const date = new Date(now);
+    if (period === 'daily') {
+      date.setHours(i);
+    } else if (period === 'monthly') {
+      date.setDate(date.getDate() - i);
+    } else if (period === 'yearly') {
+      date.setMonth(date.getMonth() - i);
+    } else {
+      date.setMonth(date.getMonth() - i);
+    }
+
+    // Simulate arbitrage cycle
+    const chargePrice = 25 + Math.random() * 50; // $25-75/MWh
+    const dischargePrice = 180 + Math.random() * 120; // $180-300/MWh
+    const chargeEnergy = 8 + Math.random() * 4; // 8-12 MWh
+    const dischargeEnergy = chargeEnergy * (0.92 + Math.random() * 0.06); // 92-98% efficiency
+    
+    const chargeCost = chargeEnergy * chargePrice;
+    const dischargeRevenue = dischargeEnergy * dischargePrice;
+    const netProfit = dischargeRevenue - chargeCost;
+    const efficiency = (dischargeEnergy / chargeEnergy) * 100;
+    const spread = dischargePrice - chargePrice;
+
+    const cycle = {
+      date: date.toISOString().split('T')[0],
+      chargeEnergy: chargeEnergy.toFixed(1),
+      dischargeEnergy: dischargeEnergy.toFixed(1),
+      chargePrice: chargePrice.toFixed(2),
+      dischargePrice: dischargePrice.toFixed(2),
+      chargeCost: chargeCost.toFixed(0),
+      dischargeRevenue: dischargeRevenue.toFixed(0),
+      netProfit: netProfit.toFixed(0),
+      efficiency: efficiency.toFixed(1),
+      spread: spread.toFixed(2)
+    };
+
+    cycles.push(cycle);
+    chartData.push({
+      date: cycle.date,
+      profit: parseFloat(cycle.netProfit),
+      cost: parseFloat(cycle.chargeCost),
+      revenue: parseFloat(cycle.dischargeRevenue)
+    });
+
+    totalProfit += netProfit;
+    totalCycles++;
+    totalChargeEnergy += chargeEnergy;
+    totalDischargeEnergy += dischargeEnergy;
+    totalChargeCost += chargeCost;
+    totalDischargeRevenue += dischargeRevenue;
+  }
+
+  const avgSpread = totalDischargeRevenue > 0 ? ((totalDischargeRevenue - totalChargeCost) / totalDischargeEnergy) : 0;
+  const efficiency = totalChargeEnergy > 0 ? (totalDischargeEnergy / totalChargeEnergy) * 100 : 0;
+
+  return {
+    summary: {
+      totalProfit: totalProfit.toFixed(0),
+      totalCycles,
+      avgSpread: avgSpread.toFixed(2),
+      efficiency: efficiency.toFixed(1),
+      totalChargeEnergy: totalChargeEnergy.toFixed(1),
+      totalDischargeEnergy: totalDischargeEnergy.toFixed(1),
+      totalChargeCost: totalChargeCost.toFixed(0),
+      totalDischargeRevenue: totalDischargeRevenue.toFixed(0)
+    },
+    cycles: cycles.reverse(), // Most recent first
+    chartData: chartData.reverse()
+  };
+}
+
+// 更新套利报告
+function updateArbitrageReport() {
+  const stationSelect = document.getElementById('arbitrage-station-select');
+  const periodSelect = document.getElementById('arbitrage-period-select');
+  
+  if (!stationSelect || !periodSelect) return;
+
+  const stationId = stationSelect.value;
+  const period = periodSelect.value;
+  
+  const data = generateArbitrageData(stationId, period);
+  
+  // Update summary cards
+  updateSummaryCards(data.summary);
+  
+  // Update chart
+  renderArbitrageTrendChart(data.chartData, period);
+  
+  // Update table
+  updateDetailTable(data.cycles);
+}
+
+// 更新汇总卡片
+function updateSummaryCards(summary) {
+  const container = document.getElementById('arbitrage-summary-cards');
+  if (!container) return;
+
+  const cards = [
+    {
+      label: getTrans('reports_total_profit'),
+      value: `A$${summary.totalProfit}`,
+      icon: 'dollar-sign',
+      color: 'text-emerald-400'
+    },
+    {
+      label: getTrans('reports_total_cycles'),
+      value: summary.totalCycles,
+      icon: 'repeat',
+      color: 'text-cyan-400'
+    },
+    {
+      label: getTrans('reports_avg_spread'),
+      value: `$${summary.avgSpread}`,
+      icon: 'trending-up',
+      color: 'text-amber-400'
+    },
+    {
+      label: getTrans('reports_efficiency'),
+      value: `${summary.efficiency}%`,
+      icon: 'gauge',
+      color: 'text-blue-400'
+    }
+  ];
+
+  container.innerHTML = cards.map(card => `
+    <div class="bg-white/5 border border-white/20 rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="${card.icon}" class="w-4 h-4 ${card.color}"></i>
+        <span class="text-xs text-slate-400 uppercase tracking-wider">${card.label}</span>
+      </div>
+      <p class="text-2xl font-bold font-mono ${card.color}">${card.value}</p>
+    </div>
+  `).join('');
+
+  if (window.lucide) lucide.createIcons();
+}
+
+// 渲染趋势图表
+function renderArbitrageTrendChart(data, period) {
+  const chartContainer = document.getElementById('arbitrage-trend-chart');
+  if (!chartContainer || !window.echarts) return;
+
+  // Dispose existing chart
+  const existingChart = echarts.getInstanceByDom(chartContainer);
+  if (existingChart) {
+    existingChart.dispose();
+  }
+
+  const chart = echarts.init(chartContainer);
+  
+  const dates = data.map(d => d.date);
+  const profits = data.map(d => d.profit);
+  const costs = data.map(d => d.cost);
+  const revenues = data.map(d => d.revenue);
+
+  const option = {
+    backgroundColor: 'transparent',
+    grid: {
+      left: 60,
+      right: 30,
+      top: 60,
+      bottom: 60
+    },
+    xAxis: {
+      type: 'category',
+      data: dates,
+      axisLabel: {
+        color: '#94a3b8',
+        fontSize: 11
+      },
+      axisLine: {
+        lineStyle: { color: '#334155' }
+      }
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: 'Profit (A$)',
+        axisLabel: {
+          color: '#94a3b8',
+          fontSize: 11,
+          formatter: 'A${value}'
+        },
+        axisLine: {
+          lineStyle: { color: '#334155' }
+        },
+        splitLine: {
+          lineStyle: { color: '#334155', opacity: 0.3 }
+        }
+      },
+      {
+        type: 'value',
+        name: 'Cost/Revenue (A$)',
+        position: 'right',
+        axisLabel: {
+          color: '#94a3b8',
+          fontSize: 11,
+          formatter: 'A${value}'
+        },
+        axisLine: {
+          lineStyle: { color: '#334155' }
+        }
+      }
+    ],
+    legend: {
+      data: ['Net Profit', 'Charge Cost', 'Discharge Revenue'],
+      textStyle: {
+        color: '#94a3b8'
+      },
+      top: 10
+    },
+    series: [
+      {
+        name: 'Net Profit',
+        type: 'line',
+        data: profits,
+        lineStyle: {
+          color: '#10b981',
+          width: 3
+        },
+        itemStyle: {
+          color: '#10b981'
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(16, 185, 129, 0.3)' },
+              { offset: 1, color: 'rgba(16, 185, 129, 0.05)' }
+            ]
+          }
+        }
+      },
+      {
+        name: 'Charge Cost',
+        type: 'bar',
+        yAxisIndex: 1,
+        data: costs,
+        itemStyle: {
+          color: '#ef4444',
+          opacity: 0.7
+        }
+      },
+      {
+        name: 'Discharge Revenue',
+        type: 'bar',
+        yAxisIndex: 1,
+        data: revenues,
+        itemStyle: {
+          color: '#3b82f6',
+          opacity: 0.7
+        }
+      }
+    ],
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: '#1e293b',
+      borderColor: '#334155',
+      textStyle: {
+        color: '#e2e8f0'
+      },
+      formatter: function(params) {
+        let html = `<div class="text-sm">
+          <div class="font-bold mb-2">${params[0].axisValue}</div>`;
+        params.forEach(param => {
+          html += `<div class="flex items-center gap-2">
+            <div style="width:8px;height:8px;background:${param.color};border-radius:50%;"></div>
+            <span>${param.seriesName}: A$${param.value}</span>
+          </div>`;
+        });
+        html += '</div>';
+        return html;
+      }
+    }
+  };
+
+  chart.setOption(option);
+
+  // Save chart instance for disposal
+  window.arbitrageTrendChart = chart;
+}
+
+// 更新详细表格
+function updateDetailTable(cycles) {
+  const tbody = document.getElementById('arbitrage-detail-table');
+  if (!tbody) return;
+
+  tbody.innerHTML = cycles.slice(0, 20).map(cycle => {
+    const profitColor = parseFloat(cycle.netProfit) >= 0 ? 'text-emerald-400' : 'text-red-400';
+    return `
+      <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+        <td class="py-3 px-2 text-sm text-white font-mono">${cycle.date}</td>
+        <td class="py-3 px-2 text-sm text-white font-mono">${cycle.chargeEnergy}</td>
+        <td class="py-3 px-2 text-sm text-white font-mono">${cycle.dischargeEnergy}</td>
+        <td class="py-3 px-2 text-sm text-red-400 font-mono">A$${cycle.chargeCost}</td>
+        <td class="py-3 px-2 text-sm text-emerald-400 font-mono">A$${cycle.dischargeRevenue}</td>
+        <td class="py-3 px-2 text-sm ${profitColor} font-mono font-bold">A$${cycle.netProfit}</td>
+        <td class="py-3 px-2 text-sm text-slate-300 font-mono">${cycle.efficiency}%</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// 导出Excel功能
+function exportArbitrageExcel() {
+  const stationSelect = document.getElementById('arbitrage-station-select');
+  const periodSelect = document.getElementById('arbitrage-period-select');
+  
+  if (!stationSelect || !periodSelect) return;
+
+  const stationId = stationSelect.value;
+  const period = periodSelect.value;
+  const station = getStation(stationId);
+  const data = generateArbitrageData(stationId, period);
+
+  const headers = [
+    'Date',
+    'Charge Energy (MWh)',
+    'Discharge Energy (MWh)', 
+    'Charge Price ($/MWh)',
+    'Discharge Price ($/MWh)',
+    'Charge Cost (A$)',
+    'Discharge Revenue (A$)',
+    'Net Profit (A$)',
+    'Efficiency (%)',
+    'Spread ($/MWh)'
+  ];
+
+  const rows = [headers];
+  
+  data.cycles.forEach(cycle => {
+    rows.push([
+      cycle.date,
+      cycle.chargeEnergy,
+      cycle.dischargeEnergy,
+      cycle.chargePrice,
+      cycle.dischargePrice,
+      cycle.chargeCost,
+      cycle.dischargeRevenue,
+      cycle.netProfit,
+      cycle.efficiency,
+      cycle.spread
+    ]);
+  });
+
+  const filename = `${station ? station.name : 'station'}-arbitrage-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+  downloadCSV(rows, filename);
+  
+  // Show success message
+  showToast(`Export completed: ${filename}`, 'success');
 }
