@@ -1937,11 +1937,12 @@ function renderDispatchControlPanel(container, forceStationId) {
   const priceColor = price < 0 ? '#10b981' : price > 300 ? '#ef4444' : '#fbbf24';
   const priceStr = price < 0 ? '-$' + Math.abs(price).toFixed(2) : '$' + price.toFixed(2);
 
-  // 今日实际交易汇总
-  const todaySummary = typeof getTodayTradesSummary === 'function' ? getTodayTradesSummary() : plan.summary;
+  // 今日汇总：优先用实时交易数据，若为0则用计划数据
+  const liveSummary = typeof getTodayTradesSummary === 'function' ? getTodayTradesSummary() : null;
+  const hasLiveData = liveSummary && (parseFloat(liveSummary.totalBuyQty) > 0 || parseFloat(liveSummary.totalSellQty) > 0);
+  const todaySummary = hasLiveData ? liveSummary : plan.summary;
   const todayProfitVal = parseFloat(todaySummary.profit);
   const todayProfitColor = todayProfitVal >= 0 ? 'text-emerald-400' : 'text-red-400';
-  const profitGlow = '';
 
   // 大圆环参数
   const ringSize = 260;
@@ -1953,30 +1954,21 @@ function renderDispatchControlPanel(container, forceStationId) {
     <div id="dispatch-panel" data-station-id="${station.id}">
 
       <!-- ====== 顶部：今日套利汇总 ====== -->
-      <div class="grid grid-cols-3 gap-8 mb-10">
-        <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-br from-blue-500/10 to-transparent  ${profitGlow}">
-          <div class="flex items-center gap-4 mb-4">
-            <span class="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-xl">⬇</span>
-            <span class="text-sm text-slate-400 tracking-wide">${getTrans('total_buy')}</span>
-          </div>
-          <p class="text-4xl font-bold text-white font-mono tracking-tight" id="dp-summary-buy">${todaySummary.totalBuyQty} <span class="text-lg text-slate-500">MWh</span></p>
-          <p class="text-sm text-slate-500 mt-3">${getTrans('cost')}: <span class="text-white">A$${todaySummary.totalBuyCost}</span></p>
+      <div class="grid grid-cols-3 gap-6 mb-8">
+        <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03]">
+          <p class="text-sm text-slate-400 mb-3">${getTrans('total_buy')}</p>
+          <p class="text-4xl font-bold text-white font-mono tracking-tight mb-1" id="dp-summary-buy">${todaySummary.totalBuyQty} <span class="text-base text-slate-500 font-normal">MWh</span></p>
+          <p class="text-sm text-slate-500">${getTrans('cost')}: <span class="text-blue-400 font-semibold">A$${todaySummary.totalBuyCost}</span></p>
         </div>
-        <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-br from-amber-500/10 to-transparent ">
-          <div class="flex items-center gap-4 mb-4">
-            <span class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-xl">⬆</span>
-            <span class="text-sm text-slate-400 tracking-wide">${getTrans('total_sell')}</span>
-          </div>
-          <p class="text-4xl font-bold text-white font-mono tracking-tight" id="dp-summary-sell">${todaySummary.totalSellQty} <span class="text-lg text-slate-500">MWh</span></p>
-          <p class="text-sm text-slate-500 mt-3">${getTrans('revenue')}: <span class="text-white">A$${todaySummary.totalSellRevenue}</span></p>
+        <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03]">
+          <p class="text-sm text-slate-400 mb-3">${getTrans('total_sell')}</p>
+          <p class="text-4xl font-bold text-white font-mono tracking-tight mb-1" id="dp-summary-sell">${todaySummary.totalSellQty} <span class="text-base text-slate-500 font-normal">MWh</span></p>
+          <p class="text-sm text-slate-500">${getTrans('revenue')}: <span class="text-amber-400 font-semibold">A$${todaySummary.totalSellRevenue}</span></p>
         </div>
-        <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-br ${todayProfitVal >= 0 ? 'from-emerald-500/10' : 'from-red-500/10'} to-transparent  ${profitGlow}">
-          <div class="flex items-center gap-4 mb-4">
-            <span class="w-12 h-12 rounded-2xl ${todayProfitVal >= 0 ? 'bg-emerald-500/20' : 'bg-red-500/20'} flex items-center justify-center text-xl">🏆</span>
-            <span class="text-sm text-slate-400 tracking-wide">${getTrans('spread_profit')}</span>
-          </div>
-          <p class="text-4xl font-bold ${todayProfitColor} font-mono tracking-tight" id="dp-summary-profit">A$${todaySummary.profit}</p>
-          <p class="text-sm text-slate-500 mt-3">${getTrans('margin')}: <span class="${todayProfitColor}">${todaySummary.margin}%</span></p>
+        <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03]">
+          <p class="text-sm text-slate-400 mb-3">${getTrans('spread_profit')}</p>
+          <p class="text-4xl font-bold ${todayProfitColor} font-mono tracking-tight mb-1" id="dp-summary-profit">A$${todaySummary.profit}</p>
+          <p class="text-sm text-slate-500">${getTrans('margin')}: <span class="${todayProfitColor} font-semibold">${todaySummary.margin}%</span></p>
         </div>
       </div>
 
