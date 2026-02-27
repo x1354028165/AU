@@ -219,6 +219,27 @@ const TRANSLATIONS = {
     // Mobile
     menu: 'Menu',
 
+    // Alarms
+    menu_alarms: 'Alarms',
+    resolve_alarm: 'Resolve',
+    awaiting_owner: 'Awaiting Owner',
+    alarm_resolved: 'Resolved',
+    alarm_critical: 'Critical',
+    alarm_warning: 'Warning',
+    alarm_title: 'Alarm Management',
+    alarm_hint_owner: 'Review and resolve active alarms across all stations',
+    alarm_hint_operator: 'Active alarms for your stations (owner action required)',
+    alarm_col_station: 'Station',
+    alarm_col_level: 'Level',
+    alarm_col_desc: 'Description',
+    alarm_col_time: 'Time',
+    alarm_col_status: 'Status',
+    alarm_col_action: 'Action',
+    alarm_col_resolved_at: 'Resolved At',
+    alarm_resolved_success: 'Alarm resolved',
+    no_alarms_active: 'No active alarms',
+    no_alarms_hint: 'All systems operating normally',
+
     // Language
     lang_switch: 'English',
     demo_accounts_hint: 'Demo accounts: admin / op_a / op_b',
@@ -437,6 +458,27 @@ const TRANSLATIONS = {
     // 移动端
     menu: '菜单',
 
+    // 告警管理
+    menu_alarms: '告警管理',
+    resolve_alarm: '处理并消除',
+    awaiting_owner: '待业主处理',
+    alarm_resolved: '已处理',
+    alarm_critical: '严重',
+    alarm_warning: '警告',
+    alarm_title: '告警管理',
+    alarm_hint_owner: '审查并处理所有电站的活跃告警',
+    alarm_hint_operator: '您电站的活跃告警（需业主处理）',
+    alarm_col_station: '电站',
+    alarm_col_level: '级别',
+    alarm_col_desc: '描述',
+    alarm_col_time: '时间',
+    alarm_col_status: '状态',
+    alarm_col_action: '操作',
+    alarm_col_resolved_at: '处理时间',
+    alarm_resolved_success: '告警已消除',
+    no_alarms_active: '暂无活跃告警',
+    no_alarms_hint: '所有系统运行正常',
+
     // 语言
     lang_switch: '中文',
     demo_accounts_hint: '演示账号：admin / op_a / op_b',
@@ -529,7 +571,11 @@ const DEFAULT_STATIONS = [
       { id: 'ems-01', name: 'EMS Controller', type: 'EMS', version: 'v1.0.2' },
       { id: 'pcs-01', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 5, rated_capacity: 10 }
     ],
-    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' },
+    alarms: [
+      { id: 'alm_01', level: 'Critical', desc: 'PCS Unit 1 communication timeout', time: '2025-02-26 14:32:00', status: 'Active', resolved_at: null },
+      { id: 'alm_02', level: 'Warning', desc: 'Battery cell temperature above threshold (42°C)', time: '2025-02-26 18:15:00', status: 'Active', resolved_at: null }
+    ]
   },
   {
     id: 'st_02',
@@ -551,7 +597,8 @@ const DEFAULT_STATIONS = [
       { id: 'ems-02', name: 'EMS Controller', type: 'EMS', version: 'v1.0.2' },
       { id: 'pcs-02', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 2.5, rated_capacity: 5 }
     ],
-    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' },
+    alarms: []
   },
   {
     id: 'st_03',
@@ -573,7 +620,11 @@ const DEFAULT_STATIONS = [
       { id: 'ems-03', name: 'EMS Controller', type: 'EMS', version: 'v1.0.2' },
       { id: 'pcs-03', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 10, rated_capacity: 20 }
     ],
-    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' },
+    alarms: [
+      { id: 'alm_03', level: 'Warning', desc: 'Inverter efficiency degraded to 85%', time: '2025-02-27 02:10:00', status: 'Active', resolved_at: null },
+      { id: 'alm_04', level: 'Critical', desc: 'Grid connection lost - islanding detected', time: '2025-02-27 06:45:00', status: 'Active', resolved_at: null }
+    ]
   },
   {
     id: 'st_04',
@@ -595,7 +646,10 @@ const DEFAULT_STATIONS = [
       { id: 'ems-04', name: 'EMS Controller', type: 'EMS', version: 'v1.0.2' },
       { id: 'pcs-04', name: 'PCS Unit 1', type: 'PCS', version: 'v2.3.1', rated_power: 5, rated_capacity: 10 }
     ],
-    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' }
+    soc: 50, efficiency: 0.88, revenue_today: 0, status: 'IDLE', cumulative_mwh: 0, strategy: { charge_threshold: 50, discharge_threshold: 200, reserve_soc: 10, mode: 'auto' },
+    alarms: [
+      { id: 'alm_05', level: 'Warning', desc: 'EMS firmware update available (v1.0.3)', time: '2025-02-25 09:00:00', status: 'Active', resolved_at: null }
+    ]
   }
 ];
 

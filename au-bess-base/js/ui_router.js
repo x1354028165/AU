@@ -41,12 +41,14 @@ function getMenus() {
       { id: 'portfolio', labelKey: 'menu_portfolio', icon: 'briefcase', view: 'dashboard' },
       { id: 'assets', labelKey: 'menu_assets', icon: 'battery-charging', view: 'dashboard' },
       { id: 'lease', labelKey: 'menu_lease', icon: 'file-text', view: 'reports' },
-      { id: 'health', labelKey: 'menu_health', icon: 'activity', view: 'reports' }
+      { id: 'health', labelKey: 'menu_health', icon: 'activity', view: 'reports' },
+      { id: 'alarms', labelKey: 'menu_alarms', icon: 'alert-triangle', view: 'reports' }
     ],
     operator: [
       { id: 'dispatch', labelKey: 'menu_dispatch', icon: 'zap', view: 'dashboard' },
       { id: 'assets', labelKey: 'menu_assets', icon: 'battery-charging', view: 'dashboard' },
-      { id: 'logs', labelKey: 'menu_logs', icon: 'scroll-text', view: 'reports' }
+      { id: 'logs', labelKey: 'menu_logs', icon: 'scroll-text', view: 'reports' },
+      { id: 'alarms', labelKey: 'menu_alarms', icon: 'alert-triangle', view: 'reports' }
     ]
   };
 }
@@ -1503,6 +1505,8 @@ function handleMenuClick(menuId, viewId) {
   // 设置 report sub-view
   if (menuId === 'health') {
     reportSubView = 'health';
+  } else if (menuId === 'alarms') {
+    reportSubView = 'alarms';
   } else if (menuId === 'lease' || menuId === 'logs') {
     reportSubView = 'default';
   }

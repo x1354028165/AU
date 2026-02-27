@@ -21,7 +21,9 @@ function renderReports(subView) {
   // Dispose SoH chart first
   if (typeof disposeSohChart === 'function') disposeSohChart();
 
-  if (isOwner && reportSubView === 'health') {
+  if (reportSubView === 'alarms') {
+    renderAlarmsList(container, isOwner);
+  } else if (isOwner && reportSubView === 'health') {
     renderHealthView(container);
   } else if (isOwner) {
     renderLeaderboard(container);
@@ -326,4 +328,174 @@ function downloadCSV(rows, filename) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// ============ 告警管理 ============
+
+/**
+ * 渲染告警列表（业主可消除，运维仅查看）
+ * @param {HTMLElement} container
+ * @param {boolean} isOwner
+ */
+function renderAlarmsList(container, isOwner) {
+  const myStations = getStationsByRole();
+
+  // 收集所有告警并关联电站信息
+  const allAlarms = [];
+  myStations.forEach(station => {
+    if (!station.alarms) station.alarms = [];
+    station.alarms.forEach(alarm => {
+      allAlarms.push({
+        ...alarm,
+        stationId: station.id,
+        stationName: station.name
+      });
+    });
+  });
+
+  // Active 优先，Critical 优先，时间倒序
+  allAlarms.sort((a, b) => {
+    if (a.status !== b.status) return a.status === 'Active' ? -1 : 1;
+    if (a.level !== b.level) return a.level === 'Critical' ? -1 : 1;
+    return new Date(b.time) - new Date(a.time);
+  });
+
+  const activeCount = allAlarms.filter(a => a.status === 'Active').length;
+
+  if (allAlarms.length === 0) {
+    container.innerHTML = `
+      <div class="max-w-[1600px] mx-auto">
+        <div class="flex items-center gap-3 mb-6">
+          <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400"></i>
+          <h2 class="text-xl font-bold text-white">${getTrans('alarm_title')}</h2>
+        </div>
+        <div class="flex flex-col items-center justify-center py-16 text-slate-500">
+          <i data-lucide="shield-check" class="w-12 h-12 mb-3 opacity-40"></i>
+          <p class="text-base">${getTrans('no_alarms_active')}</p>
+          <p class="text-sm mt-1">${getTrans('no_alarms_hint')}</p>
+        </div>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  const rows = allAlarms.map((alarm, i) => {
+    const isActive = alarm.status === 'Active';
+    const isCritical = alarm.level === 'Critical';
+
+    // 级别标签
+    const levelBadge = isCritical
+      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400">
+          <i data-lucide="alert-circle" class="w-3 h-3"></i>
+          ${getTrans('alarm_critical')}
+        </span>`
+      : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-400">
+          <i data-lucide="alert-triangle" class="w-3 h-3"></i>
+          ${getTrans('alarm_warning')}
+        </span>`;
+
+    // 状态标签
+    const statusBadge = isActive
+      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-red-500/10 text-red-400 animate-pulse">● Active</span>`
+      : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400">✓ ${getTrans('alarm_resolved')}</span>`;
+
+    // 操作列：业主可消除，运维仅显示状态
+    let actionCol = '';
+    if (isActive) {
+      if (isOwner) {
+        actionCol = `<button onclick="resolveAlarm('${alarm.stationId}', '${alarm.id}')"
+          class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors flex items-center gap-1.5">
+          <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+          ${getTrans('resolve_alarm')}
+        </button>`;
+      } else {
+        actionCol = `<span class="px-2 py-1 rounded text-xs font-medium text-amber-400 bg-amber-500/10">${getTrans('awaiting_owner')}</span>`;
+      }
+    } else {
+      actionCol = `<span class="text-xs text-slate-500 font-mono">${alarm.resolved_at || '-'}</span>`;
+    }
+
+    const rowBorder = isActive && isCritical ? 'border-l-2 border-l-red-500' : isActive ? 'border-l-2 border-l-amber-500' : '';
+
+    return `
+      <tr class="${i % 2 === 0 ? 'bg-white/[0.02]' : ''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}" id="alarm-row-${alarm.id}">
+        <td class="px-4 py-3 text-white font-medium text-sm">${escapeHTML(alarm.stationName)}</td>
+        <td class="px-4 py-3">${levelBadge}</td>
+        <td class="px-4 py-3 text-slate-300 text-sm">${escapeHTML(alarm.desc)}</td>
+        <td class="px-4 py-3 font-mono text-slate-400 text-xs">${escapeHTML(alarm.time)}</td>
+        <td class="px-4 py-3">${statusBadge}</td>
+        <td class="px-4 py-3 text-right">${actionCol}</td>
+      </tr>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="max-w-[1600px] mx-auto">
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400"></i>
+            ${getTrans('alarm_title')}
+            ${activeCount > 0 ? `<span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-400">${activeCount} Active</span>` : ''}
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">${isOwner ? getTrans('alarm_hint_owner') : getTrans('alarm_hint_operator')}</p>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white/5 rounded-xl border border-white/10 overflow-x-auto">
+        <table class="w-full text-sm min-w-[800px]">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_station')}</th>
+              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_level')}</th>
+              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_desc')}</th>
+              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_time')}</th>
+              <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('alarm_col_status')}</th>
+              <th class="text-right px-4 py-3 text-slate-400 font-medium">${isOwner ? getTrans('alarm_col_action') : ''}</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * 业主消除告警
+ * @param {string} stationId
+ * @param {string} alarmId
+ */
+function resolveAlarm(stationId, alarmId) {
+  const station = stations.find(s => s.id === stationId);
+  if (!station || !station.alarms) return;
+
+  const alarm = station.alarms.find(a => a.id === alarmId);
+  if (!alarm || alarm.status !== 'Active') return;
+
+  alarm.status = 'Resolved';
+  alarm.resolved_at = new Date().toLocaleString('en-AU', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+
+  // 保存数据
+  if (typeof saveStations === 'function') saveStations();
+
+  // 刷新告警列表
+  const container = document.getElementById('view-reports');
+  if (container) {
+    const role = getCurrentUser();
+    const isOwner = role === 'owner';
+    renderAlarmsList(container, isOwner);
+  }
+
+  if (typeof showToast === 'function') {
+    showToast(getTrans('alarm_resolved_success'), 'success');
+  }
 }
