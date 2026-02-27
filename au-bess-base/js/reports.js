@@ -604,12 +604,11 @@ function renderAlarmsList(container, isOwner) {
     return `
       <tr class="${i%2===0?'bg-white/[0.01]':''} border-b border-white/5 hover:bg-white/[0.04] transition-colors ${rowBorder}">
         <td class="${tdClass} font-mono text-slate-400 text-xs">${shortTime(alarm.timestamp)}</td>
-        <td class="${tdClass} text-slate-300" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0;" title="${escapeHTML(resolveAlarmMsg(alarm.message))}">${escapeHTML(resolveAlarmMsg(alarm.message))}</td>
+        <td class="${tdClass} text-slate-300" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;" title="${escapeHTML(resolveAlarmMsg(alarm.message))}">${escapeHTML(resolveAlarmMsg(alarm.message))}</td>
         <td class="${tdClass} whitespace-nowrap">${severityBadge}</td>
         <td class="${tdClass} text-slate-400 font-mono text-xs whitespace-nowrap">${alarm.device_id ? escapeHTML(alarm.device_id) : '-'}</td>
         <td class="${tdClass} text-white text-xs whitespace-nowrap">${escapeHTML(alarm.stationName)}</td>
         <td class="${tdClass} whitespace-nowrap">${statusBadge}</td>
-        <td class="${tdClass} whitespace-nowrap">${suggestion}</td>
         <td class="${tdClass} text-right whitespace-nowrap">${actionCol}</td>
       </tr>
     `;
@@ -617,7 +616,7 @@ function renderAlarmsList(container, isOwner) {
 
   // 空状态
   const emptyState = allAlarms.length === 0 ? `
-    <tr><td colspan="8" class="text-center py-16">
+    <tr><td colspan="7" class="text-center py-16">
       <div class="text-slate-600">
         <p class="text-base mb-1">🛡️ ${getTrans('no_alarms_active')}</p>
         <p class="text-sm">${getTrans('no_alarms_hint')}</p>
@@ -656,7 +655,6 @@ function renderAlarmsList(container, isOwner) {
               <th class="${thClass}">${getTrans('alarm_col_device')}</th>
               <th class="${thClass}">${getTrans('alarm_col_station')}</th>
               <th class="${thClass}">${getTrans('alarm_col_status')}</th>
-              <th class="${thClass}">${getTrans('alarm_col_root_cause')}</th>
               <th class="${thClass} text-right">${getTrans('alarm_col_action')}</th>
             </tr>
           </thead>
