@@ -518,10 +518,10 @@ function renderAlarmsList(container, isOwner) {
         <td colspan="3">
           <div class="flex items-center gap-2">
             <input type="date" value="${alarmFilterDateFrom}" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-              class="${selClass} max-w-[160px] dark-date-input" />
+              class="${selClass} flex-1 dark-date-input" />
             <span class="text-slate-500 text-sm">→</span>
             <input type="date" value="${alarmFilterDateTo}" onchange="alarmFilterDateTo=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-              class="${selClass} max-w-[160px] dark-date-input" />
+              class="${selClass} flex-1 dark-date-input" />
           </div>
         </td>
         <td colspan="2" class="text-right">
