@@ -517,11 +517,11 @@ function renderAlarmsList(container, isOwner) {
         <td class="${lblClass}">${getTrans('alarm_col_time')}:</td>
         <td colspan="3">
           <div class="flex items-center gap-2">
-            <input type="text" value="${alarmFilterDateFrom}" placeholder="${getTrans('date_placeholder')}" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-              class="${selClass} w-full" />
+            <input type="date" value="${alarmFilterDateFrom}" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+              class="${selClass} max-w-[160px] dark-date-input" />
             <span class="text-slate-500 text-sm">→</span>
-            <input type="text" value="${alarmFilterDateTo}" placeholder="${getTrans('date_placeholder')}" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" onchange="alarmFilterDateTo=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-              class="${selClass} w-full" />
+            <input type="date" value="${alarmFilterDateTo}" onchange="alarmFilterDateTo=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+              class="${selClass} max-w-[160px] dark-date-input" />
           </div>
         </td>
         <td colspan="2" class="text-right">

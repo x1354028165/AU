@@ -3,6 +3,11 @@
  * Phase 1 Enhanced v2: 澳洲储能电站管理平台
  */
 
+/* 暗色背景下日期选择器图标变白 */
+.dark-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
 /* ============ CSS 变量 ============ */
 :root {
   --color-amber: #f59e0b;
