@@ -508,7 +508,7 @@ function renderAlarmsList(container, isOwner) {
 
   // ===== 表格 =====
   const thClass = 'text-left px-4 py-3 text-slate-500 font-medium text-xs tracking-wide whitespace-nowrap';
-  const tdClass = 'px-4 py-5 text-sm';
+  const tdClass = 'px-4 py-6 text-sm';
 
   const rows = allAlarms.map((alarm, i) => {
     const isCritical = alarm.severity === 'Critical';
