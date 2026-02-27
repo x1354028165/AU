@@ -259,5 +259,21 @@ input[type="checkbox"] {
 }
 
 /* UI 加固 */
-.station-card { overflow: hidden; }
-.line-clamp-1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Station card hardening */
+.station-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+@media (min-width: 1024px) {
+  .station-card { min-height: 380px; }
+}
+
+/* Line clamp utility */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

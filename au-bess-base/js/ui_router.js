@@ -1496,7 +1496,7 @@ function renderStationCard(station, theme, isOwner) {
             ${assignmentLabel}
             ${(station.alarms && station.alarms.some(a => a.status !== 'RESOLVED')) ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold">(' + getTrans('alarm') + ')</span>' : ''}
           </div>
-          <h3 class="text-base md:text-lg font-bold text-white truncate max-w-[280px]">${escapeHTML(station.name)}</h3>
+          <h3 class="text-base md:text-lg font-bold text-white truncate" style="max-width:60%">${escapeHTML(station.name)}</h3>
           <p class="text-sm text-slate-400 flex items-center gap-1 mt-1">
             <i data-lucide="map-pin" class="w-3 h-3"></i>
             ${escapeHTML(station.location)}
@@ -1510,14 +1510,14 @@ function renderStationCard(station, theme, isOwner) {
 
       ${socBar}
 
-      <div class="mt-4 grid grid-cols-3 gap-2 md:gap-4">
-        <div class="bg-white/5 rounded-lg p-2 md:p-3">
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4">
+        <div class="bg-white/5 rounded-lg p-2 md:p-3 min-w-0 min-h-[70px]">
           <p class="text-xs text-slate-500">${getTrans('available_energy')}</p>
-          <p class="text-base md:text-lg font-bold text-cyan-400 font-mono" data-energy="${station.id}">${(station.soc * MAX_MWH / 100).toFixed(1)} MWh</p>
+          <p class="text-sm sm:text-base md:text-lg font-bold text-cyan-400 font-mono" data-energy="${station.id}">${(station.soc * MAX_MWH / 100).toFixed(1)} MWh</p>
         </div>
-        <div class="bg-white/5 rounded-lg p-2 md:p-3">
+        <div class="bg-white/5 rounded-lg p-2 md:p-3 min-w-0 min-h-[70px]">
           <p class="text-xs text-slate-500">${getTrans('discharge_duration')}</p>
-          <p class="text-base md:text-lg font-bold text-amber-400 font-mono" data-discharge="${station.id}">${(station.soc * MAX_MWH / 100 / MAX_MW).toFixed(1)}h</p>
+          <p class="text-sm sm:text-base md:text-lg font-bold text-amber-400 font-mono" data-discharge="${station.id}">${(station.soc * MAX_MWH / 100 / MAX_MW).toFixed(1)}h</p>
         </div>
         ${revenueDisplay || `
         <div class="bg-white/5 rounded-lg p-2 md:p-3">
@@ -1525,9 +1525,9 @@ function renderStationCard(station, theme, isOwner) {
           <p class="text-sm font-bold text-emerald-400 font-mono" data-profit="${station.id}">A$${(station.projected_profit || 0).toFixed(0)}</p>
         </div>`}
       </div>
-      <div class="mt-2 flex items-center gap-2">
-        <span class="text-xs text-slate-500">${getTrans('next_action')}:</span>
-        <span class="text-xs font-medium text-cyan-400" data-next-action="${station.id}">${station.nextAction ? (station.nextAction.action === 'discharge' ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.time || station.nextAction.hour) : getTrans('expect_charge_at').replace('{0}', station.nextAction.time || station.nextAction.hour)) : '-'}</span>
+      <div class="mt-2 flex items-center gap-2 line-clamp-1">
+        <span class="text-xs text-slate-500 flex-shrink-0">${getTrans('next_action')}:</span>
+        <span class="text-xs font-medium text-cyan-400 truncate" data-next-action="${station.id}">${station.nextAction ? (station.nextAction.action === 'discharge' ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.time || station.nextAction.hour) : getTrans('expect_charge_at').replace('{0}', station.nextAction.time || station.nextAction.hour)) : '-'}</span>
       </div>
 
       ${leaseInfo}
