@@ -1997,51 +1997,33 @@ function renderDispatchControlPanel(container, forceStationId) {
               </label>
             </div>
 
-            <!-- 充电 | 价格球 | 放电 三栏布局 -->
-            <div class="flex items-center justify-center gap-6">
-              <!-- 左：充电信息 -->
-              <div class="text-right flex-1">
-                <p class="text-sm font-semibold text-blue-400 mb-3">⚡ ${getTrans('force_charge')}</p>
-                <p class="text-xs text-slate-500 mb-1">${getTrans('time')}</p>
-                <p class="text-sm text-white font-mono mb-3">${station.nextAction?.action === 'charge' ? (station.nextAction.time || '--:--') : '--:--'}</p>
-                <p class="text-xs text-slate-500 mb-1">${getTrans('price')}</p>
-                <p class="text-sm text-white font-mono mb-3">$${(strat.charge_threshold || 50).toFixed(0)}</p>
-                <p class="text-xs text-slate-500 mb-1">SoC</p>
-                <p class="text-sm text-white font-mono">${(strat.charge_soc_limit || 90)}%</p>
-              </div>
+            <!-- 充电按钮 | 价格球 | 放电按钮 -->
+            <div class="flex items-center justify-center gap-8 py-4">
+              <!-- 左：充电胶囊按钮 -->
+              <button onclick="showDispatchConfirm('${station.id}', 'charge')"
+                class="px-8 py-4 rounded-full text-lg font-bold text-white transition-all hover:scale-105 active:scale-95"
+                style="background: linear-gradient(135deg, #34d399, #10b981); min-width: 120px;">
+                ${getTrans('force_charge')}
+              </button>
 
               <!-- 中：价格实心球 -->
               <div class="flex-shrink-0">
-                <div class="rounded-full flex flex-col items-center justify-center border-2" style="width: 200px; height: 200px; background: radial-gradient(circle at 35% 30%, ${socColor}99, ${socColor}55 50%, ${socColor}22 80%, #0f172a); border-color: ${socColor}66;">
-                  <span class="text-4xl font-bold font-mono tracking-tight" style="color:${priceColor}" id="dp-ring-price">${priceStr}</span>
-                  <span class="text-sm text-slate-400 mt-2 font-medium" id="dp-ring-soc">${station.status || 'Standby'}</span>
+                <div class="rounded-full flex flex-col items-center justify-center" style="width: 220px; height: 220px; background: radial-gradient(circle at 40% 35%, #7dd3fc, #38bdf8 60%, #0ea5e9);">
+                  <span class="text-4xl font-bold font-mono tracking-tight text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.3);" id="dp-ring-price">${priceStr}</span>
+                  <span class="text-sm text-white/70 mt-2 font-medium" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
                 </div>
               </div>
 
-              <!-- 右：放电信息 -->
-              <div class="text-left flex-1">
-                <p class="text-sm font-semibold text-red-400 mb-3">🔋 ${getTrans('force_discharge')}</p>
-                <p class="text-xs text-slate-500 mb-1">${getTrans('time')}</p>
-                <p class="text-sm text-white font-mono mb-3">${station.nextAction?.action === 'discharge' ? (station.nextAction.time || '--:--') : '--:--'}</p>
-                <p class="text-xs text-slate-500 mb-1">${getTrans('price')}</p>
-                <p class="text-sm text-white font-mono mb-3">$${(strat.discharge_threshold || 200).toFixed(0)}</p>
-                <p class="text-xs text-slate-500 mb-1">SoC</p>
-                <p class="text-sm text-white font-mono">${(strat.reserve_soc || 20)}%</p>
-              </div>
+              <!-- 右：放电胶囊按钮 -->
+              <button onclick="showDispatchConfirm('${station.id}', 'discharge')"
+                class="px-8 py-4 rounded-full text-lg font-bold text-white transition-all hover:scale-105 active:scale-95"
+                style="background: linear-gradient(135deg, #fbbf24, #f59e0b); min-width: 120px;">
+                ${getTrans('force_discharge')}
+              </button>
             </div>
           </div>
 
-          <!-- 手动控制 -->
-          ${!isAuto ? `
-          <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03]">
-            <p class="text-sm text-slate-400 mb-4 font-medium">${getTrans('dispatch_mode_manual')}</p>
-            <div class="grid grid-cols-3 gap-3">
-              <button onclick="dispatchSetMode('${station.id}', 'manual_charge')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_charge' ? 'bg-blue-500 text-white ' : 'bg-white/5 text-blue-400 border border-blue-500/30 hover:bg-blue-500/10'}">⚡ ${getTrans('force_charge')}</button>
-              <button onclick="dispatchSetMode('${station.id}', 'manual_discharge')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_discharge' ? 'bg-red-500 text-white ' : 'bg-white/5 text-red-400 border border-red-500/30 hover:bg-red-500/10'}">🔋 ${getTrans('force_discharge')}</button>
-              <button onclick="dispatchSetMode('${station.id}', 'manual_idle')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_idle' ? 'bg-slate-500 text-white ' : 'bg-white/5 text-slate-400 border border-slate-500/30 hover:bg-slate-500/10'}">⏸ ${getTrans('force_idle')}</button>
-            </div>
-          </div>
-          ` : ''}
+
         </div>
 
         <!-- 右栏：行情 -->
@@ -2172,6 +2154,76 @@ function dispatchToggleAuto(stationId, isAuto) {
   const container = document.getElementById('station-container');
   if (container && activeMenuId === 'dispatch') renderDispatchControlPanel(container);
   showToast(isAuto ? getTrans('dispatch_mode_smart') : getTrans('dispatch_mode_manual'), 'success');
+}
+
+// 充电/放电确认弹窗
+function showDispatchConfirm(stationId, action) {
+  const station = stations.find(s => s.id === stationId);
+  if (!station) return;
+  const isCharge = action === 'charge';
+  const title = isCharge ? getTrans('confirm_charge') : getTrans('confirm_discharge');
+  const actionText = isCharge ? getTrans('force_charge') : getTrans('force_discharge');
+  const color = isCharge ? '#10b981' : '#f59e0b';
+  const cap = getStationCapacity(station);
+
+  // 创建弹窗
+  const overlay = document.createElement('div');
+  overlay.id = 'dispatch-confirm-overlay';
+  overlay.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50';
+  overlay.innerHTML = `
+    <div class="bg-slate-900 border border-white/20 rounded-3xl w-full max-w-md p-0 overflow-hidden" style="animation: fadeInUp 0.2s ease-out;">
+      <!-- Header -->
+      <div class="px-8 pt-8 pb-4 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: ${color}33;">
+          <span class="text-2xl">${isCharge ? '⚡' : '🔋'}</span>
+        </div>
+        <h2 class="text-xl font-bold text-white">${title}</h2>
+      </div>
+
+      <!-- Body -->
+      <div class="px-8 py-6">
+        <p class="text-sm text-slate-400 mb-6">${isCharge ? getTrans('confirm_charge_desc') : getTrans('confirm_discharge_desc')}</p>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="rounded-2xl border border-white/20 p-5">
+            <p class="text-xs text-slate-500 mb-1">${getTrans('operation')}</p>
+            <p class="text-lg font-bold" style="color: ${color};">${actionText}</p>
+          </div>
+          <div class="rounded-2xl border border-white/20 p-5">
+            <p class="text-xs text-slate-500 mb-1">${getTrans('station_capacity')}</p>
+            <p class="text-lg font-bold text-white">${cap.mw}MW / ${cap.mwh}MWh</p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 flex items-start gap-3">
+          <span class="text-lg">⚠️</span>
+          <p class="text-sm text-amber-300/80">${isCharge ? getTrans('charge_warning') : getTrans('discharge_warning')}</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-8 pb-8 flex gap-4">
+        <button onclick="closeDispatchConfirm()" class="flex-1 py-3.5 rounded-2xl border border-white/20 text-sm font-bold text-slate-300 hover:bg-white/5 transition-colors">
+          ${getTrans('cancel')}
+        </button>
+        <button onclick="confirmDispatchAction('${stationId}', '${action}')" class="flex-1 py-3.5 rounded-2xl text-sm font-bold text-white transition-all hover:scale-[1.02]" style="background: linear-gradient(135deg, ${color}, ${color}cc);">
+          ${title}
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function closeDispatchConfirm() {
+  const overlay = document.getElementById('dispatch-confirm-overlay');
+  if (overlay) overlay.remove();
+}
+
+function confirmDispatchAction(stationId, action) {
+  closeDispatchConfirm();
+  const mode = action === 'charge' ? 'manual_charge' : 'manual_discharge';
+  dispatchSetMode(stationId, mode);
 }
 
 function dispatchSetMode(stationId, mode) {
