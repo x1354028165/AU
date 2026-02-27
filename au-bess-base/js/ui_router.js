@@ -2090,10 +2090,10 @@ function renderDispatchControlPanel(container, forceStationId) {
       </div>
 
       <!-- ====== 左右分栏 ====== -->
-      <div class="flex gap-10" style="flex-direction: row; flex-wrap: wrap;">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
-        <!-- 左栏：电站控制 -->
-        <div class="space-y-8" style="width: 480px; flex-shrink: 0;">
+        <!-- 左栏：电站控制 (1/3宽度，与上方KPI卡片对齐) -->
+        <div class="space-y-8">
 
           <!-- 电站管理标题 + 智能托管 -->
           <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-b from-white/[0.03] to-transparent overflow-hidden">
@@ -2164,8 +2164,8 @@ function renderDispatchControlPanel(container, forceStationId) {
 
         </div>
 
-        <!-- 右栏：行情 -->
-        <div class="flex-1 space-y-8">
+        <!-- 右栏：行情 (2/3宽度) -->
+        <div class="lg:col-span-2 space-y-8">
 
           <!-- 4 KPI -->
           <div class="grid grid-cols-4 gap-4">
