@@ -619,6 +619,12 @@ function switchLang(lang) {
   if (typeof initDashboard === 'function') {
     initDashboard();
   }
+  // 重渲染告警列表（如果当前可见）
+  const reportView = document.getElementById('view-reports');
+  if (reportView && !reportView.classList.contains('hidden') && typeof renderAlarmsList === 'function') {
+    const role = typeof getCurrentUser === 'function' ? getCurrentUser() : 'owner';
+    renderAlarmsList(reportView, role === 'owner');
+  }
 }
 
 function toggleLang() {
