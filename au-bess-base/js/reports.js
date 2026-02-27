@@ -353,7 +353,8 @@ function shortTime(timeStr) {
   const m = String(timeStr).match(/(\d{2})\/(\d{2})\/\d{4},?\s*(\d{2}):(\d{2})/);
   const city = String(timeStr).match(/\((\w+)\)/);
   const gmt = city && tzGmtMap[city[1]] ? ' ' + tzGmtMap[city[1]] : '';
-  if (m) return m[2] + '-' + m[1] + ' ' + m[3] + ':' + m[4] + (gmt ? '<br><span class="text-slate-600 text-[10px]">（' + gmt + '）</span>' : '');
+  const mFull = String(timeStr).match(/(\d{2})\/(\d{2})\/(\d{4}),?\s*(\d{2}):(\d{2})/);
+  if (mFull) return mFull[3] + '-' + mFull[2] + '-' + mFull[1] + ' ' + mFull[4] + ':' + mFull[5] + (gmt ? '<br><span class="text-slate-600 text-[10px]">（' + gmt + '）</span>' : '');
   return timeStr.replace(/\s*\(.*\)\s*$/, '').replace(/:\d{2}$/, '') + (gmt ? '<br><span class="text-slate-600 text-[10px]">（' + gmt + '）</span>' : '');
 }
 
