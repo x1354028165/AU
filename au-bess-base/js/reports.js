@@ -1242,12 +1242,12 @@ const hourlyChargeWeight = [0.08,0.08,0.09,0.09,0.08,0.06,0.04,0.02,0.01,0.01,0.
 const hourlyDischargeWeight = [0.01,0.01,0.01,0.01,0.01,0.01,0.02,0.03,0.04,0.04,0.03,0.03,0.03,0.04,0.05,0.06,0.08,0.09,0.09,0.08,0.06,0.05,0.04,0.02];
 const monthlyWeight = [0.07,0.07,0.08,0.08,0.08,0.09,0.10,0.10,0.09,0.08,0.08,0.08];
 
-// 基础数据配置（模拟不同时间周期的套利规模）
+// 基础数据配置（模拟不同时间周期的套利规模，确保放电量符合电池效率）
 const periodBaseData = {
-  daily: { charge: 12, discharge: 11.5, buyPrice: 45, sellPrice: 240 },
-  monthly: { charge: 320, discharge: 305, buyPrice: 48, sellPrice: 235 },
-  yearly: { charge: 3800, discharge: 3650, buyPrice: 50, sellPrice: 245 },
-  cumulative: { charge: 12000, discharge: 11500, buyPrice: 52, sellPrice: 250 }
+  daily: { charge: 12, discharge: 11.4, buyPrice: 45, sellPrice: 240 }, // 95%效率
+  monthly: { charge: 320, discharge: 304, buyPrice: 48, sellPrice: 235 }, // 95%效率  
+  yearly: { charge: 3800, discharge: 3610, buyPrice: 50, sellPrice: 245 }, // 95%效率
+  cumulative: { charge: 12000, discharge: 11400, buyPrice: 52, sellPrice: 250 } // 95%效率
 };
 
 // 电站系数（不同电站规模不同）
@@ -1435,11 +1435,30 @@ function generateSharedReportData() {
     dischargeWeights = [0.12, 0.16, 0.20, 0.24, 0.28];
   }
   
-  // 生成详细数据行
+  // 生成详细数据行（确保充放电严格平衡）
   const rows = [];
+  let totalChargeActual = 0;
+  let totalDischargeActual = 0;
+  
+  // 第一轮：生成基础数据
+  const tempRows = [];
   labels.forEach((label, idx) => {
     const charge = +(totalCharge * chargeWeights[idx] * (0.85 + Math.random() * 0.3)).toFixed(2);
     const discharge = +(totalDischarge * dischargeWeights[idx] * (0.85 + Math.random() * 0.3)).toFixed(2);
+    totalChargeActual += charge;
+    totalDischargeActual += discharge;
+    tempRows.push({ label, idx, charge, discharge });
+  });
+  
+  // 第二轮：按比例调整确保总体平衡（放电量 = 充电量 × 95%）
+  const targetTotalDischarge = totalChargeActual * 0.95; // 95%效率
+  const adjustmentRatio = targetTotalDischarge / totalDischargeActual;
+  
+  tempRows.forEach(row => {
+    const charge = row.charge;
+    const discharge = +(row.discharge * adjustmentRatio).toFixed(2);
+    const idx = row.idx;
+    const label = row.label;
     
     // 价格计算（考虑时间段差异）
     let avgBuyPrice, avgSellPrice;
