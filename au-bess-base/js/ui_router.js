@@ -214,7 +214,7 @@ function renderViewToggle(theme, isOwner) {
 
   container.innerHTML = `
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <div class="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+      <div class="flex items-center gap-1 bg-white/5 border border-white/20 rounded-lg p-1">
         ${modes.map(m => `
           <button onclick="setStationView('${m.id}')"
             class="px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors
@@ -395,10 +395,10 @@ function renderListView(theme, isOwner) {
   }).join('');
 
   container.innerHTML = `
-    <div class="bg-white/5 rounded-xl border border-white/10 overflow-x-auto">
+    <div class="bg-white/5 rounded-xl border border-white/20 overflow-x-auto">
       <table class="w-full text-sm min-w-[800px]">
         <thead>
-          <tr class="border-b border-white/10">
+          <tr class="border-b border-white/20">
             <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('station_name')}</th>
             <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('confirm_location')}</th>
             <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('capacity')}</th>
@@ -494,7 +494,7 @@ function renderStationDetail(station, theme, isOwner) {
     <div class="">
       <!-- Back + Title -->
       <div class="flex items-center gap-4 mb-6">
-        <button onclick="closeStationDetail()" class="p-2 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+        <button onclick="closeStationDetail()" class="p-2 rounded-lg bg-white/5 border border-white/20 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
           <i data-lucide="arrow-left" class="w-5 h-5"></i>
         </button>
         <div>
@@ -503,7 +503,7 @@ function renderStationDetail(station, theme, isOwner) {
         </div>
       </div>
       <!-- Tabs -->
-      <div class="flex items-center gap-1 mb-6 bg-white/5 border border-white/10 rounded-lg p-1 overflow-x-auto">
+      <div class="flex items-center gap-1 mb-6 bg-white/5 border border-white/20 rounded-lg p-1 overflow-x-auto">
         ${tabBar}
       </div>
       <!-- Content -->
@@ -523,7 +523,7 @@ function renderDetailOverview(station, theme, isOwner) {
   const capCheck = checkCapacityMismatch(station);
   let capacityCompare = '';
   if (capCheck) {
-    const mismatchClass = capCheck.mismatch ? 'border-red-500/50' : 'border-white/10';
+    const mismatchClass = capCheck.mismatch ? 'border-red-500/50' : 'border-white/20';
     capacityCompare = `
       <div class="bg-white/5 border ${mismatchClass} rounded-xl p-4 mt-4">
         <div class="flex items-center justify-between mb-3">
@@ -565,11 +565,11 @@ function renderDetailOverview(station, theme, isOwner) {
           ${kpiCard(getTrans('revenue_today'), 'A$' + station.revenue_today.toFixed(2), 'dollar-sign', station.revenue_today >= 0 ? 'text-emerald-400' : 'text-red-400')}
           ${kpiCard(getTrans('status_label'), statusIcon + ' ' + statusText, 'activity', theme.accent)}
         </div>
-        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+        <div class="bg-white/5 border border-white/20 rounded-xl p-4">
           <p class="text-xs text-slate-500 mb-2">${getTrans('select_timezone')}: ${station.timezone}</p>
           <p class="text-xs text-slate-500">${getTrans('select_region')}: ${station.region} · ${getTrans('efficiency_label')}: ${(station.efficiency * 100).toFixed(0)}%</p>
           ${isOwner ? `
-            <div class="mt-3 pt-3 border-t border-white/10">
+            <div class="mt-3 pt-3 border-t border-white/20">
               <p class="text-xs text-slate-500">${getTrans('lease_period')}: ${station.lease_start} ~ ${station.lease_end}</p>
               <p class="text-xs text-slate-500 mt-1">${getTrans('annual_fee')}: ${formatAUD(station.annual_fee)}</p>
             </div>
@@ -579,7 +579,7 @@ function renderDetailOverview(station, theme, isOwner) {
         ${strategySection}
       </div>
       <!-- 右：能量流动画 -->
-      <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+      <div class="bg-white/5 border border-white/20 rounded-xl p-6">
         <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
           <i data-lucide="zap" class="w-4 h-4 ${theme.accent}"></i>
           ${getTrans('energy_flow')}
@@ -620,10 +620,10 @@ function renderDetailDevices(station, theme, isOwner) {
         <h3 class="text-sm font-bold text-white">${getTrans('tab_devices')} (${devices.length})</h3>
         ${addDeviceBtn}
       </div>
-      <div class="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+      <div class="bg-white/5 rounded-xl border border-white/20 overflow-hidden">
         <table class="w-full text-sm">
           <thead>
-            <tr class="border-b border-white/10">
+            <tr class="border-b border-white/20">
               <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('device_name')}</th>
               <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('device_type')}</th>
               <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('device_version')}</th>
@@ -703,7 +703,7 @@ function openAddStationModal() {
   modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
   modal.innerHTML = `
     <div class="absolute inset-0 bg-black/60" onclick="closeAddStationModal()"></div>
-    <div class="relative bg-slate-900 border border-white/10 rounded-2xl w-full max-w-lg p-6 auth-step-enter max-h-[90vh] overflow-y-auto">
+    <div class="relative bg-slate-900 border border-white/20 rounded-2xl w-full max-w-lg p-6 auth-step-enter max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-white">${getTrans('add_station')}</h3>
         <button onclick="closeAddStationModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -712,7 +712,7 @@ function openAddStationModal() {
       <div class="space-y-4">
         <div>
           <label class="text-sm text-slate-300 block mb-1"><span class="text-red-400">*</span> ${getTrans('station_name')}</label>
-          <input id="new-st-name" type="text" required placeholder="e.g. Perth BESS Alpha" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
+          <input id="new-st-name" type="text" required placeholder="e.g. Perth BESS Alpha" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
         </div>
 
         <!-- 核心设备 (先填设备，再同步参数) -->
@@ -723,18 +723,18 @@ function openAddStationModal() {
           <div class="grid grid-cols-3 gap-2 mb-3">
             <div>
               <label class="text-xs text-slate-500 block mb-1">${getTrans('device_type')}</label>
-              <select id="new-st-dev-type" class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50">
+              <select id="new-st-dev-type" class="w-full bg-white/5 border border-white/20 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50">
                 <option value="PCS">PCS</option>
                 <option value="BMS">BMS</option>
               </select>
             </div>
             <div>
               <label class="text-xs text-slate-500 block mb-1">${getTrans('rated_power')} (MW)</label>
-              <input id="new-st-dev-mw" type="number" step="0.5" min="0.1" value="5" class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50"/>
+              <input id="new-st-dev-mw" type="number" step="0.5" min="0.1" value="5" class="w-full bg-white/5 border border-white/20 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50"/>
             </div>
             <div>
               <label class="text-xs text-slate-500 block mb-1">${getTrans('rated_capacity')} (MWh)</label>
-              <input id="new-st-dev-mwh" type="number" step="1" min="1" value="10" class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50"/>
+              <input id="new-st-dev-mwh" type="number" step="1" min="1" value="10" class="w-full bg-white/5 border border-white/20 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50"/>
             </div>
           </div>
           <button onclick="syncFromDevice()" class="w-full py-2 rounded-lg bg-blue-500/10 border border-blue-500/30 text-xs text-blue-400 hover:bg-blue-500/20 transition-colors flex items-center justify-center gap-1.5">
@@ -746,36 +746,36 @@ function openAddStationModal() {
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="text-sm text-slate-300 block mb-1"><span class="text-red-400">*</span> ${getTrans('power_mw')}</label>
-            <input id="new-st-mw" type="number" step="0.5" min="0.1" value="5" required class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
+            <input id="new-st-mw" type="number" step="0.5" min="0.1" value="5" required class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
           </div>
           <div>
             <label class="text-sm text-slate-300 block mb-1"><span class="text-red-400">*</span> ${getTrans('capacity_mwh')}</label>
-            <input id="new-st-mwh" type="number" step="1" min="1" value="10" required class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
+            <input id="new-st-mwh" type="number" step="1" min="1" value="10" required class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
           </div>
         </div>
         <div>
           <label class="text-sm text-slate-300 block mb-1"><span class="text-red-400">*</span> ${getTrans('select_timezone')}</label>
-          <select id="new-st-tz" required onchange="onTzChange()" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50">
+          <select id="new-st-tz" required onchange="onTzChange()" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50">
             ${tzOptions}
           </select>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="text-sm text-slate-300 block mb-1"><span class="text-red-400">*</span> ${getTrans('latitude')}</label>
-            <input id="new-st-lat" type="number" step="0.0001" required placeholder="-33.8688" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
+            <input id="new-st-lat" type="number" step="0.0001" required placeholder="-33.8688" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
           </div>
           <div>
             <label class="text-sm text-slate-300 block mb-1"><span class="text-red-400">*</span> ${getTrans('longitude')}</label>
-            <input id="new-st-lng" type="number" step="0.0001" required placeholder="151.2093" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
+            <input id="new-st-lng" type="number" step="0.0001" required placeholder="151.2093" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
           </div>
         </div>
         <div>
           <label class="text-sm text-slate-300 block mb-1">${getTrans('confirm_location')}</label>
-          <input id="new-st-location" type="text" placeholder="e.g. Perth, WA (optional)" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
+          <input id="new-st-location" type="text" placeholder="e.g. Perth, WA (optional)" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
         </div>
       </div>
       <div class="flex gap-3 mt-6">
-        <button onclick="closeAddStationModal()" class="flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-300 hover:bg-white/10 transition-colors">${getTrans('cancel')}</button>
+        <button onclick="closeAddStationModal()" class="flex-1 py-3 rounded-lg bg-white/5 border border-white/20 text-sm text-slate-300 hover:bg-white/10 transition-colors">${getTrans('cancel')}</button>
         <button onclick="handleAddStation()" class="flex-1 py-3 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">${getTrans('confirm_add')}</button>
       </div>
     </div>
@@ -885,7 +885,7 @@ function openAddDeviceModal(stationId) {
   modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
   modal.innerHTML = `
     <div class="absolute inset-0 bg-black/60" onclick="closeAddDeviceModal()"></div>
-    <div class="relative bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md p-6 auth-step-enter">
+    <div class="relative bg-slate-900 border border-white/20 rounded-2xl w-full max-w-md p-6 auth-step-enter">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-white">${getTrans('add_device')}</h3>
         <button onclick="closeAddDeviceModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -893,11 +893,11 @@ function openAddDeviceModal(stationId) {
       <div class="space-y-4">
         <div>
           <label class="text-sm text-slate-300 block mb-1">${getTrans('device_name')}</label>
-          <input id="new-dev-name" type="text" placeholder="e.g. PCS Unit 1" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
+          <input id="new-dev-name" type="text" placeholder="e.g. PCS Unit 1" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
         </div>
         <div>
           <label class="text-sm text-slate-300 block mb-1">${getTrans('device_type')}</label>
-          <select id="new-dev-type" onchange="toggleDeviceRatedFields()" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50">
+          <select id="new-dev-type" onchange="toggleDeviceRatedFields()" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50">
             <option value="EMS">EMS</option>
             <option value="PCS">PCS</option>
             <option value="BMS">BMS</option>
@@ -908,21 +908,21 @@ function openAddDeviceModal(stationId) {
         </div>
         <div>
           <label class="text-sm text-slate-300 block mb-1">${getTrans('device_version')}</label>
-          <input id="new-dev-ver" type="text" value="v1.0.0" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
+          <input id="new-dev-ver" type="text" value="v1.0.0" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50"/>
         </div>
         <div id="dev-rated-fields" class="hidden grid grid-cols-2 gap-3">
           <div>
             <label class="text-xs text-slate-500 block mb-1">${getTrans('rated_power')} (MW)</label>
-            <input id="new-dev-rated-mw" type="number" step="0.5" value="5" class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50"/>
+            <input id="new-dev-rated-mw" type="number" step="0.5" value="5" class="w-full bg-white/5 border border-white/20 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50"/>
           </div>
           <div>
             <label class="text-xs text-slate-500 block mb-1">${getTrans('rated_capacity')} (MWh)</label>
-            <input id="new-dev-rated-mwh" type="number" step="1" value="10" class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50"/>
+            <input id="new-dev-rated-mwh" type="number" step="1" value="10" class="w-full bg-white/5 border border-white/20 rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-emerald-500/50"/>
           </div>
         </div>
       </div>
       <div class="flex gap-3 mt-6">
-        <button onclick="closeAddDeviceModal()" class="flex-1 py-3 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-300 hover:bg-white/10 transition-colors">${getTrans('cancel')}</button>
+        <button onclick="closeAddDeviceModal()" class="flex-1 py-3 rounded-lg bg-white/5 border border-white/20 text-sm text-slate-300 hover:bg-white/10 transition-colors">${getTrans('cancel')}</button>
         <button onclick="handleAddDevice('${stationId}')" class="flex-1 py-3 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">${getTrans('add_device_btn')}</button>
       </div>
     </div>
@@ -1032,7 +1032,7 @@ function renderKPI(role, theme) {
 
 function kpiCard(label, value, icon, colorClass, dataId) {
   return `
-    <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+    <div class="bg-white/5 border border-white/20 rounded-xl p-4">
       <div class="flex items-center gap-2 mb-2">
         <i data-lucide="${icon}" class="w-4 h-4 ${colorClass}"></i>
         <span class="text-xs text-slate-400">${label}</span>
@@ -1078,7 +1078,7 @@ function renderOwnerPortfolioBanner() {
 
   banner.innerHTML = `
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+      <div class="bg-white/5 border border-white/20 rounded-xl p-5">
         <div class="flex items-center gap-2 mb-3">
           <i data-lucide="heart-pulse" class="w-5 h-5 text-emerald-400"></i>
           <span class="text-xs text-slate-400 uppercase tracking-wider">${getTrans('portfolio_health')}</span>
@@ -1086,7 +1086,7 @@ function renderOwnerPortfolioBanner() {
         <p id="owner-avg-soh" class="text-2xl font-bold font-mono text-emerald-400">${avgSoh.toFixed(2)}%</p>
         <p class="text-xs text-slate-500 mt-1">${getTrans('avg_soh_desc').replace('{0}', totalStations)}</p>
       </div>
-      <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+      <div class="bg-white/5 border border-white/20 rounded-xl p-5">
         <div class="flex items-center gap-2 mb-3">
           <i data-lucide="building-2" class="w-5 h-5 text-amber-400"></i>
           <span class="text-xs text-slate-400 uppercase tracking-wider">${getTrans('asset_rental_rate')}</span>
@@ -1094,7 +1094,7 @@ function renderOwnerPortfolioBanner() {
         <p id="owner-rental-rate" class="text-2xl font-bold font-mono text-amber-400">${rentalRate}%</p>
         <p class="text-xs text-slate-500 mt-1">${getTrans('rental_rate_desc').replace('{0}', leasedCount).replace('{1}', totalStations)}</p>
       </div>
-      <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+      <div class="bg-white/5 border border-white/20 rounded-xl p-5">
         <div class="flex items-center gap-2 mb-3">
           <i data-lucide="wallet" class="w-5 h-5 text-blue-400"></i>
           <span class="text-xs text-slate-400 uppercase tracking-wider">${getTrans('monthly_rental')}</span>
@@ -1268,7 +1268,7 @@ function renderSidebar(role, theme) {
       return `
         <a href="#" data-menu="${item.id}"
           class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
-          ${isActive ? theme.accentBg + ' text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}"
+          ${isActive ? theme.accentBg + ' text-white ' : 'text-slate-400 hover:text-white hover:bg-white/5'}"
           onclick="handleMenuClick('${item.id}', '${item.view}'); return false;">
           <i data-lucide="${item.icon}" class="w-4 h-4"></i>
           ${getTrans(item.labelKey)}
@@ -1288,7 +1288,7 @@ function renderSidebar(role, theme) {
         <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
         ${getTrans('sign_out')}
       </button>
-      <button onclick="toggleLangAndRefresh()" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-slate-300 hover:bg-white/10 transition-colors">
+      <button onclick="toggleLangAndRefresh()" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/20 text-xs font-medium text-slate-300 hover:bg-white/10 transition-colors">
         ${getTrans('lang_switch')}
       </button>
     `;
@@ -1442,9 +1442,9 @@ function renderStationCard(station, theme, isOwner) {
 
   // Strategy button (operator only)
   const strategyBtn = (!isOwner && !isUnassigned) ? `
-    <div class="mt-4 pt-4 border-t border-white/10">
+    <div class="mt-4 pt-4 border-t border-white/20">
       <button onclick="openStrategyModal('${station.id}')"
-        class="w-full py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2">
+        class="w-full py-2.5 rounded-lg bg-white/5 border border-white/20 text-sm text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2">
         <i data-lucide="settings" class="w-4 h-4"></i>
         ${getTrans('strategy_panel')}
       </button>
@@ -1453,10 +1453,10 @@ function renderStationCard(station, theme, isOwner) {
 
   // Assignment control (owner only)
   const assignControl = isOwner ? `
-    <div class="mt-4 pt-4 border-t border-white/10">
+    <div class="mt-4 pt-4 border-t border-white/20">
       <label class="text-xs text-slate-400 block mb-2">${getTrans('assign_to')}</label>
       <div class="flex gap-2">
-        <select id="select-${station.id}" class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500/50">
+        <select id="select-${station.id}" class="flex-1 bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500/50">
           <option value="">${getTrans('select_operator')}</option>
           ${operators.map(op => `<option value="${op.id}" ${station.operator_id === op.id ? 'selected' : ''}>${escapeHTML(op.name)}</option>`).join('')}
           ${!isUnassigned ? `<option value="unassigned">${getTrans('revoke_access')}</option>` : ''}
@@ -1471,7 +1471,7 @@ function renderStationCard(station, theme, isOwner) {
 
   // Lease info (owner only)
   const leaseInfo = isOwner ? `
-    <div class="mt-4 pt-4 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+    <div class="mt-4 pt-4 border-t border-white/20 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
       <div>
         <p class="text-xs text-slate-500">${getTrans('lease_period')}</p>
         <p class="text-sm text-white mt-0.5">${station.lease_start === '-' ? '-' : station.lease_start + ' ~ ' + station.lease_end}</p>
@@ -1721,7 +1721,7 @@ function openStrategyModal(stationId) {
   modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
   modal.innerHTML = `
     <div class="absolute inset-0 bg-black/60" onclick="closeStrategyModal()"></div>
-    <div class="relative bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md p-6 auth-step-enter">
+    <div class="relative bg-slate-900 border border-white/20 rounded-2xl w-full max-w-md p-6 auth-step-enter">
       <div class="flex items-center justify-between mb-6">
         <div>
           <h3 class="text-lg font-bold text-white">${getTrans('strategy_panel')}</h3>
@@ -1772,7 +1772,7 @@ function openStrategyModal(stationId) {
       </button>
 
       <!-- Manual Override -->
-      <div class="border-t border-white/10 pt-4">
+      <div class="border-t border-white/20 pt-4">
         <p class="text-xs text-slate-500 uppercase tracking-wider mb-3">${getTrans('manual_override')}</p>
         <div class="grid grid-cols-3 gap-2">
           <button onclick="setManualMode('${stationId}', 'manual_charge')"
@@ -1790,7 +1790,7 @@ function openStrategyModal(stationId) {
         </div>
         ${strat.mode !== 'auto' ? `
           <button onclick="setManualMode('${stationId}', 'auto')"
-            class="w-full mt-2 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 hover:text-white transition-colors">
+            class="w-full mt-2 py-2 rounded-lg bg-white/5 border border-white/20 text-xs text-slate-400 hover:text-white transition-colors">
             ↩ ${getTrans('mode_auto')}
           </button>
         ` : ''}
@@ -1926,8 +1926,8 @@ function renderDispatchControlPanel(container, forceStationId) {
 
   // 操作按钮样式
   const actionBtnClass = (m) => mode === m
-    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-    : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10';
+    ? 'bg-emerald-500 text-white '
+    : 'bg-white/5 text-slate-300 border border-white/20 hover:bg-white/10';
 
   // SoC 圆环 SVG
   const socPct = station.soc;
@@ -1941,7 +1941,7 @@ function renderDispatchControlPanel(container, forceStationId) {
   const todaySummary = typeof getTodayTradesSummary === 'function' ? getTodayTradesSummary() : plan.summary;
   const todayProfitVal = parseFloat(todaySummary.profit);
   const todayProfitColor = todayProfitVal >= 0 ? 'text-emerald-400' : 'text-red-400';
-  const profitGlow = todayProfitVal >= 0 ? 'shadow-emerald-500/20' : 'shadow-red-500/20';
+  const profitGlow = '';
 
   // 大圆环参数
   const ringSize = 260;
@@ -1954,7 +1954,7 @@ function renderDispatchControlPanel(container, forceStationId) {
 
       <!-- ====== 顶部：今日套利汇总 ====== -->
       <div class="grid grid-cols-3 gap-8 mb-10">
-        <div class="rounded-2xl p-8 border border-white/10 bg-gradient-to-br from-blue-500/10 to-transparent shadow-xl ${profitGlow}">
+        <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-br from-blue-500/10 to-transparent  ${profitGlow}">
           <div class="flex items-center gap-4 mb-4">
             <span class="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-xl">⬇</span>
             <span class="text-sm text-slate-400 tracking-wide">${getTrans('total_buy')}</span>
@@ -1962,7 +1962,7 @@ function renderDispatchControlPanel(container, forceStationId) {
           <p class="text-4xl font-bold text-white font-mono tracking-tight" id="dp-summary-buy">${todaySummary.totalBuyQty} <span class="text-lg text-slate-500">MWh</span></p>
           <p class="text-sm text-slate-500 mt-3">${getTrans('cost')}: <span class="text-white">A$${todaySummary.totalBuyCost}</span></p>
         </div>
-        <div class="rounded-2xl p-8 border border-white/10 bg-gradient-to-br from-amber-500/10 to-transparent shadow-xl">
+        <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-br from-amber-500/10 to-transparent ">
           <div class="flex items-center gap-4 mb-4">
             <span class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-xl">⬆</span>
             <span class="text-sm text-slate-400 tracking-wide">${getTrans('total_sell')}</span>
@@ -1970,7 +1970,7 @@ function renderDispatchControlPanel(container, forceStationId) {
           <p class="text-4xl font-bold text-white font-mono tracking-tight" id="dp-summary-sell">${todaySummary.totalSellQty} <span class="text-lg text-slate-500">MWh</span></p>
           <p class="text-sm text-slate-500 mt-3">${getTrans('revenue')}: <span class="text-white">A$${todaySummary.totalSellRevenue}</span></p>
         </div>
-        <div class="rounded-2xl p-8 border border-white/10 bg-gradient-to-br ${todayProfitVal >= 0 ? 'from-emerald-500/10' : 'from-red-500/10'} to-transparent shadow-xl ${profitGlow}">
+        <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-br ${todayProfitVal >= 0 ? 'from-emerald-500/10' : 'from-red-500/10'} to-transparent  ${profitGlow}">
           <div class="flex items-center gap-4 mb-4">
             <span class="w-12 h-12 rounded-2xl ${todayProfitVal >= 0 ? 'bg-emerald-500/20' : 'bg-red-500/20'} flex items-center justify-center text-xl">🏆</span>
             <span class="text-sm text-slate-400 tracking-wide">${getTrans('spread_profit')}</span>
@@ -1987,7 +1987,7 @@ function renderDispatchControlPanel(container, forceStationId) {
         <div class="space-y-8" style="width: 440px; flex-shrink: 0;">
 
           <!-- SoC 大圆环 -->
-          <div class="rounded-2xl p-8 border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent">
+          <div class="rounded-2xl p-8 border border-white/20 bg-gradient-to-b from-white/[0.03] to-transparent">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-bold text-white tracking-tight">${getTrans('menu_dispatch')}</h3>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -1998,7 +1998,7 @@ function renderDispatchControlPanel(container, forceStationId) {
             </div>
 
             <div class="flex justify-center py-6">
-              <div class="relative" style="filter: drop-shadow(0 0 40px ${socColor}33);">
+              <div class="relative">
                 <svg width="${ringSize}" height="${ringSize}" viewBox="0 0 ${ringSize} ${ringSize}">
                   <circle cx="${ringSize/2}" cy="${ringSize/2}" r="${ringR}" fill="none" stroke="#1e293b" stroke-width="14"/>
                   <circle cx="${ringSize/2}" cy="${ringSize/2}" r="${ringR}" fill="none" stroke="${socColor}" stroke-width="14"
@@ -2016,15 +2016,15 @@ function renderDispatchControlPanel(container, forceStationId) {
 
           <!-- 3个 KPI -->
           <div class="grid grid-cols-3 gap-4">
-            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
               <p class="text-sm text-slate-400 mb-2">${getTrans('discharge_cycles')}</p>
               <p class="text-3xl font-bold text-white font-mono" id="dp-cycles">${Math.floor(station.soc * cap.mwh / 100 / cap.mwh * 10)}</p>
             </div>
-            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
               <p class="text-sm text-slate-400 mb-2">${getTrans('available_kwh')}</p>
               <p class="text-3xl font-bold text-cyan-400 font-mono" id="dp-kwh">${(station.soc * cap.mwh / 100 * 1000).toFixed(0)}<span class="text-lg">kWh</span></p>
             </div>
-            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
               <p class="text-sm text-slate-400 mb-2">${getTrans('projected_profit')}</p>
               <p class="text-3xl font-bold text-emerald-400 font-mono" id="dp-profit">$${plan.summary.profit}</p>
             </div>
@@ -2032,12 +2032,12 @@ function renderDispatchControlPanel(container, forceStationId) {
 
           <!-- 手动控制 -->
           ${!isAuto ? `
-          <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03]">
+          <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03]">
             <p class="text-sm text-slate-400 mb-4 font-medium">${getTrans('dispatch_mode_manual')}</p>
             <div class="grid grid-cols-3 gap-3">
-              <button onclick="dispatchSetMode('${station.id}', 'manual_charge')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_charge' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-white/5 text-blue-400 border border-blue-500/30 hover:bg-blue-500/10'}">⚡ ${getTrans('force_charge')}</button>
-              <button onclick="dispatchSetMode('${station.id}', 'manual_discharge')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_discharge' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-white/5 text-red-400 border border-red-500/30 hover:bg-red-500/10'}">🔋 ${getTrans('force_discharge')}</button>
-              <button onclick="dispatchSetMode('${station.id}', 'manual_idle')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_idle' ? 'bg-slate-500 text-white shadow-lg shadow-slate-500/30' : 'bg-white/5 text-slate-400 border border-slate-500/30 hover:bg-slate-500/10'}">⏸ ${getTrans('force_idle')}</button>
+              <button onclick="dispatchSetMode('${station.id}', 'manual_charge')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_charge' ? 'bg-blue-500 text-white ' : 'bg-white/5 text-blue-400 border border-blue-500/30 hover:bg-blue-500/10'}">⚡ ${getTrans('force_charge')}</button>
+              <button onclick="dispatchSetMode('${station.id}', 'manual_discharge')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_discharge' ? 'bg-red-500 text-white ' : 'bg-white/5 text-red-400 border border-red-500/30 hover:bg-red-500/10'}">🔋 ${getTrans('force_discharge')}</button>
+              <button onclick="dispatchSetMode('${station.id}', 'manual_idle')" class="py-3 rounded-xl text-sm font-bold transition-all ${mode === 'manual_idle' ? 'bg-slate-500 text-white ' : 'bg-white/5 text-slate-400 border border-slate-500/30 hover:bg-slate-500/10'}">⏸ ${getTrans('force_idle')}</button>
             </div>
           </div>
           ` : ''}
@@ -2048,22 +2048,22 @@ function renderDispatchControlPanel(container, forceStationId) {
 
           <!-- 4 KPI -->
           <div class="grid grid-cols-4 gap-4">
-            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
               <p class="text-sm text-slate-400 mb-2">${getTrans('spot_price')}</p>
               <p class="text-3xl font-bold font-mono tracking-tight" style="color:${priceColor}" id="dp-spot">${priceStr}</p>
               <p class="text-xs text-slate-600 mt-1">$/MWh</p>
             </div>
-            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
               <p class="text-sm text-slate-400 mb-2">${getTrans('current_demand')}</p>
               <p class="text-3xl font-bold text-emerald-400 font-mono tracking-tight" id="dp-demand">4,454</p>
               <p class="text-xs text-slate-600 mt-1">MW</p>
             </div>
-            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
               <p class="text-sm text-slate-400 mb-2">${getTrans('forecast_price')}</p>
               <p class="text-3xl font-bold text-amber-400 font-mono tracking-tight" id="dp-fc-price">$${fc.toFixed(2)}</p>
               <p class="text-xs text-slate-600 mt-1">$/MWh · 30min</p>
             </div>
-            <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03] text-center">
+            <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03] text-center">
               <p class="text-sm text-slate-400 mb-2">${getTrans('forecast_demand')}</p>
               <p class="text-3xl font-bold text-emerald-400 font-mono tracking-tight" id="dp-fc-demand">4,759</p>
               <p class="text-xs text-slate-600 mt-1">MW · 30min</p>
@@ -2071,7 +2071,7 @@ function renderDispatchControlPanel(container, forceStationId) {
           </div>
 
           <!-- 图表 -->
-          <div class="rounded-2xl p-6 border border-white/10 bg-white/[0.03]">
+          <div class="rounded-2xl p-6 border border-white/20 bg-white/[0.03]">
             <div id="dispatch-chart-container" style="height: 400px; position: relative;">
               <canvas id="dispatch-price-chart"></canvas>
             </div>
@@ -2080,8 +2080,8 @@ function renderDispatchControlPanel(container, forceStationId) {
       </div>
 
       <!-- 今日交易计划表 -->
-      <div class="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden">
-        <div class="px-8 py-6 border-b border-white/10">
+      <div class="mt-10 rounded-2xl border border-white/20 bg-white/[0.03] overflow-hidden">
+        <div class="px-8 py-6 border-b border-white/20">
           <h3 class="text-lg font-bold text-white tracking-tight">${getTrans('trading_plan_today')}</h3>
         </div>
         <div class="overflow-x-auto">
