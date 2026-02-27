@@ -1240,51 +1240,62 @@ function triggerSpikeAlert() {
 // ============ 侧边栏 ============
 
 function renderSidebar(role, theme) {
-  const sidebar = document.getElementById('sidebar');
+  // 顶部导航模式：渲染 nav-brand + nav-tabs + nav-actions
   const isOwner = role === 'owner';
   const menus = getMenus();
   const menuItems = isOwner ? menus.owner : menus.operator;
   const userName = escapeHTML(isOwner ? getUserName('owner_1') : getUserName(role));
 
-  sidebar.className = `sidebar-panel w-64 min-h-screen ${theme.sidebar} border-r border-white/10 flex flex-col fixed md:relative z-40 transition-transform duration-300`;
-  if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
-
-  sidebar.innerHTML = `
-    <button onclick="closeMobileMenu()" class="md:hidden absolute top-4 right-4 text-slate-400 hover:text-white">
-      <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
-    <div class="p-6 border-b border-white/10">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg ${theme.accentBg} flex items-center justify-center">
-          <i data-lucide="zap" class="w-5 h-5 text-white"></i>
-        </div>
-        <div>
-          <h1 class="text-white font-bold text-sm">${getTrans('app_title')}</h1>
-          <p class="text-xs ${theme.accent}">${isOwner ? getTrans('owner_portal') : getTrans('operator_portal')}</p>
-        </div>
+  // Brand
+  const brand = document.getElementById('nav-brand');
+  if (brand) {
+    brand.innerHTML = `
+      <div class="w-8 h-8 rounded-lg ${theme.accentBg} flex items-center justify-center">
+        <i data-lucide="zap" class="w-4 h-4 text-white"></i>
       </div>
-    </div>
-    <div class="px-6 py-4 border-b border-white/10">
-      <p class="text-xs text-slate-500 uppercase tracking-wider">${getTrans('logged_in_as')}</p>
-      <p class="text-sm text-white font-medium mt-1">${userName}</p>
-      <span class="inline-block mt-1 px-2 py-0.5 rounded text-xs ${theme.badge}">
-        ${isOwner ? getTrans('role_owner') : getTrans('role_operator')}
-      </span>
-    </div>
-    <nav class="flex-1 p-4 space-y-1">
-      ${menuItems.map((item) => {
-        const isActive = item.id === activeMenuId;
-        return `
-        <a href="#" data-menu="${item.id}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
-          ${isActive ? theme.sidebarActive : theme.sidebarText + ' ' + theme.sidebarHover}"
+      <div>
+        <h1 class="text-white font-bold text-sm leading-tight">${getTrans('app_title')}</h1>
+        <p class="text-xs ${theme.accent}">${isOwner ? getTrans('owner_portal') : getTrans('operator_portal')}</p>
+      </div>
+    `;
+  }
+
+  // Tabs
+  const tabs = document.getElementById('nav-tabs');
+  if (tabs) {
+    tabs.innerHTML = menuItems.map(item => {
+      const isActive = item.id === activeMenuId;
+      return `
+        <a href="#" data-menu="${item.id}"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
+          ${isActive ? theme.accentBg + ' text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}"
           onclick="handleMenuClick('${item.id}', '${item.view}'); return false;">
           <i data-lucide="${item.icon}" class="w-4 h-4"></i>
           ${getTrans(item.labelKey)}
         </a>`;
-      }).join('')}
-    </nav>
-    <!-- 切换角色/退出登录 只保留顶部导航栏 -->
-  `;
+    }).join('');
+  }
+
+  // Actions
+  const actions = document.getElementById('nav-actions');
+  if (actions) {
+    actions.innerHTML = `
+      <span class="text-xs text-slate-500">${userName}</span>
+      <span class="px-2 py-0.5 rounded text-xs ${theme.badge}">${isOwner ? getTrans('role_owner') : getTrans('role_operator')}</span>
+      <button onclick="switchRole()" class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-medium text-amber-400 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5" title="${getTrans('switch_role')}">
+        <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
+        ${getTrans('switch_role')}
+      </button>
+      <button onclick="logout()" class="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-xs font-medium text-red-400 hover:bg-red-500/20 transition-colors flex items-center gap-1.5" title="${getTrans('sign_out')}">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        ${getTrans('sign_out')}
+      </button>
+      <button onclick="toggleLangAndRefresh()" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-slate-300 hover:bg-white/10 transition-colors">
+        ${getTrans('lang_switch')}
+      </button>
+    `;
+  }
+
   if (window.lucide) lucide.createIcons();
 }
 
@@ -1321,36 +1332,7 @@ function closeMobileMenu() {
 // ============ 顶部栏 ============
 
 function renderHeader(role, theme) {
-  const header = document.getElementById('header');
-  const isOwner = role === 'owner';
-
-  header.className = 'px-4 md:px-8 py-4 border-b border-white/10 flex items-center justify-between';
-  header.innerHTML = `
-    <div class="flex items-center gap-3">
-      <button onclick="toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white p-1">
-        <i data-lucide="menu" class="w-5 h-5"></i>
-      </button>
-      <div>
-        <h2 class="text-lg md:text-xl font-bold text-white">${getTrans('assets_overview')}</h2>
-        <p class="text-xs md:text-sm text-slate-400 mt-0.5">${isOwner ? getTrans('owner_subtitle') : getTrans('operator_subtitle')}</p>
-      </div>
-    </div>
-    <div class="flex items-center gap-2 md:gap-3">
-      <span class="text-xs text-slate-500 hidden sm:inline">${new Date().toLocaleDateString(getLang() === 'zh' ? 'zh-CN' : 'en-AU', { timeZone: 'Australia/Sydney', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-      <button onclick="switchRole()" class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-medium text-amber-400 hover:bg-amber-500/20 hover:text-amber-300 transition-colors flex items-center gap-1.5" title="${getTrans('switch_role')}">
-        <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
-        <span class="hidden sm:inline">${getTrans('switch_role')}</span>
-      </button>
-      <button onclick="logout()" class="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-xs font-medium text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors flex items-center gap-1.5" title="${getTrans('sign_out')}">
-        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-        <span class="hidden sm:inline">${getTrans('sign_out')}</span>
-      </button>
-      <button onclick="toggleLangAndRefresh()" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
-        ${getTrans('lang_switch')}
-      </button>
-    </div>
-  `;
-  if (window.lucide) lucide.createIcons();
+  // Header 已整合到顶部导航栏，无需单独渲染
 }
 
 function toggleLangAndRefresh() {

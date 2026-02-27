@@ -14,7 +14,7 @@
   <!-- Leaflet Map -->
   <link rel="stylesheet" href="vendor/leaflet.min.css" />
   <script src="vendor/leaflet.min.js"></script>
-  <link rel="stylesheet" href="css/main.css?v=1772179524" />
+  <link rel="stylesheet" href="css/main.css?v=1772179795" />
   <script>
     tailwind.config = {
       theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] } } }
@@ -23,17 +23,24 @@
 </head>
 <body class="bg-slate-950 min-h-screen">
 
-  <div class="flex min-h-screen">
-    <!-- Mobile Overlay -->
-    <div id="mobile-overlay" onclick="closeMobileMenu()" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"></div>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="w-64 min-h-screen bg-slate-900 border-r border-white/10"></aside>
+  <div class="min-h-screen">
+    <!-- Top Navigation Bar -->
+    <header id="top-nav" class="bg-slate-900 border-b border-white/10">
+      <div class="flex items-center justify-between px-6 py-3">
+        <!-- Logo + Identity -->
+        <div class="flex items-center gap-3" id="nav-brand"></div>
+        <!-- Menu Tabs -->
+        <nav class="flex items-center gap-1" id="nav-tabs"></nav>
+        <!-- Right Actions -->
+        <div class="flex items-center gap-3" id="nav-actions"></div>
+      </div>
+    </header>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col min-w-0">
-      <!-- Header -->
-      <header id="header" class="px-8 py-4 border-b border-white/10"></header>
+    <main class="flex flex-col min-w-0">
+      <!-- Hidden elements for backward compat -->
+      <aside id="sidebar" class="hidden"></aside>
+      <header id="header" class="hidden"></header>
 
       <!-- View: Dashboard (default) -->
       <div id="view-dashboard">
@@ -62,11 +69,11 @@
   </div>
 
   <!-- Scripts (order matters) -->
-  <script src="js/auth.js?v=1772179524"></script>
-  <script src="js/simulator.js?v=1772179524"></script>
-  <script src="js/charts.js?v=1772179524"></script>
-  <script src="js/reports.js?v=1772179524"></script>
-  <script src="js/ui_router.js?v=1772179524"></script>
+  <script src="js/auth.js?v=1772179795"></script>
+  <script src="js/simulator.js?v=1772179795"></script>
+  <script src="js/charts.js?v=1772179795"></script>
+  <script src="js/reports.js?v=1772179795"></script>
+  <script src="js/ui_router.js?v=1772179795"></script>
   <script>
     document.addEventListener('DOMContentLoaded', initDashboard);
   </script>
