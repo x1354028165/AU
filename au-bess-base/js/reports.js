@@ -435,17 +435,27 @@ function renderAlarmsList(container, isOwner) {
       : alarm.status === 'ACKNOWLEDGED' ? 'border-l-amber-500/50'
       : 'border-l-emerald-500/30';
 
-    // 审计信息区域（独立行，清晰分隔）
+    // 审计信息区域（判空保护 + 按状态条件渲染）
     let auditHtml = '';
-    if (alarm.ack_by || alarm.resolved_by) {
-      const items = [];
-      if (alarm.ack_by) {
-        items.push(`<div class="flex items-center gap-2"><span class="text-slate-600 text-xs w-12">ACK:</span><span class="text-slate-400 text-xs">${escapeHTML(typeof getUserName === 'function' ? getUserName(alarm.ack_by) : alarm.ack_by)}</span><span class="text-slate-600 text-xs font-mono">${alarm.ack_at || ''}</span></div>`);
-      }
-      if (alarm.resolved_by) {
-        items.push(`<div class="flex items-center gap-2"><span class="text-slate-600 text-xs w-12">Fix:</span><span class="text-slate-400 text-xs">${escapeHTML(typeof getUserName === 'function' ? getUserName(alarm.resolved_by) : alarm.resolved_by)}</span><span class="text-slate-600 text-xs font-mono">${alarm.resolved_at || ''}</span></div>`);
-      }
-      auditHtml = `<div class="mt-3 pt-3 border-t border-white/5 space-y-1">${items.join('')}</div>`;
+    const auditItems = [];
+    if (alarm.ack_by && alarm.status !== 'ACTIVE') {
+      const ackName = typeof getUserName === 'function' ? getUserName(alarm.ack_by) : alarm.ack_by;
+      auditItems.push(`<div class="flex items-center gap-2 text-[11px]">
+        <span class="text-amber-500/70">◉ Ack'd by</span>
+        <span class="text-amber-400/80 font-medium">${escapeHTML(ackName)}</span>
+        ${alarm.ack_at ? `<span class="text-slate-600 font-mono">${escapeHTML(alarm.ack_at)}</span>` : ''}
+      </div>`);
+    }
+    if (alarm.resolved_by && alarm.status === 'RESOLVED') {
+      const resName = typeof getUserName === 'function' ? getUserName(alarm.resolved_by) : alarm.resolved_by;
+      auditItems.push(`<div class="flex items-center gap-2 text-[11px]">
+        <span class="text-emerald-500/70">✓ Fixed by</span>
+        <span class="text-emerald-400/80 font-medium">${escapeHTML(resName)}</span>
+        ${alarm.resolved_at ? `<span class="text-slate-600 font-mono">${escapeHTML(alarm.resolved_at)}</span>` : ''}
+      </div>`);
+    }
+    if (auditItems.length > 0) {
+      auditHtml = `<div class="mt-3 pt-3 border-t border-white/5 space-y-1.5">${auditItems.join('')}</div>`;
     }
 
     return `
