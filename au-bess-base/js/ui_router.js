@@ -2158,7 +2158,7 @@ function showDispatchConfirm(stationId, action) {
   const isCharge = action === 'charge';
   const title = isCharge ? getTrans('confirm_charge') : getTrans('confirm_discharge');
   const color = isCharge ? '#10b981' : '#f59e0b';
-  const cap = getStationCapacity(station);
+  const cap = typeof getPhysicalCapacity === "function" ? getPhysicalCapacity(station) : { mw: MAX_MW, mwh: MAX_MWH };
   const price = typeof currentPrice !== 'undefined' ? currentPrice : 100;
   const priceStr = '$' + price.toFixed(2);
 
