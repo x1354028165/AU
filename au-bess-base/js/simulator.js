@@ -340,20 +340,30 @@ function checkAndTriggerAlarms(station, price) {
   // 生成电站本地时区时间戳（使用全局工具函数）
   const timeStr = formatLocalTime(new Date(), station.timezone);
 
+  // 随机选取 device_id
+  const pcsDevices = (station.devices || []).filter(d => d.type === 'PCS');
+  const emsDevices = (station.devices || []).filter(d => d.type === 'EMS');
+  const nowMs = Date.now();
+
   // 规则 A：尖峰放电时高温告警（Critical, 5%概率）
   if (price > 3000 && station.status === 'DISCHARGING' && !hasActiveAlarm('HIGH_TEMP')) {
     if (Math.random() < 0.05) {
+      const dev = pcsDevices.length > 0 ? pcsDevices[Math.floor(Math.random() * pcsDevices.length)] : null;
       station.alarms.push({
         id: 'alm_' + (++alarmIdCounter),
         type: 'HIGH_TEMP',
         severity: 'Critical',
+        fault_code: 'BESS_T' + String(Math.floor(Math.random() * 10)).padStart(2, '0'),
+        device_id: dev ? dev.id : 'unknown',
         message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
         timestamp: timeStr,
+        created_ms: nowMs,
         status: 'ACTIVE',
-        ack_by: null, ack_at: null, resolved_by: null, resolved_at: null
+        ack_by: null, ack_at: null,
+        resolved_by: null, resolved_at: null, resolved_ms: null,
+        root_cause: null
       });
       triggered = true;
-      // Critical 告警弹 toast
       if (typeof showToast === 'function') {
         showToast('⚠️ CRITICAL: ' + station.name + ' — BMS High Temperature', 'error');
       }
@@ -363,17 +373,22 @@ function checkAndTriggerAlarms(station, price) {
   // 规则 B：低电量告警（Warning, 5%概率）
   if (station.soc < 10 && !hasActiveAlarm('LOW_SOC')) {
     if (Math.random() < 0.05) {
+      const dev = emsDevices.length > 0 ? emsDevices[Math.floor(Math.random() * emsDevices.length)] : null;
       station.alarms.push({
         id: 'alm_' + (++alarmIdCounter),
         type: 'LOW_SOC',
         severity: 'Warning',
+        fault_code: 'BESS_S' + String(Math.floor(Math.random() * 10)).padStart(2, '0'),
+        device_id: dev ? dev.id : 'unknown',
         message: 'Battery Low SoC — State of charge dropped below 10% (' + station.soc.toFixed(1) + '%)',
         timestamp: timeStr,
+        created_ms: nowMs,
         status: 'ACTIVE',
-        ack_by: null, ack_at: null, resolved_by: null, resolved_at: null
+        ack_by: null, ack_at: null,
+        resolved_by: null, resolved_at: null, resolved_ms: null,
+        root_cause: null
       });
       triggered = true;
-      // Warning 不弹 toast
     }
   }
 

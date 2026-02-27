@@ -267,6 +267,20 @@ const TRANSLATIONS = {
     no_alarms_active: 'No active alarms',
     no_alarms_hint: 'All systems operating normally',
     awaiting_resolve: 'Awaiting Owner',
+    alarm_col_code: 'Fault Code',
+    alarm_col_duration: 'Duration',
+    alarm_col_root_cause: 'Root Cause',
+    alarm_filter_all: 'All',
+    alarm_filter_search: 'Search alarms...',
+    alarm_filter_reset: 'Reset',
+    alarm_resolve_title: 'Resolve Alarm',
+    alarm_resolve_cause: 'Root Cause',
+    alarm_resolve_note: 'Notes (optional)',
+    alarm_resolve_confirm: 'Confirm Resolve',
+    alarm_resolve_cancel: 'Cancel',
+    cause_hardware: 'Hardware',
+    cause_software: 'Software',
+    cause_environment: 'Environment',
 
     // Language
     lang_switch: 'English',
@@ -511,6 +525,20 @@ const TRANSLATIONS = {
     no_alarms_active: '暂无活跃告警',
     no_alarms_hint: '所有系统运行正常',
     awaiting_resolve: '待业主处理',
+    alarm_col_code: '故障码',
+    alarm_col_duration: '处理时长',
+    alarm_col_root_cause: '根因',
+    alarm_filter_all: '全部',
+    alarm_filter_search: '搜索告警...',
+    alarm_filter_reset: '重置',
+    alarm_resolve_title: '修复告警',
+    alarm_resolve_cause: '根因归属',
+    alarm_resolve_note: '备注（选填）',
+    alarm_resolve_confirm: '确认修复',
+    alarm_resolve_cancel: '取消',
+    cause_hardware: '硬件故障',
+    cause_software: '软件缺陷',
+    cause_environment: '环境因素',
 
     // 语言
     lang_switch: '中文',
@@ -608,10 +636,14 @@ const DEFAULT_STATIONS = [
     alarms: [
       {
         id: 'alm_init_1', type: 'HIGH_TEMP', severity: 'Critical',
+        fault_code: 'BESS_T01', device_id: 'pcs-01',
         message: 'BMS High Temperature Warning — Cell temp exceeded 55°C during peak discharge',
         timestamp: formatLocalTime(Date.now() - 15*60*1000, 'Australia/Sydney'),
+        created_ms: Date.now() - 15*60*1000,
         status: 'ACTIVE',
-        ack_by: null, ack_at: null, resolved_by: null, resolved_at: null
+        ack_by: null, ack_at: null,
+        resolved_by: null, resolved_at: null, resolved_ms: null,
+        root_cause: null
       }
     ]
   },
@@ -639,11 +671,14 @@ const DEFAULT_STATIONS = [
     alarms: [
       {
         id: 'alm_init_2', type: 'LOW_SOC', severity: 'Warning',
+        fault_code: 'BESS_S01', device_id: 'ems-02',
         message: 'Battery Low SoC — State of charge dropped below 10% (8.2%)',
         timestamp: formatLocalTime(Date.now() - 45*60*1000, 'Australia/Melbourne'),
+        created_ms: Date.now() - 45*60*1000,
         status: 'ACKNOWLEDGED',
         ack_by: 'op_a', ack_at: formatLocalTime(Date.now() - 30*60*1000, 'Australia/Melbourne'),
-        resolved_by: null, resolved_at: null
+        resolved_by: null, resolved_at: null, resolved_ms: null,
+        root_cause: null
       }
     ]
   },
@@ -671,11 +706,15 @@ const DEFAULT_STATIONS = [
     alarms: [
       {
         id: 'alm_init_3', type: 'HIGH_TEMP', severity: 'Critical',
+        fault_code: 'BESS_T02', device_id: 'pcs-03',
         message: 'BMS High Temperature Warning — Cell temp exceeded 58°C during grid event',
         timestamp: formatLocalTime(Date.now() - 2*3600*1000, 'Australia/Brisbane'),
+        created_ms: Date.now() - 2*3600*1000,
         status: 'RESOLVED',
         ack_by: 'op_b', ack_at: formatLocalTime(Date.now() - 90*60*1000, 'Australia/Brisbane'),
-        resolved_by: 'owner_1', resolved_at: formatLocalTime(Date.now() - 3600*1000, 'Australia/Brisbane')
+        resolved_by: 'owner_1', resolved_at: formatLocalTime(Date.now() - 3600*1000, 'Australia/Brisbane'),
+        resolved_ms: Date.now() - 3600*1000,
+        root_cause: 'Environment'
       }
     ]
   },
@@ -705,7 +744,7 @@ const DEFAULT_STATIONS = [
 ];
 
 // ============ 数据持久化 ============
-const STATIONS_DATA_VERSION = 'v6_unified_tz';
+const STATIONS_DATA_VERSION = 'v7_alarm_fields';
 
 let stations = loadStations();
 

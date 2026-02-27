@@ -330,176 +330,279 @@ function downloadCSV(rows, filename) {
   URL.revokeObjectURL(url);
 }
 
-// ============ 告警管理（3 阶段状态机：ACTIVE → ACKNOWLEDGED → RESOLVED）============
+// ============ 告警管理（3 阶段状态机 + 过滤器 + Resolve Modal）============
+
+// 过滤器状态
+let alarmFilterSearch = '';
+let alarmFilterSeverity = 'all';
+let alarmFilterStatus = 'all';
 
 /**
- * 渲染告警列表
- * - 运维视角：ACTIVE 可 ACK，ACKNOWLEDGED 显示「待业主处理」
- * - 业主视角：ACTIVE 或 ACKNOWLEDGED 统一显示 [Resolve Issue]
- * @param {HTMLElement} container
- * @param {boolean} isOwner
+ * 计算持续时长
+ */
+function calcDuration(alarm) {
+  const start = alarm.created_ms || 0;
+  if (!start) return '-';
+  const end = alarm.status === 'RESOLVED' ? (alarm.resolved_ms || Date.now()) : Date.now();
+  const diffMin = Math.floor((end - start) / 60000);
+  if (diffMin < 60) return diffMin + 'min';
+  const hours = Math.floor(diffMin / 60);
+  const mins = diffMin % 60;
+  return hours + 'h ' + mins + 'min';
+}
+
+/**
+ * 渲染告警列表（带过滤器）
  */
 function renderAlarmsList(container, isOwner) {
   const myStations = getStationsByRole();
 
   // 收集所有告警并关联电站信息
-  const allAlarms = [];
+  let allAlarms = [];
   myStations.forEach(station => {
     if (!station.alarms) station.alarms = [];
     station.alarms.forEach(alarm => {
-      allAlarms.push({
-        ...alarm,
-        stationId: station.id,
-        stationName: station.name
-      });
+      allAlarms.push({ ...alarm, stationId: station.id, stationName: station.name });
     });
   });
 
-  // 排序：ACTIVE > ACKNOWLEDGED > RESOLVED，Critical > Warning，时间倒序
+  // 应用过滤器
+  if (alarmFilterSearch) {
+    const q = alarmFilterSearch.toLowerCase();
+    allAlarms = allAlarms.filter(a =>
+      a.message.toLowerCase().includes(q) ||
+      a.stationName.toLowerCase().includes(q) ||
+      (a.fault_code && a.fault_code.toLowerCase().includes(q))
+    );
+  }
+  if (alarmFilterSeverity !== 'all') {
+    allAlarms = allAlarms.filter(a => a.severity === alarmFilterSeverity);
+  }
+  if (alarmFilterStatus !== 'all') {
+    allAlarms = allAlarms.filter(a => a.status === alarmFilterStatus);
+  }
+
+  // 排序
   const statusOrder = { 'ACTIVE': 0, 'ACKNOWLEDGED': 1, 'RESOLVED': 2 };
   allAlarms.sort((a, b) => {
     const sa = statusOrder[a.status] ?? 9;
     const sb = statusOrder[b.status] ?? 9;
     if (sa !== sb) return sa - sb;
     if (a.severity !== b.severity) return a.severity === 'Critical' ? -1 : 1;
-    return new Date(b.timestamp) - new Date(a.timestamp);
+    return (b.created_ms || 0) - (a.created_ms || 0);
   });
 
-  const unresolvedCount = allAlarms.filter(a => a.status !== 'RESOLVED').length;
+  const totalAlarms = [];
+  myStations.forEach(s => { if (s.alarms) s.alarms.forEach(a => totalAlarms.push(a)); });
+  const unresolvedCount = totalAlarms.filter(a => a.status !== 'RESOLVED').length;
 
+  // 过滤器 Bar
+  const filterBar = `
+    <div class="flex flex-wrap items-center gap-3 mb-4 p-3 bg-white/[0.03] rounded-xl border border-white/10">
+      <input type="text" id="alarm-search" placeholder="${getTrans('alarm_filter_search')}" value="${escapeHTML(alarmFilterSearch)}"
+        onchange="alarmFilterSearch=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+        class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 w-48" />
+      <select id="alarm-severity-filter" onchange="alarmFilterSeverity=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+        class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white">
+        <option value="all" ${alarmFilterSeverity==='all'?'selected':''}>${getTrans('alarm_filter_all')} ${getTrans('alarm_col_level')}</option>
+        <option value="Critical" ${alarmFilterSeverity==='Critical'?'selected':''}>${getTrans('alarm_critical')}</option>
+        <option value="Warning" ${alarmFilterSeverity==='Warning'?'selected':''}>${getTrans('alarm_warning')}</option>
+      </select>
+      <select id="alarm-status-filter" onchange="alarmFilterStatus=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+        class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white">
+        <option value="all" ${alarmFilterStatus==='all'?'selected':''}>${getTrans('alarm_filter_all')} ${getTrans('alarm_col_status')}</option>
+        <option value="ACTIVE" ${alarmFilterStatus==='ACTIVE'?'selected':''}>${getTrans('status_active')}</option>
+        <option value="ACKNOWLEDGED" ${alarmFilterStatus==='ACKNOWLEDGED'?'selected':''}>${getTrans('status_ack')}</option>
+        <option value="RESOLVED" ${alarmFilterStatus==='RESOLVED'?'selected':''}>${getTrans('status_resolved')}</option>
+      </select>
+      <button onclick="alarmFilterSearch='';alarmFilterSeverity='all';alarmFilterStatus='all';renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+        class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 hover:text-white transition-colors">
+        ↻ ${getTrans('alarm_filter_reset')}
+      </button>
+      <button onclick="exportAlarmsCSV()"
+        class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 hover:text-white transition-colors ml-auto">
+        📥 ${getTrans('export_csv')}
+      </button>
+    </div>
+  `;
+
+  // 空状态
   if (allAlarms.length === 0) {
     container.innerHTML = `
       <div class="max-w-[1600px] mx-auto">
         <div class="flex items-center gap-3 mb-6">
-          <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400"></i>
-          <h2 class="text-xl font-bold text-white">${getTrans('alarm_title')}</h2>
+          <h2 class="text-xl font-bold text-white">⚠️ ${getTrans('alarm_title')}
+            ${unresolvedCount > 0 ? `<span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-400">${unresolvedCount} Open</span>` : ''}
+          </h2>
         </div>
+        ${filterBar}
         <div class="flex flex-col items-center justify-center py-16 text-slate-500">
-          <i data-lucide="shield-check" class="w-12 h-12 mb-3 opacity-40"></i>
-          <p class="text-base">${getTrans('no_alarms_active')}</p>
+          <p class="text-base">🛡️ ${getTrans('no_alarms_active')}</p>
           <p class="text-sm mt-1">${getTrans('no_alarms_hint')}</p>
         </div>
       </div>
     `;
-    if (window.lucide) lucide.createIcons();
     return;
   }
 
-  // 使用卡片布局替代表格，解决列对齐问题
-  const cards = allAlarms.map((alarm, i) => {
+  // 卡片渲染
+  const cards = allAlarms.map(alarm => {
     const isCritical = alarm.severity === 'Critical';
-
-    // 级别标签
     const levelBadge = isCritical
-      ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/20">● ${getTrans('alarm_critical')}</span>`
-      : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/20">▲ ${getTrans('alarm_warning')}</span>`;
+      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400">● ${getTrans('alarm_critical')}</span>`
+      : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-400">▲ ${getTrans('alarm_warning')}</span>`;
 
-    // 状态标签
     let statusBadge = '';
     if (alarm.status === 'ACTIVE') {
-      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse">● ${getTrans('status_active')}</span>`;
+      statusBadge = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-red-500/10 text-red-400 animate-pulse">● ${getTrans('status_active')}</span>`;
     } else if (alarm.status === 'ACKNOWLEDGED') {
-      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">◉ ${getTrans('status_ack')}</span>`;
+      statusBadge = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-500/10 text-amber-400">◉ ${getTrans('status_ack')}</span>`;
     } else {
-      statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✓ ${getTrans('status_resolved')}</span>`;
+      statusBadge = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400">✓ ${getTrans('status_resolved')}</span>`;
     }
 
     // 操作按钮
     let actionBtn = '';
     if (alarm.status === 'ACTIVE') {
-      if (isOwner) {
-        actionBtn = `<button onclick="resolveAlarm('${alarm.stationId}', '${alarm.id}')"
-          class="px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors inline-flex items-center gap-1.5">
-          ✓ ${getTrans('btn_resolve')}
-        </button>`;
-      } else {
-        actionBtn = `<button onclick="ackAlarm('${alarm.stationId}', '${alarm.id}')"
-          class="px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-medium text-amber-400 hover:bg-amber-500/20 transition-colors inline-flex items-center gap-1.5">
-          ◉ ${getTrans('btn_ack')}
-        </button>`;
-      }
+      actionBtn = isOwner
+        ? `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 hover:bg-emerald-500/20 transition-colors">✓ ${getTrans('btn_resolve')}</button>`
+        : `<button onclick="ackAlarm('${alarm.stationId}','${alarm.id}')" class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-400 hover:bg-amber-500/20 transition-colors">◉ ${getTrans('btn_ack')}</button>`;
     } else if (alarm.status === 'ACKNOWLEDGED') {
-      if (isOwner) {
-        actionBtn = `<button onclick="resolveAlarm('${alarm.stationId}', '${alarm.id}')"
-          class="px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors inline-flex items-center gap-1.5">
-          ✓ ${getTrans('btn_resolve')}
-        </button>`;
-      } else {
-        actionBtn = `<span class="px-3 py-1.5 rounded-lg text-xs font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20">${getTrans('awaiting_resolve')}</span>`;
-      }
+      actionBtn = isOwner
+        ? `<button onclick="showResolveModal('${alarm.stationId}','${alarm.id}')" class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 hover:bg-emerald-500/20 transition-colors">✓ ${getTrans('btn_resolve')}</button>`
+        : `<span class="px-2 py-1 rounded text-xs text-amber-400 bg-amber-500/10">${getTrans('awaiting_resolve')}</span>`;
     }
 
-    // 左侧边框颜色
     const borderColor = alarm.status === 'ACTIVE' && isCritical ? 'border-l-red-500'
       : alarm.status === 'ACTIVE' ? 'border-l-amber-500'
       : alarm.status === 'ACKNOWLEDGED' ? 'border-l-amber-500/50'
       : 'border-l-emerald-500/30';
 
-    // 审计信息区域（判空保护 + 按状态条件渲染）
-    let auditHtml = '';
+    const duration = calcDuration(alarm);
+
+    // 审计
     const auditItems = [];
     if (alarm.ack_by && alarm.status !== 'ACTIVE') {
       const ackName = typeof getUserName === 'function' ? getUserName(alarm.ack_by) : alarm.ack_by;
-      auditItems.push(`<div class="flex items-center gap-2 text-[11px]">
-        <span class="text-amber-500/70">◉ Ack'd by</span>
-        <span class="text-amber-400/80 font-medium">${escapeHTML(ackName)}</span>
-        ${alarm.ack_at ? `<span class="text-slate-600 font-mono">${escapeHTML(alarm.ack_at)}</span>` : ''}
-      </div>`);
+      auditItems.push(`<span class="text-amber-500/70">◉ Ack'd by ${escapeHTML(ackName)}</span>`);
     }
     if (alarm.resolved_by && alarm.status === 'RESOLVED') {
       const resName = typeof getUserName === 'function' ? getUserName(alarm.resolved_by) : alarm.resolved_by;
-      auditItems.push(`<div class="flex items-center gap-2 text-[11px]">
-        <span class="text-emerald-500/70">✓ Fixed by</span>
-        <span class="text-emerald-400/80 font-medium">${escapeHTML(resName)}</span>
-        ${alarm.resolved_at ? `<span class="text-slate-600 font-mono">${escapeHTML(alarm.resolved_at)}</span>` : ''}
-      </div>`);
+      auditItems.push(`<span class="text-emerald-500/70">✓ Fixed by ${escapeHTML(resName)}</span>`);
     }
-    if (auditItems.length > 0) {
-      auditHtml = `<div class="mt-3 pt-3 border-t border-white/5 space-y-1.5">${auditItems.join('')}</div>`;
+    if (alarm.root_cause) {
+      auditItems.push(`<span class="text-cyan-500/70">⚙ ${escapeHTML(alarm.root_cause)}</span>`);
     }
 
     return `
       <div class="rounded-xl bg-white/[0.03] border border-white/10 border-l-4 ${borderColor} p-4 hover:bg-white/[0.05] transition-colors">
-        <!-- 顶部行：电站名 + 级别 + 状态 -->
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-          <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <div class="flex flex-wrap items-center gap-2">
             <h4 class="text-white font-semibold text-sm">${escapeHTML(alarm.stationName)}</h4>
-            ${levelBadge}
-            ${statusBadge}
+            ${levelBadge} ${statusBadge}
+            ${alarm.fault_code ? `<span class="px-1.5 py-0.5 rounded bg-white/5 text-[10px] font-mono text-slate-400">${escapeHTML(alarm.fault_code)}</span>` : ''}
           </div>
-          <div class="text-right">
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-500 font-mono">⏱ ${duration}</span>
             ${actionBtn}
           </div>
         </div>
-        <!-- 描述 -->
-        <p class="text-slate-300 text-sm leading-relaxed">${escapeHTML(alarm.message)}</p>
-        <!-- 时间 -->
-        <p class="text-slate-500 text-xs font-mono mt-2">${escapeHTML(alarm.timestamp)}</p>
-        <!-- 审计记录 -->
-        ${auditHtml}
+        <p class="text-slate-300 text-sm">${escapeHTML(alarm.message)}</p>
+        <div class="flex flex-wrap items-center gap-3 mt-2 text-[11px]">
+          <span class="text-slate-500 font-mono">${escapeHTML(alarm.timestamp)}</span>
+          ${alarm.device_id ? `<span class="text-slate-600">📟 ${escapeHTML(alarm.device_id)}</span>` : ''}
+          ${auditItems.map(a => a).join(' · ')}
+        </div>
       </div>
     `;
   }).join('');
 
   container.innerHTML = `
     <div class="max-w-[1600px] mx-auto">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-xl font-bold text-white">⚠️ ${getTrans('alarm_title')}
+          ${unresolvedCount > 0 ? `<span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-400">${unresolvedCount} Open</span>` : `<span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400">All Clear</span>`}
+        </h2>
+        <p class="text-sm text-slate-400">${isOwner ? getTrans('alarm_hint_owner') : getTrans('alarm_hint_operator')}</p>
+      </div>
+      ${filterBar}
+      <div class="space-y-3">${cards}</div>
+    </div>
+  `;
+}
+
+// ============ Resolve Modal ============
+
+function showResolveModal(stationId, alarmId) {
+  // 移除已有 modal
+  const existing = document.getElementById('resolve-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'resolve-modal';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/60';
+  modal.innerHTML = `
+    <div class="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      <h3 class="text-lg font-bold text-white mb-4">🔧 ${getTrans('alarm_resolve_title')}</h3>
+      <div class="space-y-4">
         <div>
-          <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            ⚠️ ${getTrans('alarm_title')}
-            ${unresolvedCount > 0 ? `<span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-400">${unresolvedCount} Open</span>` : `<span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400">All Clear</span>`}
-          </h2>
-          <p class="text-sm text-slate-400 mt-1">${isOwner ? getTrans('alarm_hint_owner') : getTrans('alarm_hint_operator')}</p>
+          <label class="text-xs text-slate-400 mb-1 block">${getTrans('alarm_resolve_cause')}</label>
+          <select id="resolve-cause" class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white">
+            <option value="Hardware">${getTrans('cause_hardware')}</option>
+            <option value="Software">${getTrans('cause_software')}</option>
+            <option value="Environment" selected>${getTrans('cause_environment')}</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 mb-1 block">${getTrans('alarm_resolve_note')}</label>
+          <input type="text" id="resolve-note" placeholder="" class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-600" />
         </div>
       </div>
-
-      <div class="space-y-3">
-        ${cards}
+      <div class="flex justify-end gap-3 mt-6">
+        <button onclick="closeResolveModal()" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-400 hover:text-white transition-colors">
+          ${getTrans('alarm_resolve_cancel')}
+        </button>
+        <button onclick="confirmResolve('${stationId}','${alarmId}')" class="px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-sm font-medium text-emerald-400 hover:bg-emerald-500/30 transition-colors">
+          ✓ ${getTrans('alarm_resolve_confirm')}
+        </button>
       </div>
     </div>
   `;
+  document.body.appendChild(modal);
+}
 
-  if (window.lucide) lucide.createIcons();
+function closeResolveModal() {
+  const modal = document.getElementById('resolve-modal');
+  if (modal) modal.remove();
+}
+
+function confirmResolve(stationId, alarmId) {
+  const cause = document.getElementById('resolve-cause')?.value || 'Environment';
+  const note = document.getElementById('resolve-note')?.value || '';
+
+  const station = stations.find(s => s.id === stationId);
+  if (!station || !station.alarms) return;
+
+  const alarm = station.alarms.find(a => a.id === alarmId);
+  if (!alarm || alarm.status === 'RESOLVED') return;
+
+  const role = getCurrentUser();
+  alarm.status = 'RESOLVED';
+  alarm.resolved_by = role;
+  alarm.resolved_at = formatLocalTime(new Date(), station.timezone || 'Australia/Sydney');
+  alarm.resolved_ms = Date.now();
+  alarm.root_cause = cause + (note ? ' — ' + note : '');
+
+  if (typeof saveStations === 'function') saveStations();
+  closeResolveModal();
+
+  const container = document.getElementById('view-reports');
+  if (container) {
+    const currentRole = getCurrentUser();
+    renderAlarmsList(container, currentRole === 'owner');
+  }
+
+  if (typeof showToast === 'function') showToast(getTrans('alarm_resolved_success'), 'success');
 }
 
 /**
@@ -519,7 +622,6 @@ function ackAlarm(stationId, alarmId) {
 
   if (typeof saveStations === 'function') saveStations();
 
-  // 刷新列表（动态获取当前角色）
   const container = document.getElementById('view-reports');
   if (container) {
     const currentRole = getCurrentUser();
@@ -530,28 +632,36 @@ function ackAlarm(stationId, alarmId) {
 }
 
 /**
- * 业主消除告警（Resolve）— 可从 ACTIVE 或 ACKNOWLEDGED 直接闭环
+ * 导出告警 CSV
  */
-function resolveAlarm(stationId, alarmId) {
-  const station = stations.find(s => s.id === stationId);
-  if (!station || !station.alarms) return;
+function exportAlarmsCSV() {
+  const myStations = getStationsByRole();
+  const allAlarms = [];
+  myStations.forEach(station => {
+    if (!station.alarms) return;
+    station.alarms.forEach(alarm => {
+      allAlarms.push({ ...alarm, stationName: station.name });
+    });
+  });
 
-  const alarm = station.alarms.find(a => a.id === alarmId);
-  if (!alarm || alarm.status === 'RESOLVED') return;
+  const rows = [['Station', 'Fault Code', 'Severity', 'Status', 'Device', 'Description', 'Triggered At', 'Duration', 'ACK By', 'ACK At', 'Resolved By', 'Resolved At', 'Root Cause']];
+  allAlarms.forEach(a => {
+    rows.push([
+      a.stationName,
+      a.fault_code || '',
+      a.severity,
+      a.status,
+      a.device_id || '',
+      a.message,
+      a.timestamp,
+      calcDuration(a),
+      a.ack_by ? (typeof getUserName === 'function' ? getUserName(a.ack_by) : a.ack_by) : '',
+      a.ack_at || '',
+      a.resolved_by ? (typeof getUserName === 'function' ? getUserName(a.resolved_by) : a.resolved_by) : '',
+      a.resolved_at || '',
+      a.root_cause || ''
+    ]);
+  });
 
-  const role = getCurrentUser();
-  alarm.status = 'RESOLVED';
-  alarm.resolved_by = role;
-  alarm.resolved_at = formatLocalTime(new Date(), station.timezone || 'Australia/Sydney');
-
-  if (typeof saveStations === 'function') saveStations();
-
-  // 刷新列表（动态获取当前角色）
-  const container = document.getElementById('view-reports');
-  if (container) {
-    const currentRole = getCurrentUser();
-    renderAlarmsList(container, currentRole === 'owner');
-  }
-
-  if (typeof showToast === 'function') showToast(getTrans('alarm_resolved_success'), 'success');
+  downloadCSV(rows, 'au-bess-alarms.csv');
 }
