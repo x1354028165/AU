@@ -343,17 +343,18 @@ let alarmFilterDateTo = '';
 /**
  * 缩短时间显示：'27/02/2026, 13:30:32 (Sydney)' → '02-27 13:30 (+11)'
  */
-const tzOffsetMap = {
-  'Sydney': '+11', 'Melbourne': '+11', 'Brisbane': '+10',
-  'Perth': '+8', 'Adelaide': '+10.5', 'Hobart': '+11', 'Darwin': '+9.5'
+const tzGmtMap = {
+  'Sydney': 'GMT+11', 'Melbourne': 'GMT+11', 'Hobart': 'GMT+11',
+  'Brisbane': 'GMT+10', 'Perth': 'GMT+8',
+  'Adelaide': 'GMT+10:30', 'Darwin': 'GMT+9:30'
 };
 function shortTime(timeStr) {
   if (!timeStr) return '-';
   const m = String(timeStr).match(/(\d{2})\/(\d{2})\/\d{4},?\s*(\d{2}):(\d{2})/);
   const city = String(timeStr).match(/\((\w+)\)/);
-  const tz = city && tzOffsetMap[city[1]] ? ' (+' + tzOffsetMap[city[1]].replace('+','') + ')' : '';
-  if (m) return m[2] + '-' + m[1] + ' ' + m[3] + ':' + m[4] + tz;
-  return timeStr.replace(/\s*\(.*\)\s*$/, '').replace(/:\d{2}$/, '') + tz;
+  const gmt = city && tzGmtMap[city[1]] ? ' ' + tzGmtMap[city[1]] : '';
+  if (m) return m[2] + '-' + m[1] + ' ' + m[3] + ':' + m[4] + gmt;
+  return timeStr.replace(/\s*\(.*\)\s*$/, '').replace(/:\d{2}$/, '') + gmt;
 }
 
 /**
