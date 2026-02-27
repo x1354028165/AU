@@ -1146,14 +1146,25 @@ function updateMarketBanner(price) {
     } else {
       const fc = typeof getForecastPrice === 'function' ? getForecastPrice() : price;
       const trend = fc - price;
+      // 汇总预计收益
+      const totalProfit = stations.reduce((s, st) => s + (st.projected_profit || 0), 0);
+      const hour = new Date().getHours();
+      const peakHour = hour < 15 ? 18 : (hour < 20 ? hour + 1 : 18);
+
       if (trend > 30 || price > 500) {
-        narratorEl.textContent = getTrans('ai_narrator_discharging');
+        narratorEl.textContent = getTrans('ai_target').replace('{0}', peakHour).replace('{1}', totalProfit.toFixed(0));
         narratorEl.className = 'text-sm font-medium text-red-400';
       } else if (trend < -30 || price < 50) {
         narratorEl.textContent = getTrans('ai_narrator_charging');
         narratorEl.className = 'text-sm font-medium text-blue-400';
       } else {
-        narratorEl.textContent = getTrans('ai_narrator_idle');
+        // FCAS 待机
+        const totalFcas = stations.reduce((s, st) => s + (st.fcas_revenue || 0), 0);
+        if (totalFcas > 0) {
+          narratorEl.textContent = getTrans('fcas_standby').replace('{0}', totalFcas.toFixed(1));
+        } else {
+          narratorEl.textContent = getTrans('ai_narrator_idle');
+        }
         narratorEl.className = 'text-sm font-medium text-emerald-400';
       }
       if (narratorBox) { narratorBox.className = 'mb-4 px-4 py-3 rounded-xl border bg-emerald-500/10 border-emerald-500/30'; }
@@ -1498,9 +1509,13 @@ function renderStationCard(station, theme, isOwner) {
         </div>
         ${revenueDisplay || `
         <div class="bg-white/5 rounded-lg p-2 md:p-3">
-          <p class="text-xs text-slate-500">${getTrans('operator')}</p>
-          <p class="text-xs md:text-sm font-medium text-white mt-1">${currentOpName}</p>
+          <p class="text-xs text-slate-500">${getTrans('projected_profit')}</p>
+          <p class="text-sm font-bold text-emerald-400 font-mono" data-profit="${station.id}">A$${(station.projected_profit || 0).toFixed(0)}</p>
         </div>`}
+      </div>
+      <div class="mt-2 flex items-center gap-2">
+        <span class="text-xs text-slate-500">${getTrans('next_action')}:</span>
+        <span class="text-xs font-medium text-cyan-400" data-next-action="${station.id}">${station.nextAction ? (station.nextAction.action === 'discharge' ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.hour) : getTrans('expect_charge_at').replace('{0}', station.nextAction.hour)) : '-'}</span>
       </div>
 
       ${leaseInfo}
@@ -1524,6 +1539,18 @@ function updateStationCards(theme, isOwner) {
     if (energyEl) energyEl.textContent = (station.soc * MAX_MWH / 100).toFixed(1) + ' MWh';
     const dischargeEl = card.querySelector(`[data-discharge="${station.id}"]`);
     if (dischargeEl) dischargeEl.textContent = (station.soc * MAX_MWH / 100 / MAX_MW).toFixed(1) + 'h';
+
+    // Update Projected Profit
+    const profitEl = card.querySelector(`[data-profit="${station.id}"]`);
+    if (profitEl) profitEl.textContent = 'A$' + (station.projected_profit || 0).toFixed(0);
+
+    // Update Next Action
+    const nextEl = card.querySelector(`[data-next-action="${station.id}"]`);
+    if (nextEl && station.nextAction) {
+      nextEl.textContent = station.nextAction.action === 'discharge'
+        ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.hour)
+        : getTrans('expect_charge_at').replace('{0}', station.nextAction.hour);
+    }
 
     // Update Revenue
     const revEl = card.querySelector(`[data-revenue="${station.id}"]`);

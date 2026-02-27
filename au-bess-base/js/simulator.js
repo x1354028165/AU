@@ -132,25 +132,58 @@ function runAutoBidder(station, price) {
   } else if (strat.mode === 'manual_idle') {
     station.status = 'IDLE';
   } else {
-    // Auto 模式：使用动态阈值
+    // Auto 模式：分段收割策略
     const chargeAt = strat.charge_threshold || 50;
     const dischargeAt = strat.discharge_threshold || 200;
+    const fc = typeof forecastPrice !== 'undefined' ? forecastPrice : price;
+    const hour = new Date().getHours();
 
-    if (price < chargeAt && station.soc < 95) {
+    // 预测下一个高峰时段（15:00-20:00）
+    const nextPeakHour = hour < 15 ? 15 : (hour < 20 ? hour + 1 : 15);
+    station.nextAction = hour < 15
+      ? { action: 'discharge', hour: nextPeakHour }
+      : (hour >= 20 ? { action: 'charge', hour: 2 } : { action: 'discharge', hour: nextPeakHour });
+
+    // 负电价强制充电
+    if (price < 0 && station.soc < 95) {
+      power = -cap.mw;
+      energyMWh = cap.mw * intervalHours;
+      station.soc = Math.min(95, station.soc + (energyMWh / cap.mwh) * 100);
+      station.status = 'CHARGING';
+      revenue = -(energyMWh * price); // 负电价充电=赚钱
+    } else if (price < chargeAt && station.soc < 95) {
       power = -cap.mw;
       energyMWh = cap.mw * intervalHours;
       station.soc = Math.min(95, station.soc + (energyMWh / cap.mwh) * 100);
       station.status = 'CHARGING';
       revenue = -(energyMWh * price);
     } else if (price > dischargeAt && station.soc > minSoc) {
-      power = cap.mw;
-      energyMWh = cap.mw * intervalHours;
+      // 分段放电：预测价更高→只放一部分，保留子弹
+      let powerRatio = 1.0;
+      if (fc > price * 1.3) {
+        // 预测未来更贵，只放 40% 功率
+        powerRatio = 0.4;
+      } else if (fc > price * 1.1) {
+        powerRatio = 0.7;
+      }
+      const actualMW = cap.mw * powerRatio;
+      power = actualMW;
+      energyMWh = actualMW * intervalHours;
       station.soc = Math.max(minSoc, station.soc - (energyMWh / cap.mwh) * 100);
       station.status = 'DISCHARGING';
       revenue = energyMWh * price * station.efficiency;
     } else {
       station.status = 'IDLE';
+      // FCAS 待机收益：SoC 在 20%-80% 之间提供调频支持
+      if (station.soc >= 20 && station.soc <= 80) {
+        station.fcas_revenue = (station.fcas_revenue || 0) + 0.5;
+        station.revenue_today = (station.revenue_today || 0) + 0.5;
+      }
     }
+
+    // 收益预估：按预测价估算剩余电量全部放出的收益
+    const remainMWh = station.soc * cap.mwh / 100;
+    station.projected_profit = Math.round(remainMWh * Math.max(fc, price) * station.efficiency * 100) / 100;
   }
 
   // SoH 损耗
