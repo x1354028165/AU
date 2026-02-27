@@ -134,8 +134,12 @@ function onSimUpdate(price, history) {
     updateMarketBanner(price);
   }
 
-  // 更新电站卡片（不重建DOM，只更新数值）
-  updateStationCards(theme, isOwner);
+  // 更新电站卡片或调度面板（不重建DOM，只更新数值）
+  if (activeMenuId === 'dispatch') {
+    updateDispatchPanel();
+  } else {
+    updateStationCards(theme, isOwner);
+  }
 
   // 更新图表
   if (typeof updateChart === 'function') updateChart(history);
@@ -1617,19 +1621,18 @@ function handleMenuClick(menuId, viewId) {
   const stationCont = document.getElementById('station-container');
 
   if (menuId === 'dispatch') {
-    // 调度中心：显示 AI 面板 + 图表 + 电站卡片，隐藏资产视图切换/地图/列表
+    // 调度中心：单电站操盘视图
     if (marketBanner) marketBanner.classList.remove('hidden');
     if (viewToggle) viewToggle.classList.add('hidden');
     if (mapCont) mapCont.classList.add('hidden');
     if (listCont) listCont.classList.add('hidden');
-    if (stationCont) stationCont.classList.remove('hidden');
+    if (stationCont) {
+      stationCont.classList.remove('hidden');
+      renderDispatchControlPanel(stationCont);
+    }
     renderMarketBanner();
     if (typeof initChart === 'function') initChart();
     if (typeof updateChart === 'function' && typeof getPriceHistory === 'function') updateChart(getPriceHistory());
-    const role = getCurrentUser();
-    const isOwner = role === 'owner';
-    const theme = THEMES[isOwner ? 'owner' : 'operator'];
-    renderStationList(theme, isOwner);
   } else if (menuId === 'assets' || menuId === 'portfolio') {
     // 电站管理：隐藏 AI 面板/图表，显示资产视图切换
     if (marketBanner) marketBanner.classList.add('hidden');
@@ -1825,6 +1828,159 @@ function saveStrategy(stationId) {
   if (reserveVal > station.soc) {
     setTimeout(() => showToast(getTrans('strategy_warning_high_reserve'), 'warning'), 500);
   }
+}
+
+// ============ 调度中心：单电站操盘面板 ============
+
+let dispatchSelectedStationId = null;
+
+function renderDispatchControlPanel(container, forceStationId) {
+  const stationList = getStationsByRole();
+  const targetId = forceStationId || dispatchSelectedStationId;
+  const station = targetId ? stationList.find(s => s.id === targetId) || stationList[0] : stationList[0];
+  if (station) dispatchSelectedStationId = station.id;
+  if (!station) {
+    container.innerHTML = `<div class="text-center text-slate-500 py-20">${getTrans('no_stations')}</div>`;
+    return;
+  }
+
+  const strat = station.strategy || { mode: 'auto' };
+  const mode = strat.mode || 'auto';
+  const isManual = mode === 'manual_charge' || mode === 'manual_discharge' || mode === 'manual_idle';
+  const cap = typeof getPhysicalCapacity === 'function' ? getPhysicalCapacity(station) : { mw: MAX_MW, mwh: MAX_MWH };
+  const availEnergy = (station.soc * cap.mwh / 100).toFixed(1);
+  const dischargeDur = (station.soc * cap.mwh / 100 / cap.mw).toFixed(1);
+  const chargeDur = ((100 - station.soc) * cap.mwh / 100 / cap.mw).toFixed(1);
+
+  // 电站选择器（如果有多个电站）
+  const stationSelector = stationList.length > 1 ? `
+    <select id="dispatch-station-select" onchange="switchDispatchStation(this.value)" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
+      ${stationList.map(s => `<option value="${s.id}" ${s.id === station.id ? 'selected' : ''} class="bg-slate-800">${escapeHTML(s.name)}</option>`).join('')}
+    </select>
+  ` : '';
+
+  container.innerHTML = `
+    <div class="max-w-4xl mx-auto" id="dispatch-panel" data-station-id="${station.id}">
+      <!-- 电站头部 -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-bold text-white">${escapeHTML(station.name)}</h2>
+            <span class="px-2 py-1 rounded text-xs font-bold ${isManual ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}">
+              ${isManual ? getTrans('dispatch_mode_manual') : getTrans('dispatch_mode_smart')}
+            </span>
+          </div>
+          <p class="text-sm text-slate-400 mt-1">${escapeHTML(station.location)} · ${station.capacity}</p>
+        </div>
+        ${stationSelector}
+      </div>
+
+      <!-- KPI 行 -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+          <p class="text-xs text-slate-500">SoC</p>
+          <p class="text-2xl font-bold text-white font-mono" id="dp-soc">${station.soc.toFixed(1)}%</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+          <p class="text-xs text-slate-500">${getTrans('available_energy')}</p>
+          <p class="text-2xl font-bold text-cyan-400 font-mono" id="dp-energy">${availEnergy} MWh</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+          <p class="text-xs text-slate-500">${getTrans('discharge_duration')}</p>
+          <p class="text-2xl font-bold text-amber-400 font-mono" id="dp-discharge">${dischargeDur}h</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+          <p class="text-xs text-slate-500">${getTrans('charge_duration')}</p>
+          <p class="text-2xl font-bold text-blue-400 font-mono" id="dp-charge">${chargeDur}h</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+          <p class="text-xs text-slate-500">${getTrans('projected_profit')}</p>
+          <p class="text-2xl font-bold text-emerald-400 font-mono" id="dp-profit">A$${(station.projected_profit || 0).toFixed(0)}</p>
+        </div>
+      </div>
+
+      <!-- 控制按钮区 -->
+      <div class="bg-white/5 rounded-xl p-5 border border-white/10 mb-6">
+        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">${getTrans('next_action')}</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button onclick="dispatchSetMode('${station.id}', 'auto')"
+            class="py-3 px-4 rounded-xl text-sm font-bold transition-all ${mode === 'auto' ? 'bg-emerald-500 text-white ring-2 ring-emerald-400' : 'bg-white/5 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/10'}">
+            🤖 ${getTrans('btn_resume_ai')}
+          </button>
+          <button onclick="dispatchSetMode('${station.id}', 'manual_charge')"
+            class="py-3 px-4 rounded-xl text-sm font-bold transition-all ${mode === 'manual_charge' ? 'bg-blue-500 text-white ring-2 ring-blue-400' : 'bg-white/5 text-blue-400 border border-blue-500/30 hover:bg-blue-500/10'}">
+            ⚡ ${getTrans('force_charge')}
+          </button>
+          <button onclick="dispatchSetMode('${station.id}', 'manual_discharge')"
+            class="py-3 px-4 rounded-xl text-sm font-bold transition-all ${mode === 'manual_discharge' ? 'bg-red-500 text-white ring-2 ring-red-400' : 'bg-white/5 text-red-400 border border-red-500/30 hover:bg-red-500/10'}">
+            🔋 ${getTrans('force_discharge')}
+          </button>
+          <button onclick="dispatchSetMode('${station.id}', 'manual_idle')"
+            class="py-3 px-4 rounded-xl text-sm font-bold transition-all ${mode === 'manual_idle' ? 'bg-slate-500 text-white ring-2 ring-slate-400' : 'bg-white/5 text-slate-400 border border-slate-500/30 hover:bg-slate-500/10'}">
+            ⏸ ${getTrans('force_idle')}
+          </button>
+        </div>
+      </div>
+
+      <!-- 下一动作预告 -->
+      <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-slate-500">${getTrans('next_action')}</span>
+          <span class="text-sm font-medium text-cyan-400" id="dp-next-action">${station.nextAction ? (station.nextAction.action === 'discharge' ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.time || station.nextAction.hour || '--') : getTrans('expect_charge_at').replace('{0}', station.nextAction.time || station.nextAction.hour || '--')) : '-'}</span>
+        </div>
+      </div>
+    </div>
+  `;
+  if (window.lucide) lucide.createIcons();
+}
+
+function updateDispatchPanel() {
+  const panel = document.getElementById('dispatch-panel');
+  if (!panel) return;
+  const stationId = panel.getAttribute('data-station-id');
+  const station = stations.find(s => s.id === stationId);
+  if (!station) return;
+
+  const cap = typeof getPhysicalCapacity === 'function' ? getPhysicalCapacity(station) : { mw: MAX_MW, mwh: MAX_MWH };
+  const el = (id) => document.getElementById(id);
+  const soc = el('dp-soc'); if (soc) soc.textContent = station.soc.toFixed(1) + '%';
+  const energy = el('dp-energy'); if (energy) energy.textContent = (station.soc * cap.mwh / 100).toFixed(1) + ' MWh';
+  const discharge = el('dp-discharge'); if (discharge) discharge.textContent = (station.soc * cap.mwh / 100 / cap.mw).toFixed(1) + 'h';
+  const charge = el('dp-charge'); if (charge) charge.textContent = ((100 - station.soc) * cap.mwh / 100 / cap.mw).toFixed(1) + 'h';
+  const profit = el('dp-profit'); if (profit) profit.textContent = 'A$' + (station.projected_profit || 0).toFixed(0);
+  const nextAct = el('dp-next-action');
+  if (nextAct && station.nextAction) {
+    nextAct.textContent = station.nextAction.action === 'discharge'
+      ? getTrans('expect_discharge_at').replace('{0}', station.nextAction.time || station.nextAction.hour || '--')
+      : getTrans('expect_charge_at').replace('{0}', station.nextAction.time || station.nextAction.hour || '--');
+  }
+}
+
+function dispatchSetMode(stationId, mode) {
+  const station = stations.find(s => s.id === stationId);
+  if (!station) return;
+  station.strategy = station.strategy || {};
+  station.strategy.mode = mode;
+  if (typeof saveStations === 'function') saveStations();
+
+  // 刷新面板
+  const container = document.getElementById('station-container');
+  if (container && activeMenuId === 'dispatch') {
+    renderDispatchControlPanel(container);
+  }
+  // 刷新 AI Narrator
+  renderMarketBanner();
+  if (typeof initChart === 'function') initChart();
+  if (typeof updateChart === 'function' && typeof getPriceHistory === 'function') updateChart(getPriceHistory());
+
+  const modeName = mode === 'auto' ? getTrans('dispatch_mode_smart') : getTrans('dispatch_mode_manual');
+  showToast(`${station.name}: ${modeName}`, 'success');
+}
+
+function switchDispatchStation(stationId) {
+  // 切换调度面板到指定电站
+  const container = document.getElementById('station-container');
+  if (container) renderDispatchControlPanel(container, stationId);
 }
 
 function resumeSmartHosting() {
