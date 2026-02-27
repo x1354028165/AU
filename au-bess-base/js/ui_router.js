@@ -498,7 +498,7 @@ function renderStationDetail(station, theme, isOwner) {
           <i data-lucide="arrow-left" class="w-5 h-5"></i>
         </button>
         <div>
-          <h2 class="text-xl font-bold text-white truncate max-w-[280px]">${escapeHTML(station.name)}</h2>
+          <h2 class="text-xl font-bold text-white truncate" style="max-width:75%">${escapeHTML(station.name)}</h2>
           <p class="text-sm text-slate-400">${escapeHTML(station.location)} · ${station.timezone} · ${station.capacity}</p>
         </div>
       </div>
@@ -1496,7 +1496,7 @@ function renderStationCard(station, theme, isOwner) {
             ${assignmentLabel}
             ${(station.alarms && station.alarms.some(a => a.status !== 'RESOLVED')) ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold">(' + getTrans('alarm') + ')</span>' : ''}
           </div>
-          <h3 class="text-base md:text-lg font-bold text-white truncate" style="max-width:60%">${escapeHTML(station.name)}</h3>
+          <h3 class="text-base md:text-lg font-bold text-white truncate" style="max-width:75%">${escapeHTML(station.name)}</h3>
           <p class="text-sm text-slate-400 flex items-center gap-1 mt-1">
             <i data-lucide="map-pin" class="w-3 h-3"></i>
             ${escapeHTML(station.location)}
