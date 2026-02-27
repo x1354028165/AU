@@ -440,7 +440,7 @@ function renderAlarmsList(container, isOwner) {
   // ===== 查询条件区（参考 SCADA：label 等宽对齐，两行平铺） =====
   const lblClass = 'text-xs text-slate-500 whitespace-nowrap w-[70px] text-right shrink-0';
   const querySection = `
-    <table class="w-full mb-6" style="border-spacing:10px 12px;border-collapse:separate;">
+    <table class="w-full mb-6" style="border-spacing:10px 20px;border-collapse:separate;">
       <tr>
         <td class="${lblClass}">${getTrans('alarm_col_station')}:</td>
         <td>
