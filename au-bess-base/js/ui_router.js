@@ -79,6 +79,35 @@ function switchView(viewId) {
   }
 }
 
+// ============ 安全翻译函数 ============
+function safeGetTrans(key) {
+  // 确保翻译系统已加载
+  if (typeof getTrans !== 'function' || typeof TRANSLATIONS === 'undefined') {
+    // 硬编码的关键翻译作为fallback
+    const fallback = {
+      'ai_panel_title': getCurrentUser() === 'owner' ? 'AI决策引擎' : 'AI Decision Engine',
+      'ai_status_analyzing': 'Analyzing market data…',
+      'ai_logic_trend_stable': 'Stable',
+      'ai_action_charge': 'CHARGE',
+      'ai_confidence_high': 'High',
+      'ai_logic_soc_low': 'Low SoC',
+      'ai_logic_forecast_stable': 'Stable',
+      'ai_decision_logic': 'Decision Logic',
+      'ai_decision_result': 'Decision Result',
+      'ai_execute_time': 'Execute At',
+      'ai_power_level': 'Power Level',
+      'ai_expected_profit': 'Expected Profit',
+      'ai_profit_this_cycle': 'This Cycle',
+      'ai_profit_today': 'Today Total',
+      'ai_last_updated': 'Last Updated',
+      'ai_seconds': 's',
+      'ai_thinking': 'AI Analysis'
+    };
+    return fallback[key] || key;
+  }
+  return getTrans(key);
+}
+
 // ============ 初始化 ============
 
 function initDashboard() {
@@ -1136,7 +1165,7 @@ function renderMarketBanner() {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="text-lg">🤖</span>
-          <span id="ai-narrator-text" class="text-sm font-medium ${hasManual ? 'text-amber-400' : 'text-emerald-400'}">${hasManual ? getTrans('ai_narrator_manual') : getTrans('ai_narrator_idle')}</span>
+          <span id="ai-narrator-text" class="text-sm font-medium ${hasManual ? 'text-amber-400' : 'text-emerald-400'}">${hasManual ? safeGetTrans('ai_narrator_manual') : safeGetTrans('ai_narrator_idle')}</span>
         </div>
         <div class="flex items-center gap-2">
           <span id="dispatch-mode-badge" class="px-2 py-1 rounded text-xs font-bold ${hasManual ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}">${hasManual ? getTrans('dispatch_mode_manual') : getTrans('dispatch_mode_smart')}</span>
@@ -1172,7 +1201,7 @@ function updateMarketBanner(price) {
   const hasManual = stations.some(s => s.strategy && (s.strategy.mode === 'manual_charge' || s.strategy.mode === 'manual_discharge' || s.strategy.mode === 'manual_idle'));
   if (narratorEl) {
     if (hasManual) {
-      narratorEl.textContent = getTrans('ai_narrator_manual');
+      narratorEl.textContent = safeGetTrans('ai_narrator_manual');
       narratorEl.className = 'text-sm font-medium text-amber-400';
       if (narratorBox) { narratorBox.className = 'mb-4 px-4 py-3 rounded-xl border bg-amber-500/10 border-amber-500/30'; }
       if (modeBadge) { modeBadge.textContent = getTrans('dispatch_mode_manual'); modeBadge.className = 'px-2 py-1 rounded text-xs font-bold bg-amber-500/20 text-amber-400'; }
@@ -1188,17 +1217,17 @@ function updateMarketBanner(price) {
       const anyCharging = stations.some(s => s.status === 'CHARGING');
 
       if (anyDischarging || price > 500) {
-        narratorEl.textContent = getTrans('ai_target').replace('{0}', nextDischTime).replace('{1}', totalProfit.toFixed(0));
+        narratorEl.textContent = safeGetTrans('ai_target').replace('{0}', nextDischTime).replace('{1}', totalProfit.toFixed(0));
         narratorEl.className = 'text-sm font-medium text-red-400';
       } else if (anyCharging || price < 50) {
-        narratorEl.textContent = getTrans('ai_narrator_charging') + ' | ' + getTrans('projected_profit') + ': A$' + totalProfit.toFixed(0);
+        narratorEl.textContent = safeGetTrans('ai_narrator_charging') + ' | ' + getTrans('projected_profit') + ': A$' + totalProfit.toFixed(0);
         narratorEl.className = 'text-sm font-medium text-blue-400';
       } else {
         const totalFcas = stations.reduce((s, st) => s + (st.fcas_revenue || 0), 0);
         if (totalFcas > 0) {
           narratorEl.textContent = getTrans('fcas_standby').replace('{0}', totalFcas.toFixed(1)) + ' | ' + getTrans('projected_profit') + ': A$' + totalProfit.toFixed(0);
         } else {
-          narratorEl.textContent = getTrans('ai_narrator_idle') + ' | ' + getTrans('projected_profit') + ': A$' + totalProfit.toFixed(0);
+          narratorEl.textContent = safeGetTrans('ai_narrator_idle') + ' | ' + getTrans('projected_profit') + ': A$' + totalProfit.toFixed(0);
         }
         narratorEl.className = 'text-sm font-medium text-emerald-400';
       }
@@ -2154,18 +2183,18 @@ function renderDispatchControlPanel(container, forceStationId) {
                 <span class="text-lg">🧠</span>
               </div>
               <div>
-                <h3 class="text-lg font-bold text-white tracking-tight">${getTrans('ai_panel_title')}</h3>
+                <h3 class="text-lg font-bold text-white tracking-tight">${typeof getTrans === 'function' ? safeGetTrans('ai_panel_title') : 'AI Decision Engine'}</h3>
                 <div class="flex items-center gap-2 mt-0.5">
                   <span class="ai-pulse-dot w-2 h-2 rounded-full bg-cyan-400"></span>
-                  <span class="text-xs text-cyan-400 font-medium" id="ai-thinking-status">${getTrans('ai_status_analyzing')}</span>
+                  <span class="text-xs text-cyan-400 font-medium" id="ai-thinking-status">${safeGetTrans('ai_status_analyzing')}</span>
                 </div>
               </div>
             </div>
             <div class="flex items-center gap-3">
-              <span class="text-xs text-slate-500" id="ai-last-update">${getTrans('ai_last_updated')}: --:--</span>
+              <span class="text-xs text-slate-500" id="ai-last-update">${safeGetTrans('ai_last_updated')}: --:--</span>
               <div class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                 <i data-lucide="timer" class="w-3.5 h-3.5 text-slate-400"></i>
-                <span class="text-xs text-slate-400 font-mono" id="ai-countdown">30${getTrans('ai_seconds')}</span>
+                <span class="text-xs text-slate-400 font-mono" id="ai-countdown">30${safeGetTrans('ai_seconds')}</span>
               </div>
             </div>
           </div>
@@ -2178,7 +2207,7 @@ function renderDispatchControlPanel(container, forceStationId) {
               <div class="space-y-4">
                 <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
                   <i data-lucide="brain" class="w-4 h-4 text-cyan-400"></i>
-                  ${getTrans('ai_thinking')}
+                  ${safeGetTrans('ai_thinking')}
                 </h4>
                 <div id="ai-thinking-steps" class="space-y-2">
                   ${renderAIThinkingSteps()}
@@ -2189,7 +2218,7 @@ function renderDispatchControlPanel(container, forceStationId) {
               <div class="space-y-4">
                 <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
                   <i data-lucide="git-branch" class="w-4 h-4 text-purple-400"></i>
-                  ${getTrans('ai_decision_logic')}
+                  ${safeGetTrans('ai_decision_logic')}
                 </h4>
                 <div id="ai-logic-factors" class="space-y-3">
                   ${renderAILogicFactors()}
@@ -2200,7 +2229,7 @@ function renderDispatchControlPanel(container, forceStationId) {
               <div class="space-y-4">
                 <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
                   <i data-lucide="target" class="w-4 h-4 text-amber-400"></i>
-                  ${getTrans('ai_decision_result')}
+                  ${safeGetTrans('ai_decision_result')}
                 </h4>
                 <div id="ai-decision-result" class="space-y-3">
                   ${renderAIDecisionResult()}
@@ -2286,7 +2315,7 @@ function renderAIThinkingSteps() {
     return `
       <div class="ai-step-item flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/5">
         <span class="ai-spinner w-5 h-5 rounded-full border-2 border-cyan-400 border-t-transparent"></span>
-        <span class="text-sm text-slate-300">${getTrans('ai_status_analyzing')}</span>
+        <span class="text-sm text-slate-300">${safeGetTrans('ai_status_analyzing')}</span>
       </div>
     `;
   }
@@ -2322,15 +2351,15 @@ function parseAIStepText(text) {
   const type = parts[0];
   switch (type) {
     case 'price_analysis':
-      return `${getTrans('ai_logic_price_trend')}: $${parts[1]} — <span class="font-semibold ${parts[2] === 'rising' ? 'text-amber-400' : parts[2] === 'falling' ? 'text-emerald-400' : parts[2] === 'spike' ? 'text-red-400' : 'text-slate-400'}">${getTrans('ai_logic_trend_' + parts[2])}</span>`;
+      return `${safeGetTrans('ai_logic_price_trend')}: $${parts[1]} — <span class="font-semibold ${parts[2] === 'rising' ? 'text-amber-400' : parts[2] === 'falling' ? 'text-emerald-400' : parts[2] === 'spike' ? 'text-red-400' : 'text-slate-400'}">${safeGetTrans('ai_logic_trend_' + parts[2])}</span>`;
     case 'forecast_analysis':
-      return `${getTrans('ai_logic_forecast')}: $${parts[1]} — <span class="font-semibold ${parts[2] === 'up' ? 'text-amber-400' : parts[2] === 'down' ? 'text-emerald-400' : 'text-slate-400'}">${getTrans('ai_logic_forecast_' + parts[2])}</span>`;
+      return `${safeGetTrans('ai_logic_forecast')}: $${parts[1]} — <span class="font-semibold ${parts[2] === 'up' ? 'text-amber-400' : parts[2] === 'down' ? 'text-emerald-400' : 'text-slate-400'}">${safeGetTrans('ai_logic_forecast_' + parts[2])}</span>`;
     case 'soc_analysis':
-      return `${getTrans('ai_logic_soc_state')}: ${parts[1]}% — <span class="font-semibold ${parts[2] === 'low' ? 'text-red-400' : parts[2] === 'high' ? 'text-emerald-400' : 'text-slate-400'}">${getTrans('ai_logic_soc_' + parts[2])}</span>`;
+      return `${safeGetTrans('ai_logic_soc_state')}: ${parts[1]}% — <span class="font-semibold ${parts[2] === 'low' ? 'text-red-400' : parts[2] === 'high' ? 'text-emerald-400' : 'text-slate-400'}">${safeGetTrans('ai_logic_soc_' + parts[2])}</span>`;
     case 'spread_analysis':
-      return `${getTrans('ai_logic_spread')}: <span class="font-semibold text-cyan-400">$${parts[1]}/MWh</span>`;
+      return `${safeGetTrans('ai_logic_spread')}: <span class="font-semibold text-cyan-400">$${parts[1]}/MWh</span>`;
     case 'decision':
-      return `${getTrans('ai_planned_action')}: <span class="font-bold ${parts[1] === 'charge' ? 'text-blue-400' : parts[1] === 'discharge' ? 'text-amber-400' : parts[1] === 'fcas' ? 'text-purple-400' : 'text-slate-400'}">${getTrans('ai_action_' + parts[1])}</span> (${getTrans('ai_confidence')}: ${getTrans('ai_confidence_' + parts[2])})`;
+      return `${safeGetTrans('ai_planned_action')}: <span class="font-bold ${parts[1] === 'charge' ? 'text-blue-400' : parts[1] === 'discharge' ? 'text-amber-400' : parts[1] === 'fcas' ? 'text-purple-400' : 'text-slate-400'}">${safeGetTrans('ai_action_' + parts[1])}</span> (${safeGetTrans('ai_confidence')}: ${safeGetTrans('ai_confidence_' + parts[2])})`;
     default:
       return text;
   }
@@ -2361,9 +2390,9 @@ function renderAILogicFactors() {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i data-lucide="${trendIcon}" class="w-4 h-4 ${trendColor}"></i>
-          <span class="text-xs text-slate-400">${getTrans('ai_logic_price_trend')}</span>
+          <span class="text-xs text-slate-400">${safeGetTrans('ai_logic_price_trend')}</span>
         </div>
-        <span class="text-sm font-bold ${trendColor}">${getTrans('ai_logic_trend_' + trend)}</span>
+        <span class="text-sm font-bold ${trendColor}">${safeGetTrans('ai_logic_trend_' + trend)}</span>
       </div>
     </div>
 
@@ -2372,9 +2401,9 @@ function renderAILogicFactors() {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i data-lucide="${fcIcon}" class="w-4 h-4 ${fcColor}"></i>
-          <span class="text-xs text-slate-400">${getTrans('ai_logic_forecast')}</span>
+          <span class="text-xs text-slate-400">${safeGetTrans('ai_logic_forecast')}</span>
         </div>
-        <span class="text-sm font-bold ${fcColor}">${getTrans('ai_logic_forecast_' + forecast)}</span>
+        <span class="text-sm font-bold ${fcColor}">${safeGetTrans('ai_logic_forecast_' + forecast)}</span>
       </div>
     </div>
 
@@ -2383,9 +2412,9 @@ function renderAILogicFactors() {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i data-lucide="${socIcon}" class="w-4 h-4 ${socColor}"></i>
-          <span class="text-xs text-slate-400">${getTrans('ai_logic_soc_state')}</span>
+          <span class="text-xs text-slate-400">${safeGetTrans('ai_logic_soc_state')}</span>
         </div>
-        <span class="text-sm font-bold ${socColor}">${getTrans('ai_logic_soc_' + soc)}</span>
+        <span class="text-sm font-bold ${socColor}">${safeGetTrans('ai_logic_soc_' + soc)}</span>
       </div>
     </div>
 
@@ -2394,7 +2423,7 @@ function renderAILogicFactors() {
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i data-lucide="bar-chart-3" class="w-4 h-4 text-cyan-400"></i>
-          <span class="text-xs text-slate-400">${getTrans('ai_logic_spread')}</span>
+          <span class="text-xs text-slate-400">${safeGetTrans('ai_logic_spread')}</span>
         </div>
         <span class="text-sm font-bold text-cyan-400">$${(state.avgSpread || 0).toFixed(1)}/MWh</span>
       </div>
@@ -2427,10 +2456,10 @@ function renderAIDecisionResult() {
     <!-- 当前决策 -->
     <div class="px-5 py-4 rounded-xl border ${ac.bg} text-center">
       <span class="text-3xl">${ac.icon}</span>
-      <p class="text-2xl font-black ${ac.color} mt-2 tracking-wide">${getTrans('ai_action_' + action)}</p>
+      <p class="text-2xl font-black ${ac.color} mt-2 tracking-wide">${safeGetTrans('ai_action_' + action)}</p>
       <div class="flex items-center justify-center gap-2 mt-2">
-        <span class="text-xs text-slate-500">${getTrans('ai_confidence')}:</span>
-        <span class="text-xs font-bold ${confColor}">${getTrans('ai_confidence_' + confidence)}</span>
+        <span class="text-xs text-slate-500">${safeGetTrans('ai_confidence')}:</span>
+        <span class="text-xs font-bold ${confColor}">${safeGetTrans('ai_confidence_' + confidence)}</span>
       </div>
       <div class="w-full h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
         <div class="${confBg} h-full rounded-full transition-all duration-500 ${confBar}"></div>
@@ -2440,11 +2469,11 @@ function renderAIDecisionResult() {
     <!-- 执行详情 -->
     <div class="grid grid-cols-2 gap-2">
       <div class="px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/5">
-        <p class="text-[10px] text-slate-500 uppercase">${getTrans('ai_execute_time')}</p>
+        <p class="text-[10px] text-slate-500 uppercase">${safeGetTrans('ai_execute_time')}</p>
         <p class="text-sm font-bold text-white font-mono mt-0.5" id="ai-execute-time">${state.executeTime || '--:--'}</p>
       </div>
       <div class="px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/5">
-        <p class="text-[10px] text-slate-500 uppercase">${getTrans('ai_power_level')}</p>
+        <p class="text-[10px] text-slate-500 uppercase">${safeGetTrans('ai_power_level')}</p>
         <p class="text-sm font-bold text-white font-mono mt-0.5" id="ai-power-level">${(state.powerLevel || 0).toFixed(1)} MW</p>
       </div>
     </div>
@@ -2453,15 +2482,15 @@ function renderAIDecisionResult() {
     <div class="px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20">
       <div class="flex items-center gap-2 mb-2">
         <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
-        <span class="text-xs text-slate-400">${getTrans('ai_expected_profit')}</span>
+        <span class="text-xs text-slate-400">${safeGetTrans('ai_expected_profit')}</span>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <p class="text-[10px] text-slate-500 uppercase">${getTrans('ai_profit_this_cycle')}</p>
+          <p class="text-[10px] text-slate-500 uppercase">${safeGetTrans('ai_profit_this_cycle')}</p>
           <p class="text-lg font-black text-emerald-400 font-mono" id="ai-cycle-profit">A$${(state.cycleProfit || 0).toFixed(0)}</p>
         </div>
         <div>
-          <p class="text-[10px] text-slate-500 uppercase">${getTrans('ai_profit_today')}</p>
+          <p class="text-[10px] text-slate-500 uppercase">${safeGetTrans('ai_profit_today')}</p>
           <p class="text-lg font-black font-mono ${(state.todayProfit || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}" id="ai-today-profit">A$${(state.todayProfit || 0).toFixed(0)}</p>
         </div>
       </div>
@@ -2479,18 +2508,18 @@ function updateAIDecisionPanel() {
   // 每次更新时重新应用翻译
   const titleEl = panel.querySelector('h3');
   if (titleEl && titleEl.textContent.startsWith('ai_')) {
-    titleEl.textContent = getTrans('ai_panel_title');
+    titleEl.textContent = safeGetTrans('ai_panel_title');
   }
 
   const state = typeof getAIDecisionState === 'function' ? getAIDecisionState() : {};
 
   // 更新倒计时
   const countdown = document.getElementById('ai-countdown');
-  if (countdown) countdown.textContent = (state.updateCountdown || 0) + getTrans('ai_seconds');
+  if (countdown) countdown.textContent = (state.updateCountdown || 0) + safeGetTrans('ai_seconds');
 
   // 更新最后刷新时间
   const lastUpdate = document.getElementById('ai-last-update');
-  if (lastUpdate && state.lastUpdated) lastUpdate.textContent = getTrans('ai_last_updated') + ': ' + state.lastUpdated;
+  if (lastUpdate && state.lastUpdated) lastUpdate.textContent = safeGetTrans('ai_last_updated') + ': ' + state.lastUpdated;
 
   // 更新思考状态文本
   const statusEl = document.getElementById('ai-thinking-status');
