@@ -618,14 +618,6 @@ function getTrans(key) {
 
 function switchLang(lang) {
   localStorage.setItem('lang', lang);
-  // 记住当前视图，通过 hash 传递
-  const rv = document.getElementById('view-reports');
-  if (rv && !rv.classList.contains('hidden')) {
-    window.location.hash = '#reports';
-  } else {
-    window.location.hash = '';
-  }
-  window.location.reload();
 }
 
 function toggleLang() {

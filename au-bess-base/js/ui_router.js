@@ -111,11 +111,7 @@ function initDashboard() {
   // 仿真引擎：始终启动（运维需要实时电价，业主也需要间接收益计算）
   if (typeof startSimulator === 'function') startSimulator();
 
-  // 语言切换后恢复视图状态（通过 URL hash）
-  if (window.location.hash === '#reports') {
-    window.location.hash = '';
-    setTimeout(() => switchView('reports'), 50);
-  }
+
 }
 
 // ============ 仿真回调 ============
@@ -1270,10 +1266,20 @@ function renderHeader(role, theme) {
 }
 
 function toggleLangAndRefresh() {
+  const savedView = currentView;
+  const savedMenu = activeMenuId;
+  const savedSubView = typeof reportSubView !== 'undefined' ? reportSubView : 'alarms';
+
   toggleLang();
-  // 需要重新初始化图表（legend 文案更新）
   if (typeof disposeChart === 'function') disposeChart();
   initDashboard();
+
+  // 恢复到切换前的视图
+  if (savedView === 'reports') {
+    handleMenuClick(savedMenu, 'reports');
+  } else {
+    switchView(savedView);
+  }
 }
 
 // ============ 电站卡片 ============
