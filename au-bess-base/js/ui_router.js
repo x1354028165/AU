@@ -370,7 +370,7 @@ function renderListView(theme, isOwner) {
             <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('station_name')}</th>
             <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('confirm_location')}</th>
             <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('capacity')}</th>
-            <th class="text-left px-4 py-3 text-slate-400 font-medium">Status</th>
+            <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('status_label')}</th>
             <th class="text-left px-4 py-3 text-slate-400 font-medium">${getTrans('soh')}</th>
             ${extraHeaders}
             <th class="text-right px-4 py-3 text-slate-400 font-medium"></th>
@@ -449,12 +449,12 @@ function renderStationDetail(station, theme, isOwner) {
   } else if (detailTab === 'history') {
     tabContent = `<div class="flex flex-col items-center justify-center py-16 text-slate-500">
       <i data-lucide="clock" class="w-12 h-12 mb-3 opacity-40"></i>
-      <p class="text-base">Coming soon</p>
+      <p class="text-base">${getTrans('coming_soon')}</p>
     </div>`;
   } else if (detailTab === 'reports') {
     tabContent = `<div class="flex flex-col items-center justify-center py-16 text-slate-500">
       <i data-lucide="bar-chart-2" class="w-12 h-12 mb-3 opacity-40"></i>
-      <p class="text-base">Coming soon</p>
+      <p class="text-base">${getTrans('coming_soon')}</p>
     </div>`;
   }
 
@@ -531,7 +531,7 @@ function renderDetailOverview(station, theme, isOwner) {
           ${kpiCard(getTrans('soh'), station.soh.toFixed(4) + '%', 'heart-pulse', 'text-emerald-400')}
           ${kpiCard(getTrans('soc'), station.soc.toFixed(1) + '%', 'gauge', station.soc > 40 ? 'text-emerald-400' : 'text-amber-400')}
           ${kpiCard(getTrans('revenue_today'), 'A$' + station.revenue_today.toFixed(2), 'dollar-sign', station.revenue_today >= 0 ? 'text-emerald-400' : 'text-red-400')}
-          ${kpiCard('Status', statusIcon + ' ' + statusText, 'activity', theme.accent)}
+          ${kpiCard(getTrans('status_label'), statusIcon + ' ' + statusText, 'activity', theme.accent)}
         </div>
         <div class="bg-white/5 border border-white/10 rounded-xl p-4">
           <p class="text-xs text-slate-500 mb-2">${getTrans('select_timezone')}: ${station.timezone}</p>
@@ -572,7 +572,7 @@ function renderDetailDevices(station, theme, isOwner) {
   ` : '';
 
   const deviceRows = devices.length === 0
-    ? `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">No devices</td></tr>`
+    ? `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">${getTrans('no_devices')}</td></tr>`
     : devices.map((d, i) => `
         <tr class="${i % 2 === 0 ? 'bg-white/[0.02]' : ''} border-b border-white/5">
           <td class="px-4 py-3 text-white font-medium">${escapeHTML(d.name)}</td>
@@ -686,7 +686,7 @@ function openAddStationModal() {
         <!-- 核心设备 (先填设备，再同步参数) -->
         <div class="bg-white/[0.03] border border-white/5 rounded-xl p-4">
           <div class="flex items-center justify-between mb-3">
-            <label class="text-sm text-slate-300 font-medium">Core Device</label>
+            <label class="text-sm text-slate-300 font-medium">${getTrans('core_device')}</label>
           </div>
           <div class="grid grid-cols-3 gap-2 mb-3">
             <div>
@@ -869,9 +869,9 @@ function openAddDeviceModal(stationId) {
             <option value="EMS">EMS</option>
             <option value="PCS">PCS</option>
             <option value="BMS">BMS</option>
-            <option value="Meter">Meter</option>
-            <option value="Transformer">Transformer</option>
-            <option value="Other">Other</option>
+            <option value="Meter">${getTrans('device_meter')}</option>
+            <option value="Transformer">${getTrans('device_transformer')}</option>
+            <option value="Other">${getTrans('device_other')}</option>
           </select>
         </div>
         <div>
@@ -947,7 +947,7 @@ function handleAddDevice(stationId) {
     const theme = THEMES[isOwner ? 'owner' : 'operator'];
     renderStationDetail(station, theme, isOwner);
   } else {
-    showToast('Failed to add device', 'error');
+    showToast(getTrans('add_device_fail'), 'error');
   }
 }
 
@@ -1049,26 +1049,26 @@ function renderOwnerPortfolioBanner() {
       <div class="bg-white/5 border border-white/10 rounded-xl p-5">
         <div class="flex items-center gap-2 mb-3">
           <i data-lucide="heart-pulse" class="w-5 h-5 text-emerald-400"></i>
-          <span class="text-xs text-slate-400 uppercase tracking-wider">Portfolio Health</span>
+          <span class="text-xs text-slate-400 uppercase tracking-wider">${getTrans('portfolio_health')}</span>
         </div>
         <p id="owner-avg-soh" class="text-2xl font-bold font-mono text-emerald-400">${avgSoh.toFixed(2)}%</p>
-        <p class="text-xs text-slate-500 mt-1">Average SoH across ${totalStations} stations</p>
+        <p class="text-xs text-slate-500 mt-1">${getTrans('avg_soh_desc').replace('{0}', totalStations)}</p>
       </div>
       <div class="bg-white/5 border border-white/10 rounded-xl p-5">
         <div class="flex items-center gap-2 mb-3">
           <i data-lucide="building-2" class="w-5 h-5 text-amber-400"></i>
-          <span class="text-xs text-slate-400 uppercase tracking-wider">Asset Rental Rate</span>
+          <span class="text-xs text-slate-400 uppercase tracking-wider">${getTrans('asset_rental_rate')}</span>
         </div>
         <p id="owner-rental-rate" class="text-2xl font-bold font-mono text-amber-400">${rentalRate}%</p>
-        <p class="text-xs text-slate-500 mt-1">${leasedCount} / ${totalStations} stations leased</p>
+        <p class="text-xs text-slate-500 mt-1">${getTrans('rental_rate_desc').replace('{0}', leasedCount).replace('{1}', totalStations)}</p>
       </div>
       <div class="bg-white/5 border border-white/10 rounded-xl p-5">
         <div class="flex items-center gap-2 mb-3">
           <i data-lucide="wallet" class="w-5 h-5 text-blue-400"></i>
-          <span class="text-xs text-slate-400 uppercase tracking-wider">Monthly Rental Income</span>
+          <span class="text-xs text-slate-400 uppercase tracking-wider">${getTrans('monthly_rental')}</span>
         </div>
         <p id="owner-monthly-rev" class="text-2xl font-bold font-mono text-blue-400">A$${Math.round(monthlyRev).toLocaleString('en-AU')}</p>
-        <p class="text-xs text-slate-500 mt-1">Annual: ${formatAUD(totalAnnualFee)}</p>
+        <p class="text-xs text-slate-500 mt-1">${getTrans('annual_label').replace('{0}', formatAUD(totalAnnualFee))}</p>
       </div>
     </div>
   `;
@@ -1414,7 +1414,7 @@ function renderStationCard(station, theme, isOwner) {
           <div class="flex items-center gap-2 mb-1">
             ${statusDot}
             ${assignmentLabel}
-            ${(station.alarms && station.alarms.some(a => a.status !== 'RESOLVED')) ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold">(ALARM)</span>' : ''}
+            ${(station.alarms && station.alarms.some(a => a.status !== 'RESOLVED')) ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold">(' + getTrans('alarm') + ')</span>' : ''}
           </div>
           <h3 class="text-base md:text-lg font-bold text-white">${escapeHTML(station.name)}</h3>
           <p class="text-sm text-slate-400 flex items-center gap-1 mt-1">
@@ -1493,13 +1493,13 @@ function updateStationCards(theme, isOwner) {
     const statusRow = card.querySelector('.flex.items-center.gap-2.mb-1');
     if (hasAlarm && !existingIndicator && statusRow) {
       const alarmIcon = document.createElement('span');
-      alarmIcon.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold">(ALARM)</span>';
+      alarmIcon.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 animate-pulse alarm-indicator"></i><span class="text-red-400 text-xs font-bold alarm-label">(' + getTrans('alarm') + ')</span>';
       statusRow.appendChild(alarmIcon);
       if (window.lucide) lucide.createIcons();
     } else if (!hasAlarm && existingIndicator) {
       // 移除告警指示器
       const alarmText = existingIndicator.nextElementSibling;
-      if (alarmText && alarmText.textContent === '(ALARM)') alarmText.remove();
+      if (alarmText && alarmText.classList.contains('alarm-label')) alarmText.remove();
       existingIndicator.remove();
     }
   });

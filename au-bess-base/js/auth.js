@@ -11,6 +11,10 @@
  * @param {string} timezone - IANA 时区，如 'Australia/Sydney'
  * @returns {string} 格式化后的时间字符串，如 "27/02/2026, 14:30:00 (Sydney)"
  */
+const CITY_NAMES_ZH = {
+  'Sydney': '悉尼', 'Melbourne': '墨尔本', 'Brisbane': '布里斯班',
+  'Perth': '珀斯', 'Adelaide': '阿德莱德', 'Hobart': '霍巴特', 'Darwin': '达尔文'
+};
 function formatLocalTime(date, timezone) {
   try {
     const city = timezone.split('/')[1] || 'Local';
@@ -20,7 +24,9 @@ function formatLocalTime(date, timezone) {
       hour: '2-digit', minute: '2-digit', second: '2-digit',
       hour12: false
     });
-    return timeStr + ' (' + city + ')';
+    const lang = typeof getLang === 'function' ? getLang() : 'en';
+    const cityDisplay = lang === 'zh' ? (CITY_NAMES_ZH[city] || city) : city;
+    return timeStr + ' (' + cityDisplay + ')';
   } catch (e) {
     return new Date(date).toLocaleString('en-AU');
   }
@@ -285,6 +291,21 @@ const TRANSLATIONS = {
     cause_environment: 'Environment',
     alarm_msg_temp: 'BMS High Temperature Warning — Cell temp exceeded {0}°C during peak discharge',
     alarm_msg_soc: 'Battery Low SoC — State of charge dropped below 10% ({0}%)',
+    no_devices: 'No devices',
+    coming_soon: 'Coming soon',
+    core_device: 'Core Device',
+    device_ems: 'EMS Controller',
+    device_meter: 'Meter',
+    device_transformer: 'Transformer',
+    device_other: 'Other',
+    add_device_fail: 'Failed to add device',
+    portfolio_health: 'Portfolio Health',
+    asset_rental_rate: 'Asset Rental Rate',
+    monthly_rental: 'Monthly Rental Income',
+    status_label: 'Status',
+    avg_soh_desc: 'Average SoH across {0} stations',
+    rental_rate_desc: '{0} / {1} stations leased',
+    annual_label: 'Annual: {0}',
 
     // Language
     lang_switch: 'English',
@@ -547,6 +568,21 @@ const TRANSLATIONS = {
     cause_environment: '环境因素',
     alarm_msg_temp: 'BMS 高温告警 — 电芯温度超过 {0}°C（峰值放电期间）',
     alarm_msg_soc: '电池低电量告警 — 荷电状态低于 10%（{0}%）',
+    no_devices: '暂无设备',
+    coming_soon: '即将上线',
+    core_device: '核心设备',
+    device_ems: 'EMS 控制器',
+    device_meter: '电表',
+    device_transformer: '变压器',
+    device_other: '其他',
+    add_device_fail: '添加设备失败',
+    portfolio_health: '资产健康度',
+    asset_rental_rate: '资产租赁费率',
+    monthly_rental: '月租金收入',
+    status_label: '状态',
+    avg_soh_desc: '{0} 个电站平均 SoH',
+    rental_rate_desc: '{0} / {1} 电站已出租',
+    annual_label: '年度: {0}',
 
     // 语言
     lang_switch: '中文',
