@@ -1957,35 +1957,37 @@ function renderDispatchControlPanel(container, forceStationId) {
   const priceColor = price < 0 ? '#10b981' : price > 300 ? '#ef4444' : '#fbbf24';
   const priceStr = price < 0 ? '-$' + Math.abs(price).toFixed(2) : '$' + price.toFixed(2);
 
-  const profitColor = parseFloat(plan.summary.profit) >= 0 ? 'text-emerald-400' : 'text-red-400';
+  // 今日实际交易汇总
+  const todaySummary = typeof getTodayTradesSummary === 'function' ? getTodayTradesSummary() : plan.summary;
+  const todayProfitColor = parseFloat(todaySummary.profit) >= 0 ? 'text-emerald-400' : 'text-red-400';
 
   container.innerHTML = `
     <div id="dispatch-panel" data-station-id="${station.id}">
-      <!-- 顶部套利汇总 -->
+      <!-- 顶部：今日套利汇总 -->
       <div class="grid grid-cols-3 gap-4 mb-6">
         <div class="bg-white/5 rounded-xl p-5 border border-white/10">
           <div class="flex items-center gap-3 mb-2">
             <span class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-sm">⬇</span>
             <span class="text-xs text-slate-400">${getTrans('total_buy')}</span>
           </div>
-          <p class="text-2xl font-bold text-white font-mono" id="dp-summary-buy">${plan.summary.totalBuyQty} MWh</p>
-          <p class="text-xs text-slate-500 mt-1">${getTrans('cost')}: A$${plan.summary.totalBuyCost}</p>
+          <p class="text-2xl font-bold text-white font-mono" id="dp-summary-buy">${todaySummary.totalBuyQty} MWh</p>
+          <p class="text-xs text-slate-500 mt-1">${getTrans('cost')}: A$${todaySummary.totalBuyCost}</p>
         </div>
         <div class="bg-white/5 rounded-xl p-5 border border-white/10">
           <div class="flex items-center gap-3 mb-2">
             <span class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-sm">⬆</span>
             <span class="text-xs text-slate-400">${getTrans('total_sell')}</span>
           </div>
-          <p class="text-2xl font-bold text-white font-mono" id="dp-summary-sell">${plan.summary.totalSellQty} MWh</p>
-          <p class="text-xs text-slate-500 mt-1">${getTrans('revenue')}: A$${plan.summary.totalSellRevenue}</p>
+          <p class="text-2xl font-bold text-white font-mono" id="dp-summary-sell">${todaySummary.totalSellQty} MWh</p>
+          <p class="text-xs text-slate-500 mt-1">${getTrans('revenue')}: A$${todaySummary.totalSellRevenue}</p>
         </div>
         <div class="bg-white/5 rounded-xl p-5 border border-white/10">
           <div class="flex items-center gap-3 mb-2">
             <span class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm">🏆</span>
             <span class="text-xs text-slate-400">${getTrans('spread_profit')}</span>
           </div>
-          <p class="text-2xl font-bold ${profitColor} font-mono" id="dp-summary-profit">A$${plan.summary.profit}</p>
-          <p class="text-xs text-slate-500 mt-1">${getTrans('margin')}: ${plan.summary.margin}%</p>
+          <p class="text-2xl font-bold ${todayProfitColor} font-mono" id="dp-summary-profit">A$${todaySummary.profit}</p>
+          <p class="text-xs text-slate-500 mt-1">${getTrans('margin')}: ${todaySummary.margin}%</p>
         </div>
       </div>
 
@@ -2018,35 +2020,6 @@ function renderDispatchControlPanel(container, forceStationId) {
                   <span class="text-3xl font-bold font-mono" style="color:${priceColor}" id="dp-ring-price">${priceStr}</span>
                   <span class="text-xs text-slate-500 mt-1" id="dp-ring-soc">SoC ${socPct.toFixed(1)}%</span>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 设置区 -->
-          <div class="bg-white/5 rounded-xl p-5 border border-white/10">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-bold text-white">${getTrans('settings')}</span>
-            </div>
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs text-slate-400">⚡ ${getTrans('charge_stop_soc')}</span>
-              <span class="text-sm font-bold text-emerald-400" id="dp-charge-soc">${chargeSoc}%</span>
-            </div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs text-slate-400">🔋 ${getTrans('discharge_stop_soc')}</span>
-              <span class="text-sm font-bold text-amber-400" id="dp-discharge-soc">${dischargeSoc}%</span>
-            </div>
-
-            <!-- 充电条件 -->
-            <div class="grid grid-cols-2 gap-3 mb-3">
-              <div class="bg-slate-800/50 rounded-lg p-3 border border-white/5">
-                <p class="text-xs font-bold text-blue-400 mb-2">${getTrans('auto_charge_rules')}</p>
-                <p class="text-xs text-slate-400">00:00-07:00 &nbsp; ${getTrans('price')}&lt;$50</p>
-              </div>
-              <div class="bg-slate-800/50 rounded-lg p-3 border border-white/5">
-                <p class="text-xs font-bold text-red-400 mb-2">${getTrans('auto_discharge_rules')}</p>
-                <p class="text-xs text-slate-400">00:00-18:00 &nbsp; ${getTrans('price')}&gt;$10k</p>
-                <p class="text-xs text-slate-400">18:00-21:00 &nbsp; ${getTrans('price')}&gt;$150</p>
-                <p class="text-xs text-slate-400">21:00-23:59 &nbsp; ${getTrans('price')}&gt;$10k</p>
               </div>
             </div>
           </div>
@@ -2214,6 +2187,17 @@ function updateDispatchPanel() {
   const fcPrice = el('dp-fc-price'); if (fcPrice) fcPrice.textContent = '$' + fc.toFixed(2);
   const profit = el('dp-profit'); if (profit) profit.textContent = '$' + (station.projected_profit || 0).toFixed(0);
   const kwh = el('dp-kwh'); if (kwh) kwh.textContent = (station.soc * cap.mwh / 100 * 1000).toFixed(0) + 'kWh';
+
+  // 实时更新今日汇总
+  if (typeof getTodayTradesSummary === 'function') {
+    const ts = getTodayTradesSummary();
+    const buyEl = el('dp-summary-buy'); if (buyEl) buyEl.textContent = ts.totalBuyQty + ' MWh';
+    const sellEl = el('dp-summary-sell'); if (sellEl) sellEl.textContent = ts.totalSellQty + ' MWh';
+    const profitEl = el('dp-summary-profit'); if (profitEl) {
+      profitEl.textContent = 'A$' + ts.profit;
+      profitEl.className = profitEl.className.replace(/text-(emerald|red)-400/g, '') + (parseFloat(ts.profit) >= 0 ? ' text-emerald-400' : ' text-red-400');
+    }
+  }
 }
 
 function dispatchToggleAuto(stationId, isAuto) {

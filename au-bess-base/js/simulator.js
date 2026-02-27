@@ -37,6 +37,44 @@ function getNextAemoPrice() {
   return pt.price;
 }
 
+// ============ 今日交易累计 ============
+let todayBuyMWh = 0;
+let todaySellMWh = 0;
+let todayBuyCost = 0;    // A$
+let todaySellRevenue = 0; // A$
+let todayLastDate = new Date().toDateString();
+
+function recordTrade(type, mwh, price) {
+  // 每天零点重置
+  const today = new Date().toDateString();
+  if (today !== todayLastDate) {
+    todayBuyMWh = 0; todaySellMWh = 0;
+    todayBuyCost = 0; todaySellRevenue = 0;
+    todayLastDate = today;
+  }
+  const cost = mwh * price / 1000; // $/MWh * MWh / 1000 = k$? 不，price 是 $/MWh
+  if (type === 'buy') {
+    todayBuyMWh += mwh;
+    todayBuyCost += mwh * price;
+  } else {
+    todaySellMWh += mwh;
+    todaySellRevenue += mwh * price;
+  }
+}
+
+function getTodayTradesSummary() {
+  const profit = todaySellRevenue - todayBuyCost;
+  const margin = todaySellRevenue > 0 ? (profit / todaySellRevenue * 100) : 0;
+  return {
+    totalBuyQty: todayBuyMWh.toFixed(1),
+    totalSellQty: todaySellMWh.toFixed(1),
+    totalBuyCost: todayBuyCost.toFixed(0),
+    totalSellRevenue: todaySellRevenue.toFixed(0),
+    profit: profit.toFixed(0),
+    margin: margin.toFixed(1)
+  };
+}
+
 // ============ 仿真状态 ============
 let simTime = new Date();
 let simInterval = null;
@@ -295,6 +333,14 @@ function runAutoBidder(station, price) {
   }
 
   station.revenue_today = (station.revenue_today || 0) + revenue;
+  // 记录今日交易
+  if (energyMWh > 0) {
+    if (revenue < 0) {
+      recordTrade('buy', energyMWh, currentPrice);
+    } else if (revenue > 0) {
+      recordTrade('sell', energyMWh, currentPrice);
+    }
+  }
   return { power, revenue };
 }
 
