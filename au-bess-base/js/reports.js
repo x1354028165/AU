@@ -513,11 +513,11 @@ function renderAlarmsList(container, isOwner) {
         <td class="${lblClass}">${getTrans('alarm_col_time')}:</td>
         <td colspan="3">
           <div class="flex items-center gap-2">
-            <input type="date" value="${alarmFilterDateFrom}" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-              class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-white" />
+            <input type="text" value="${alarmFilterDateFrom}" placeholder="YYYY-MM-DD" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" onchange="alarmFilterDateFrom=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+              class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-white w-[140px]" />
             <span class="text-slate-600 text-xs">→</span>
-            <input type="date" value="${alarmFilterDateTo}" onchange="alarmFilterDateTo=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
-              class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-white" />
+            <input type="text" value="${alarmFilterDateTo}" placeholder="YYYY-MM-DD" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" onchange="alarmFilterDateTo=this.value;renderAlarmsList(document.getElementById('view-reports'),${isOwner})"
+              class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm text-white w-[140px]" />
           </div>
         </td>
         <td colspan="2" class="text-right">
