@@ -217,7 +217,9 @@ function applyStationView(theme, isOwner) {
 
   if (stationViewMode === 'map') {
     mapCont.classList.remove('hidden');
-    renderMapView(theme, isOwner);
+    setTimeout(() => {
+      renderMapView(theme, isOwner);
+    }, 100);
   } else if (stationViewMode === 'list') {
     listCont.classList.remove('hidden');
     renderListView(theme, isOwner);
@@ -789,8 +791,8 @@ function handleAddStation() {
     showToast(getTrans('station_name') + ' required', 'warning');
     return;
   }
-  if (!lat || !lng) {
-    showToast(getTrans('latitude') + ' / ' + getTrans('longitude') + ' required', 'warning');
+  if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    showToast(getTrans('latitude') + ' / ' + getTrans('longitude') + ' invalid', 'warning');
     return;
   }
   if (!tz) {
