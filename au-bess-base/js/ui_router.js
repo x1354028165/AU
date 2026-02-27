@@ -2210,71 +2210,64 @@ function switchDispatchStation(stationId) {
   if (container) renderDispatchControlPanel(container, stationId);
 }
 
-// 调度中心专属图表
+// 调度中心专属图表（ECharts）
 let dispatchChartInstance = null;
 function initDispatchChart() {
-  const canvas = document.getElementById('dispatch-price-chart');
-  if (!canvas) return;
-  if (dispatchChartInstance) { dispatchChartInstance.destroy(); }
+  const container = document.getElementById('dispatch-chart-container');
+  if (!container) return;
+  // 移除 canvas，用 div 给 echarts
+  container.innerHTML = '<div id="dispatch-echart" style="width:100%;height:100%;"></div>';
+  const chartDom = document.getElementById('dispatch-echart');
+  if (!chartDom || typeof echarts === 'undefined') return;
 
+  dispatchChartInstance = echarts.init(chartDom, 'dark');
   const history = typeof getPriceHistory === 'function' ? getPriceHistory() : [];
-  const labels = history.map(h => h.time);
-  const prices = history.map(h => h.price);
-  const forecasts = history.map(h => h.forecast);
 
-  dispatchChartInstance = new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: getTrans('spot_price'),
-          data: prices,
-          borderColor: '#fbbf24',
-          backgroundColor: 'rgba(251,191,36,0.1)',
-          borderWidth: 2,
-          pointRadius: 1,
-          fill: true,
-          yAxisID: 'y',
-        },
-        {
-          label: getTrans('forecast_price'),
-          data: forecasts,
-          borderColor: '#10b981',
-          borderWidth: 2,
-          pointRadius: 0,
-          borderDash: [6, 3],
-          yAxisID: 'y',
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
-      scales: {
-        x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-        y: { position: 'left', ticks: { color: '#fbbf24', callback: v => '$' + v }, grid: { color: 'rgba(255,255,255,0.05)' } }
+  const option = {
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis' },
+    legend: { data: [getTrans('spot_price'), getTrans('forecast_price')], textStyle: { color: '#94a3b8', fontSize: 11 }, top: 0 },
+    grid: { left: 50, right: 20, top: 40, bottom: 30 },
+    xAxis: { type: 'category', data: history.map(h => h.time), axisLabel: { color: '#64748b', fontSize: 10 }, axisLine: { lineStyle: { color: '#1e293b' } } },
+    yAxis: { type: 'value', axisLabel: { color: '#fbbf24', formatter: '${value}' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } } },
+    series: [
+      {
+        name: getTrans('spot_price'),
+        type: 'line',
+        data: history.map(h => h.price),
+        lineStyle: { color: '#fbbf24', width: 2 },
+        itemStyle: { color: '#fbbf24' },
+        areaStyle: { color: 'rgba(251,191,36,0.1)' },
+        symbol: 'none',
+        smooth: true,
+      },
+      {
+        name: getTrans('forecast_price'),
+        type: 'line',
+        data: history.map(h => h.forecast),
+        lineStyle: { color: '#10b981', width: 2, type: 'dashed' },
+        itemStyle: { color: '#10b981' },
+        symbol: 'none',
+        smooth: true,
       }
-    }
-  });
+    ]
+  };
+  dispatchChartInstance.setOption(option);
 }
 
 function updateDispatchChart(history) {
   if (!history || history.length === 0) return;
-  const canvas = document.getElementById('dispatch-price-chart');
-  if (!canvas) return;
-
   if (!dispatchChartInstance) {
     initDispatchChart();
     return;
   }
-
-  dispatchChartInstance.data.labels = history.map(h => h.time);
-  dispatchChartInstance.data.datasets[0].data = history.map(h => h.price);
-  dispatchChartInstance.data.datasets[1].data = history.map(h => h.forecast);
-  dispatchChartInstance.update('none');
+  dispatchChartInstance.setOption({
+    xAxis: { data: history.map(h => h.time) },
+    series: [
+      { data: history.map(h => h.price) },
+      { data: history.map(h => h.forecast) }
+    ]
+  });
 }
 
 function resumeSmartHosting() {
