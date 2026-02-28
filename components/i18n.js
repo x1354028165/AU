@@ -123,7 +123,7 @@ class I18n {
                     switchRole: "切换角色",
 
                     dispatchCenter: "调度中心",
-                    operatorMgmt: "运维管理",
+                    clients: "客户",
                     logs: "记录",
                     roleOwner: "业主",
                     roleOperator: "运维方",
@@ -2696,7 +2696,7 @@ class I18n {
                     switchRole: "Switch Role",
 
                     dispatchCenter: "Dispatch Center",
-                    operatorMgmt: "Operator Management",
+                    clients: "Clients",
                     logs: "Logs",
                     roleOwner: "Owner",
                     roleOperator: "Operator",

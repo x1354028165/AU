@@ -87,7 +87,7 @@ class HeaderNav {
             { href: 'station.html', i18nKey: 'nav.station', key: 'station', roles: ['owner', 'operator'] },
             { href: '002.html', i18nKey: 'nav.report', key: 'report', roles: ['operator'] },
             { href: 'fault-alarm.html', i18nKey: 'nav.faultAlarm', key: 'faultAlarm', roles: ['owner', 'operator'] },
-            { href: 'organization-new.html', i18nKey: 'nav.operatorMgmt', key: 'organization', roles: ['owner'] },
+            { href: 'organization-new.html', i18nKey: 'nav.clients', key: 'organization', roles: ['owner'] },
             { href: 'operation-log-page.html', i18nKey: 'nav.logs', key: 'operationLog', roles: ['operator'] }
         ];
         const navItems = allNavItems.filter(item => item.roles.includes(role));
