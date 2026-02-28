@@ -15930,3 +15930,49 @@
     // 暴露给全局（方便其他地方调用）
     window.applyDashboardTranslations = applyDashboardTranslations;
 })();
+
+// ===== 今日指标栏动态数据 =====
+(function initTodayStats() {
+    function randomBetween(min, max, dec) {
+        return (min + Math.random() * (max - min)).toFixed(dec || 0);
+    }
+    
+    function updateTodayStats() {
+        const chargeAmount = randomBetween(1.8, 3.2, 2);
+        const dischargeAmount = randomBetween(1.5, 2.8, 2);
+        const avgBuyPrice = randomBetween(35, 55, 0);
+        const avgSellPrice = randomBetween(180, 280, 0);
+        const chargeCost = Math.round(chargeAmount * avgBuyPrice);
+        const dischargeRevenue = Math.round(dischargeAmount * avgSellPrice);
+        const netProfit = dischargeRevenue - chargeCost;
+        const yesterdayProfit = netProfit * (0.85 + Math.random() * 0.3);
+        const pctChange = ((netProfit - yesterdayProfit) / yesterdayProfit * 100).toFixed(1);
+        const isUp = netProfit >= yesterdayProfit;
+        
+        const el = (id) => document.getElementById(id);
+        if (el('todayChargeAmount')) el('todayChargeAmount').textContent = chargeAmount + ' MWh';
+        if (el('todayDischargeAmount')) el('todayDischargeAmount').textContent = dischargeAmount + ' MWh';
+        if (el('todayChargeCost')) el('todayChargeCost').textContent = '$' + chargeCost.toLocaleString();
+        if (el('todayDischargeRevenue')) el('todayDischargeRevenue').textContent = '$' + dischargeRevenue.toLocaleString();
+        if (el('todayNetProfit')) {
+            el('todayNetProfit').textContent = '$' + netProfit.toLocaleString();
+            el('todayNetProfit').style.color = netProfit >= 0 ? '#00ff88' : '#ff6b6b';
+        }
+        if (el('profitVsYesterday')) {
+            el('profitVsYesterday').textContent = (isUp ? '↑ ' : '↓ ') + Math.abs(pctChange) + '%';
+            el('profitVsYesterday').style.color = isUp ? '#00ff88' : '#ff6b6b';
+        }
+        
+        // 更新截止时间
+        const now = new Date();
+        const ts = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+        const isEn = window.i18n && window.i18n.currentLanguage && window.i18n.currentLanguage.startsWith('en');
+        if (el('dataCutoffLabel')) el('dataCutoffLabel').textContent = (isEn ? '* Updated ' : '* 更新于 ') + ts;
+    }
+    
+    if (document.readyState === 'complete') {
+        updateTodayStats();
+    } else {
+        window.addEventListener('load', updateTodayStats);
+    }
+})();
