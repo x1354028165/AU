@@ -481,10 +481,11 @@ const translations = {
     }
 };
 
-let currentLang = 'en';
+let currentLang = localStorage.getItem('app_language') || 'en';
 
 function toggleLang() {
     currentLang = currentLang === 'en' ? 'zh' : 'en';
+    localStorage.setItem('app_language', currentLang);
     updateLangSwitcher();
     applyTranslations();
 }
@@ -502,6 +503,10 @@ function applyTranslations() {
         if (t[key]) el.textContent = t[key];
     });
 }
+
+// Init on load
+updateLangSwitcher();
+applyTranslations();
 
 // Role selection
 function selectRole(role) {
