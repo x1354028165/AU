@@ -81,14 +81,16 @@ class HeaderNav {
     }
     
     createHeaderHTML() {
-        const navItems = [
-            { href: 'dashboard.html', i18nKey: 'nav.home', key: 'home' },
-            { href: 'station.html', i18nKey: 'nav.station', key: 'station' },
-            { href: '002.html', i18nKey: 'nav.report', key: 'report' },
-            { href: 'fault-alarm.html', i18nKey: 'nav.faultAlarm', key: 'faultAlarm' },
-            { href: 'organization-new.html', i18nKey: 'nav.organization', key: 'organization' },
-            { href: 'operation-log-page.html', i18nKey: 'nav.operationLog', key: 'operationLog' }
+        const role = localStorage.getItem('userRole') || 'operator';
+        const allNavItems = [
+            { href: 'dashboard.html', i18nKey: role === 'operator' ? 'nav.dispatchCenter' : 'nav.home', key: 'home', roles: ['owner', 'operator'] },
+            { href: 'station.html', i18nKey: 'nav.station', key: 'station', roles: ['owner', 'operator'] },
+            { href: '002.html', i18nKey: 'nav.report', key: 'report', roles: ['owner', 'operator'] },
+            { href: 'fault-alarm.html', i18nKey: 'nav.faultAlarm', key: 'faultAlarm', roles: ['owner', 'operator'] },
+            { href: 'organization-new.html', i18nKey: 'nav.operatorMgmt', key: 'organization', roles: ['owner'] },
+            { href: 'operation-log-page.html', i18nKey: role === 'operator' ? 'nav.logs' : 'nav.operationLog', key: 'operationLog', roles: ['owner', 'operator'] }
         ];
+        const navItems = allNavItems.filter(item => item.roles.includes(role));
         
         const navHTML = navItems.map(item => {
             const text = this.i18n ? this.i18n.getText(item.i18nKey) : item.i18nKey.split('.')[1];
@@ -107,15 +109,17 @@ class HeaderNav {
         // 创建语言切换图标（不可点击）
         const languageIcon = ``;
         
-        // 角色切换按钮
-        const roleSwitchText = this.i18n ? this.i18n.getText('nav.switchRole') : '切换角色';
+        // 角色切换按钮 — 显示当前角色
+        const roleLabel = this.i18n 
+            ? this.i18n.getText(role === 'owner' ? 'nav.roleOwner' : 'nav.roleOperator')
+            : (role === 'owner' ? '业主' : '运维方');
         const roleSwitchBtn = `
             <div class="role-switch-btn" onclick="window.__navigate ? window.__navigate('role-select.html') : (window.location.href='role-select.html')" 
-                 style="cursor: pointer; padding: 4px 12px; margin: 0 8px; border: 1px solid rgba(0,255,136,0.3); border-radius: 6px; font-size: 13px; color: #00ff88; transition: all 0.3s; display: flex; align-items: center; gap: 4px;"
+                 style="cursor: pointer; padding: 4px 14px; margin: 0 8px; border: 1px solid rgba(0,255,136,0.3); border-radius: 6px; font-size: 13px; color: #00ff88; transition: all 0.3s; display: flex; align-items: center; gap: 6px;"
                  onmouseover="this.style.background='rgba(0,255,136,0.1)'; this.style.borderColor='#00ff88'"
                  onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(0,255,136,0.3)'">
-                <span style="font-size: 16px;">🔄</span>
-                <span data-i18n="nav.switchRole">${roleSwitchText}</span>
+                <span data-i18n="${role === 'owner' ? 'nav.roleOwner' : 'nav.roleOperator'}">${roleLabel}</span>
+                <span style="font-size: 14px;">🔄</span>
             </div>
         `;
 

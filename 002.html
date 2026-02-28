@@ -350,16 +350,18 @@
                 if (typeof HeaderNav !== 'undefined') {
                     window.headerNav = new HeaderNav({ containerId: 'headerContainer', currentPage: 'report' });
                 }
-                // 填充电站下拉列表，默认选中第一个
+                // 填充电站下拉列表 — 角色过滤
+                const _role = localStorage.getItem('userRole') || 'operator';
+                const visibleStations = _role === 'operator' ? stationNames.slice(0, 2) : stationNames;
                 const stationSelect = document.getElementById('stationSelector');
-                stationNames.forEach((name, idx) => {
+                visibleStations.forEach((name, idx) => {
                     const opt = document.createElement('option');
                     opt.value = name;
                     opt.textContent = name;
                     if (idx === 0) opt.selected = true;
                     stationSelect.appendChild(opt);
                 });
-                currentStation = stationNames[0];
+                currentStation = visibleStations[0];
 
                 const today = new Date();
                 const timeInput = document.getElementById('timeSelector');

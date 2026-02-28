@@ -1164,6 +1164,9 @@
             const endDate = document.getElementById('endDate').value;
 
             filteredAlarms = allAlarms.filter(alarm => {
+                // 角色过滤：运维方只看自己电站的故障
+                if (window._operatorStationFilter && !window._operatorStationFilter.includes(alarm.station)) return false;
+                
                 // Status filter by current tab
                 if (currentTab !== 'all' && alarm.status !== currentTab) return false;
 
@@ -1329,7 +1332,7 @@
                         <td>${alarm.recoveryTime ? formatAlarmTime(alarm.recoveryTime) : '--'}</td>
                         <td>
                             <div class="action-btns-container">
-                                ${alarm.status === 'unprocessed' ? '<button class="btn-resolve-inline" onclick="resolveAlarmFromDetail(' + alarm.id + ')" data-i18n="faultAlarm.buttons.resolve">处理</button>' : ''}
+                                ${(alarm.status === 'unprocessed' && (localStorage.getItem('userRole') || 'operator') === 'owner') ? '<button class="btn-resolve-inline" onclick="resolveAlarmFromDetail(' + alarm.id + ')" data-i18n="faultAlarm.buttons.resolve">处理</button>' : ''}
                                 <button class="btn-detail" onclick="showAlarmDetail(${alarm.id})" data-i18n="faultAlarm.buttons.detail">详情</button>
                             </div>
                         </td>
@@ -1435,7 +1438,7 @@
 
             // Update footer based on alarm status
             const footer = document.getElementById('detailDrawerFooter');
-            if (alarm.status === 'unprocessed') {
+            if (alarm.status === 'unprocessed' && (localStorage.getItem('userRole') || 'operator') === 'owner') {
                 footer.innerHTML = `<button class="btn-resolve" onclick="resolveAlarmFromDetail(${alarm.id})" data-i18n="faultAlarm.buttons.resolve">处理</button>`;
                 footer.style.display = 'flex';
             } else {
@@ -1711,8 +1714,24 @@
                 containerId: 'headerContainer'
             });
 
+            // 角色权限：运维方隐藏处理按钮 + 数据过滤（必须在 initPage 前）
+            const _role = localStorage.getItem('userRole') || 'operator';
+            if (_role === 'operator') {
+                const operatorStations = ['Logistics Distribution', 'Solar Farm Alpha'];
+                window._operatorStationFilter = operatorStations;
+            }
+
             // Initialize page
             initPage();
+
+            // 运维方：隐藏处理按钮
+            if (_role === 'operator') {
+                ['btnBatchProcess', 'btnMarkProcessed', 'btnMarkUnprocessed'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+                document.querySelectorAll('.btn-resolve-inline, .btn-resolve').forEach(el => el.style.display = 'none');
+            }
 
             // Update i18n texts
             setTimeout(() => {

@@ -75,7 +75,44 @@ class I18n {
                     profit: "获利",
                     family: "家庭",
                     analysis: "分析",
-                    organization: "组织",
+    
+                operatorMgmt: {
+                    title: "运维管理",
+                    buttons: {
+                        add: "新建运维方",
+                        search: "查询",
+                        reset: "重置",
+                        export: "导出",
+                        refresh: "刷新"
+                    },
+                    table: {
+                        name: "运维方名称",
+                        contact: "联系人",
+                        stations: "分配电站",
+                        stationCount: "电站数",
+                        rentalEnd: "租赁到期",
+                        status: "状态",
+                        action: "操作"
+                    },
+                    status: {
+                        active: "运营中",
+                        inactive: "已停用",
+                        allStatus: "所有状态"
+                    },
+                    actions: {
+                        edit: "编辑",
+                        delete: "删除"
+                    },
+                    modal: {
+                        addOperator: "新建运维方",
+                        editOperator: "编辑运维方"
+                    },
+                    placeholder: {
+                        userName: "搜索运维方名称",
+                        userEmail: "搜索联系邮箱"
+                    }
+                },
+                organization: "组织",
                     pushStrategy: "推送策略",
                     operationLog: "操作记录",
                     station: "电站",
@@ -83,7 +120,13 @@ class I18n {
                     faultAlarm: "故障",
                     messageCenter: "消息中心",
                     settings: "设置",
-                    switchRole: "切换角色"
+                    switchRole: "切换角色",
+
+                    dispatchCenter: "调度中心",
+                    operatorMgmt: "运维管理",
+                    logs: "记录",
+                    roleOwner: "业主",
+                    roleOperator: "运维方",
                 },
                 analysis: {
                     realtime: "实时分析",
@@ -1357,6 +1400,43 @@ class I18n {
                 },
                 
                 // Organization page translations
+
+                operatorMgmt: {
+                    title: "Operator Management",
+                    buttons: {
+                        add: "Add Operator",
+                        search: "Search",
+                        reset: "Reset",
+                        export: "Export",
+                        refresh: "Refresh"
+                    },
+                    table: {
+                        name: "Operator Name",
+                        contact: "Contact",
+                        stations: "Assigned Stations",
+                        stationCount: "Stations",
+                        rentalEnd: "Rental Expiry",
+                        status: "Status",
+                        action: "Actions"
+                    },
+                    status: {
+                        active: "Active",
+                        inactive: "Inactive",
+                        allStatus: "All Status"
+                    },
+                    actions: {
+                        edit: "Edit",
+                        delete: "Delete"
+                    },
+                    modal: {
+                        addOperator: "Add Operator",
+                        editOperator: "Edit Operator"
+                    },
+                    placeholder: {
+                        userName: "Search operator name",
+                        userEmail: "Search contact email"
+                    }
+                },
                 organization: {
                     title: "组织",
                     subtitle: "管理组织成员和权限设置",
@@ -2613,7 +2693,13 @@ class I18n {
                     faultAlarm: "Fault Alarm",
                     messageCenter: "Message Center",
                     settings: "Settings",
-                    switchRole: "Switch Role"
+                    switchRole: "Switch Role",
+
+                    dispatchCenter: "Dispatch Center",
+                    operatorMgmt: "Operator Management",
+                    logs: "Logs",
+                    roleOwner: "Owner",
+                    roleOperator: "Operator",
                 },
                 
                 // Running Data page translations

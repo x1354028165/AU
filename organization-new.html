@@ -5,7 +5,7 @@
     <script src="page-transition.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>组织 - U Energy</title>
+    <title>运维管理 - X Energi</title>
     <link rel="stylesheet" href="components/common-styles.css">
     <link rel="stylesheet" href="components/i18n.css">
     <link rel="stylesheet" href="components/notification-center.css">
@@ -1018,12 +1018,12 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-header-left">
-                    <h1 class="page-title" data-i18n-key="organization.title">组织</h1>
+                    <h1 class="page-title" data-i18n-key="operatorMgmt.title">运维管理</h1>
                 </div>
                 <button class="edit-button" onclick="addOrganization()" style="width: 84px; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border: 1px solid #00ff88; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #00ff88; color: #000;" 
                         onmouseover="this.style.background='#00e67a'; this.style.borderColor='#00e67a'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 255, 136, 0.3)';" 
                         onmouseout="this.style.background='#00ff88'; this.style.borderColor='#00ff88'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                    <span data-i18n-key="organization.buttons.add">新建</span>
+                    <span data-i18n-key="operatorMgmt.buttons.add">新建运维方</span>
                 </button>
             </div>
 
@@ -1076,12 +1076,13 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th data-i18n-key="organization.table.userName">用户名称</th>
-                                <th data-i18n-key="organization.table.userEmail">用户邮箱</th>
-                                <th data-i18n-key="organization.table.status">状态</th>
-                                <th data-i18n-key="organization.table.remarks">备注</th>
-                                <th data-i18n-key="organization.table.createdTime">创建时间</th>
-                                <th data-i18n-key="organization.table.action">操作</th>
+                                <th data-i18n-key="operatorMgmt.table.name">运维方名称</th>
+                                <th data-i18n-key="operatorMgmt.table.contact">联系人</th>
+                                <th data-i18n-key="operatorMgmt.table.stations">分配电站</th>
+                                <th data-i18n-key="operatorMgmt.table.stationCount">电站数</th>
+                                <th data-i18n-key="operatorMgmt.table.rentalEnd">租赁到期</th>
+                                <th data-i18n-key="operatorMgmt.table.status">状态</th>
+                                <th data-i18n-key="operatorMgmt.table.action">操作</th>
                             </tr>
                         </thead>
                         <tbody id="userTableBody">
@@ -1100,7 +1101,7 @@
     <div class="modal-overlay" id="userModal" onclick="handleModalClick(event)">
         <div class="modal-container">
             <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle" data-i18n-key="organization.modal.addMember">添加成员</h2>
+                <h2 class="modal-title" id="modalTitle" data-i18n-key="operatorMgmt.modal.addOperator">新建运维方</h2>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1290,11 +1291,11 @@
 
         // Mock user data
         let allUsers = [
-            { id: 1, nameKey: 'userName1', name: '张明', email: 'bigbang@163.com', status: 'active', remarkKey: 'remark.none', remark: '-', createTime: '2024-09-12 06:15' },
-            { id: 2, nameKey: 'userName2', name: '李华', email: 'g.hjkl@163.com', status: 'inactive', remarkKey: 'remark.none', remark: '-', createTime: '2024-09-11 14:22' },
-            { id: 3, nameKey: 'userName3', name: '王伟', email: 'test@example.com', status: 'active', remarkKey: 'remark.testAccount', remark: '测试账号', createTime: '2024-09-10 09:30' },
-            { id: 4, nameKey: 'adminUser', name: '管理员', email: 'admin@example.com', status: 'active', remarkKey: 'remark.systemAdmin', remark: '系统管理员', createTime: '2024-09-09 16:45' },
-            { id: 5, nameKey: 'userName5', name: '张三', email: 'zhangsan@163.com', status: 'inactive', remarkKey: 'remark.tempUser', remark: '临时用户', createTime: '2024-09-08 11:20' }
+            { id: 1, name: 'Alpha Energy Services', contact: 'James Wilson', email: 'james@alphaenergy.com.au', stations: ['Hornsdale Power Reserve', 'Victorian Big Battery'], rentalEnd: '2027-06-30', status: 'active' },
+            { id: 2, name: 'Pacific Grid Solutions', contact: 'Sarah Chen', email: 'sarah@pacificgrid.com.au', stations: ['Wandoan BESS', 'Torrens Island BESS', 'Broken Hill Solar Farm'], rentalEnd: '2026-12-31', status: 'active' },
+            { id: 3, name: 'Southern Power Management', contact: 'Michael Brown', email: 'mbrown@southernpm.com.au', stations: ['Capital Battery'], rentalEnd: '2026-09-15', status: 'active' },
+            { id: 4, name: 'Outback BESS Operations', contact: 'David Lee', email: 'david@outbackbess.com.au', stations: ['Kwinana BESS', 'Collie Battery'], rentalEnd: '2025-12-31', status: 'inactive' },
+            { id: 5, name: 'Green Dispatch Co', contact: 'Emma Zhang', email: 'emma@greendispatch.com.au', stations: ['Lake Bonney', 'Lincoln Gap Wind Farm', 'Gannawarra Energy Storage'], rentalEnd: '2028-03-31', status: 'active' }
         ];
 
         let filteredUsers = [...allUsers];
@@ -1462,24 +1463,28 @@
             
             tbody.innerHTML = displayUsers.map(user => {
                 const statusText = window.i18n ? 
-                    window.i18n.getText(`organization.status.${user.status}`) : 
-                    (user.status === 'active' ? '启用' : '禁用');
+                    window.i18n.getText(`operatorMgmt.status.${user.status}`) : 
+                    (user.status === 'active' ? '运营中' : '已停用');
                 
-                const editText = window.i18n ? window.i18n.getText('organization.actions.edit') : '编辑';
-                const deleteText = window.i18n ? window.i18n.getText('organization.actions.delete') : '删除';
+                const editText = window.i18n ? window.i18n.getText('operatorMgmt.actions.edit') : '编辑';
+                const deleteText = window.i18n ? window.i18n.getText('operatorMgmt.actions.delete') : '删除';
+                
+                const isExpired = new Date(user.rentalEnd) < new Date();
+                const rentalClass = isExpired ? 'color: #ff4444;' : '';
                 
                 return `
                     <tr>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
+                        <td><strong>${user.name}</strong><br><span style="color: rgba(255,255,255,0.5); font-size: 12px;">${user.email}</span></td>
+                        <td>${user.contact}</td>
+                        <td style="max-width: 200px;"><span style="font-size: 12px; color: rgba(255,255,255,0.7);">${user.stations.join(', ')}</span></td>
+                        <td style="text-align: center;">${user.stations.length}</td>
+                        <td style="${rentalClass}">${user.rentalEnd}</td>
                         <td>
                             <span class="status-badge ${user.status}">
                                 <span class="status-indicator"></span>
                                 ${statusText}
                             </span>
                         </td>
-                        <td>${user.remark}</td>
-                        <td>${user.createTime}</td>
                         <td>
                             <div class="action-buttons">
                                 <button class="action-btn edit" onclick="editUser(${user.id})">${editText}</button>
@@ -1496,7 +1501,7 @@
             isEditMode = false;
             currentUserId = null;
             const modalTitle = document.getElementById('modalTitle');
-            const addOrgText = window.i18n ? window.i18n.getText('organization.modal.addOrganization') : '新建组织';
+            const addOrgText = window.i18n ? window.i18n.getText('operatorMgmt.modal.addOperator') : '新建运维方';
             modalTitle.textContent = addOrgText;
             modalTitle.setAttribute('data-i18n-key', 'organization.modal.addOrganization');
             

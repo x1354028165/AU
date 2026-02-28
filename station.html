@@ -2060,7 +2060,16 @@
         });
 
         // Mock station data
-        const stationData = generateMockData(128);
+        let stationData = generateMockData(128);
+        
+        // 角色过滤：运维方只显示分配的电站
+        (function applyRoleFilter() {
+            const role = localStorage.getItem('userRole') || 'operator';
+            if (role === 'operator') {
+                // 运维方只看前 2 个电站（模拟分配）
+                stationData = stationData.slice(0, 2);
+            }
+        })();
 
         function generateMockData(count) {
             // 澳洲大型储能电站配置
