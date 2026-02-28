@@ -2599,6 +2599,14 @@ class I18n {
                     revenueLabel: "收入",
                     netProfitLabel: "净利润",
                     vsYesterday: "较昨日",
+                    modal: {
+                        operationType: "操作类型",
+                        currentSOC: "当前 SOC",
+                        currentPrice: "当前电价",
+                        avgBatteryCost: "电池平均成本",
+                        estFullTime: "预计充满时长",
+                        estCost: "预计成本"
+                    },
                     chargeWarning: "将开始对所有连接设备进行充电操作，此过程将消耗电网电力。",
                     spotPrice: "现货电价",
                     currentDemand: "当前需求",
@@ -5185,6 +5193,14 @@ class I18n {
                     revenueLabel: "Revenue",
                     netProfitLabel: "Net Profit",
                     vsYesterday: "vs Yesterday",
+                    modal: {
+                        operationType: "Operation Type",
+                        currentSOC: "Current SOC",
+                        currentPrice: "Current Price",
+                        avgBatteryCost: "Avg Battery Cost",
+                        estFullTime: "Est. Full Charge Time",
+                        estCost: "Est. Cost"
+                    },
                     chargeWarning: "Charging will begin for all connected devices, consuming grid power.",
                     spotPrice: "Spot Price",
                     currentDemand: "Current Demand",
