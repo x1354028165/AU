@@ -7671,7 +7671,7 @@
                     regionData[region] = { status: 'none' };
                 }
                 if (!regionData[region].deviceStats) {
-                    console.warn(`⚠️ Missing deviceStats for ${region}, creating now...`);
+                    // deviceStats auto-created for ${region}
                     if (region === 'NSW') {
                         regionData[region].deviceStats = { total: 500, success: 0, executing: 0, failed: 0 };
                     } else {
@@ -7757,7 +7757,7 @@
                                 localStorage.removeItem('app_language');
                             }
                         } catch (e) {
-                            console.warn('Failed to check/clear language setting:', e);
+                            // warn('Failed to check/clear language setting:', e);
                         }
 
                         window.i18n = new I18n({
@@ -7928,7 +7928,7 @@
                     document.getElementById('failedDevices').textContent = stats.failed;
                 }
             } else {
-                console.error('❌ NSW deviceStats still missing after fix!');
+                // error('❌ NSW deviceStats still missing after fix!');
             }
 
             try {
@@ -8007,25 +8007,25 @@
                 try {
                     initPowerRevenueChart();
                 } catch (e) {
-                    console.error('Failed to initialize power chart:', e);
+                    // error('Failed to initialize power chart:', e);
                 }
                 
                 try {
                     initSystemPerformanceChart();
                 } catch (e) {
-                    console.error('Failed to initialize performance chart:', e);
+                    // error('Failed to initialize performance chart:', e);
                 }
                 
                 try {
                     initMarketChart();
                 } catch (e) {
-                    console.error('Failed to initialize market chart:', e);
+                    // error('Failed to initialize market chart:', e);
                 }
                 
                 try {
                     initMap();
                 } catch (e) {
-                    console.error('Failed to initialize map:', e);
+                    // error('Failed to initialize map:', e);
                 }
                 
                 
@@ -8062,7 +8062,7 @@
                     try {
                         initPowerChartTimeSelector();
                     } catch (error) {
-                        console.error('TimeSelector initialization failed:', error);
+                        // error('TimeSelector initialization failed:', error);
                     }
                 }, 100);
                 
@@ -8109,7 +8109,7 @@
                 // 注意：首次更新会在 initMarketChart() 完成AEMO数据加载后自动执行
                 setInterval(updateRealtimeData, 5000);
             } catch (error) {
-                console.error('Chart initialization failed:', error);
+                // error('Chart initialization failed:', error);
             }
             
             // Start auto switch if enabled
@@ -8640,7 +8640,7 @@
             const stats = regionData[region]?.deviceStats;
 
             if (!stats) {
-                console.error(`❌ No device stats found for region: ${region}`);
+                // error(`❌ No device stats found for region: ${region}`);
                 return;
             }
 
@@ -8653,7 +8653,7 @@
 
 
             if (!totalEl || !successEl || !executingEl || !failedEl) {
-                console.error('❌ One or more device stat elements not found!');
+                return; // device stats not in current layout
                 return;
             }
 
@@ -9134,7 +9134,7 @@
             if (!powerRevenueChart) {
                 initPowerRevenueChart();
                 if (!powerRevenueChart) {
-                    console.error('Failed to initialize powerRevenueChart');
+                    // error('Failed to initialize powerRevenueChart');
                     return;
                 }
             }
@@ -9452,7 +9452,7 @@
         // Initialize time selector for power chart
         function initPowerChartTimeSelector() {
             if (typeof TimeSelector === 'undefined') {
-                console.error('TimeSelector class not loaded');
+                // error('TimeSelector class not loaded');
                 return;
             }
             powerChartTimeSelector = new TimeSelector({
@@ -9643,7 +9643,7 @@
         function updatePowerChartWithData(labels, power, revenue, period) {
             // Check if powerChart exists before updating
             if (!powerChart) {
-                console.warn('powerChart is not initialized, skipping update');
+                // warn('powerChart is not initialized, skipping update');
                 return;
             }
             
@@ -9848,7 +9848,7 @@
         function initMarketChart() {
             const container = document.getElementById('marketChart');
             if (!container) {
-                console.error('Market chart container not found!');
+                // error('Market chart container not found!');
                 return;
             }
             
@@ -10169,14 +10169,14 @@
         function initMap() {
             const container = document.getElementById('australiaMap');
             if (!container) {
-                console.error('australiaMap container not found!');
+                return; // australiaMap not in current layout
                 return;
             }
             
             try {
                 mapChart = echarts.init(container);
             } catch (error) {
-                console.error('Failed to initialize mapChart:', error);
+                // error('Failed to initialize mapChart:', error);
                 return;
             }
             
@@ -10417,7 +10417,7 @@
             try {
                 mapChart.setOption(option);
             } catch (error) {
-                console.error('Failed to set mapChart option:', error);
+                // error('Failed to set mapChart option:', error);
                 return;
             }
             
@@ -16326,7 +16326,7 @@
         window.testMarketChart = function() {
             const container = document.getElementById('marketChart');
             if (!container) {
-                console.error('Market chart container not found!');
+                // error('Market chart container not found!');
                 return;
             }
             
@@ -19733,7 +19733,7 @@
         function initTimeBarInteraction() {
             const interactArea = document.getElementById('timeBarInteraction');
             if (!interactArea) {
-                console.error('timeBarInteraction element not found!');
+                return; // timeBar not in current layout
                 return;
             }
             
@@ -19962,7 +19962,7 @@
             
             const display = document.getElementById('timelineSegmentDisplay');
             if (!display) {
-                console.error('timelineSegmentDisplay element not found!');
+                return; // timeline not in current layout
                 return;
             }
             
@@ -20064,7 +20064,7 @@
             const countLabel = document.getElementById('chargeSegmentCount');
             
             if (!container) {
-                console.error('chargeTimeSegmentsList container not found!');
+                return; // charge segments not in current layout
                 return;
             }
             
@@ -20101,7 +20101,7 @@
             const countLabel = document.getElementById('dischargeSegmentCount');
             
             if (!container) {
-                console.error('dischargeTimeSegmentsList container not found!');
+                return; // discharge segments not in current layout
                 return;
             }
             

@@ -758,7 +758,7 @@
         const dischargeList = document.getElementById('dischargeConditionsList');
 
         if (!chargeList || !dischargeList) {
-            console.warn('⚠️ Main page condition containers not found');
+            
             return;
         }
 

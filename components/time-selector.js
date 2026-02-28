@@ -60,7 +60,7 @@ class TimeSelector {
     createHTML() {
         const container = document.getElementById(this.options.containerId);
         if (!container) {
-            console.error(`TimeSelector: Container with id "${this.options.containerId}" not found`);
+            return; // container not available
             return;
         }
 
