@@ -10615,7 +10615,7 @@
             updateButtonsForOperation(operationType);
 
             // 切换到地图视图
-            switchPanel('map');
+            // switchPanel('map'); // 不再切换到地图，保留行情图
 
             // 立即启动设备动画(不需要延迟,让startDeviceAnimation统一处理初始化)
             startDeviceAnimation();
@@ -13592,11 +13592,8 @@
 
         // 新的操作统计显示函数
         function showOperationStatistics() {
-            
-            // 检查用户是否已经关闭了弹窗
-            if (window.deviceResponseModalClosed) {
-                return;
-            }
+            // 设备响应统计暂时隐藏
+            return;
             
             const modal = document.getElementById('deviceResponseModal');
             if (!modal) {
