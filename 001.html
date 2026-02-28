@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="analysis.pageTitle">实时数据分析 - U Energy</title>
@@ -27,7 +28,7 @@
         body {
             background: #000 !important;
             color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sans);
         }
 
 
@@ -73,7 +74,7 @@
             width: 100%;
             height: 2px;
             background: #00ff88;
-            border-radius: 1px;
+            border-radius: 6px;
         }
 
         /* Region Selector */
@@ -124,7 +125,7 @@
             width: 100%;
             background: rgba(26, 26, 26, 0.9);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 25px 40px;
             margin-bottom: 40px;
             position: relative;
@@ -223,7 +224,7 @@
         .metric-change {
             font-size: 12px;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 500;
         }
 
@@ -248,7 +249,7 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-left: 3px solid #00ff88;
             margin-top: auto;
@@ -309,7 +310,7 @@
             padding: 8px 16px;
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
+            border-radius: 10px;
             color: #fff;
             font-size: 12px;
             cursor: pointer;
@@ -372,7 +373,7 @@
             font-size: 24px;
             cursor: pointer;
             padding: 8px;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: background 0.3s;
         }
 
@@ -434,7 +435,7 @@
             padding: 12px 24px;
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
@@ -460,7 +461,7 @@
             width: 60%;
             height: 3px;
             background: #00ff88;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         .dimension-icon {
@@ -484,7 +485,7 @@
             background: none;
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: rgba(255, 255, 255, 0.7);
-            border-radius: 20px;
+            border-radius: 16px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -582,7 +583,7 @@
         .summary-metric {
             padding: 10px 8px;
             background: rgba(255,255,255,0.03);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.08);
             transition: all 0.3s ease;
             display: flex;
@@ -764,7 +765,7 @@
         .modal-time-dropdown {
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 8px 16px;
             color: #fff;
             font-size: 14px;
@@ -870,7 +871,7 @@
                 <!-- Risk and Opportunity Tips Inside Card -->
                 <div style="position: absolute; top: 40%; left: 40px; right: 40px; transform: translateY(-50%); display: flex; justify-content: space-between;">
                     <!-- Left Risk Tips -->
-                    <div style="background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.15); border-radius: 12px; padding: 16px 20px; width: 280px;">
+                    <div style="background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.15); border-radius: 10px; padding: 16px 20px; width: 280px;">
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
                             <span style="color: #ff3b30; font-size: 16px;">🚨</span>
                             <span style="color: #fff; font-size: 14px; font-weight: 500;" data-key="riskAlert">风险提示</span>
@@ -888,7 +889,7 @@
                     </div>
                     
                     <!-- Right Opportunity Tips -->
-                    <div style="background: rgba(0, 255, 136, 0.08); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 12px; padding: 16px 20px; width: 280px;">
+                    <div style="background: rgba(0, 255, 136, 0.08); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 10px; padding: 16px 20px; width: 280px;">
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
                             <span style="color: #00ff88; font-size: 16px;">💡</span>
                             <span style="color: #fff; font-size: 14px; font-weight: 500;" data-key="opportunityHint">机会提示</span>
@@ -1340,26 +1341,26 @@
                         <span class="chart-title" data-key="sellingTimingAnalysis">售电时机分析图表</span>
                     </div>
                     <div id="sellingPointsChart" class="chart-box"></div>
-                    <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                    <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 10px;">
                         <div style="display: flex; justify-content: center; gap: 24px; align-items: center; flex-wrap: wrap;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 16px; height: 10px; background: rgba(0,255,136,0.3); border-radius: 2px;"></div>
+                                <div style="width: 16px; height: 10px; background: rgba(0,255,136,0.3); border-radius: 6px;"></div>
                                 <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$400+ <span data-key="excellentPrice">优秀价格</span></span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 16px; height: 10px; background: rgba(0,255,136,0.25); border-radius: 2px;"></div>
+                                <div style="width: 16px; height: 10px; background: rgba(0,255,136,0.25); border-radius: 6px;"></div>
                                 <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$300-400 <span data-key="goodPrice">良好价格</span></span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 16px; height: 10px; background: rgba(255,235,59,0.25); border-radius: 2px;"></div>
+                                <div style="width: 16px; height: 10px; background: rgba(255,235,59,0.25); border-radius: 6px;"></div>
                                 <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$200-300 <span data-key="averagePrice">一般价格</span></span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 16px; height: 10px; background: rgba(255,152,0,0.25); border-radius: 2px;"></div>
+                                <div style="width: 16px; height: 10px; background: rgba(255,152,0,0.25); border-radius: 6px;"></div>
                                 <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$100-200 <span data-key="lowPrice">较低价格</span></span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 16px; height: 10px; background: rgba(255,67,54,0.25); border-radius: 2px;"></div>
+                                <div style="width: 16px; height: 10px; background: rgba(255,67,54,0.25); border-radius: 6px;"></div>
                                 <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$0-100 <span data-key="veryLowPrice">极低价格</span></span>
                             </div>
                         </div>
@@ -3169,15 +3170,16 @@
             </div>
             <div class="modal-body">
                 <div class="modal-charts-grid">
-                    <div class="chart-container" style="height: 420px; background: rgba(255,255,255,0.02); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div class="chart-container" style="height: 420px; background: rgba(255,255,255,0.02); border-radius: 10px; padding: 16px; border: 1px solid rgba(255,255,255,0.05);">
                         <div id="modalPriceChart" style="width: 100%; height: 100%;"></div>
                     </div>
-                    <div class="chart-container" style="height: 420px; background: rgba(255,255,255,0.02); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div class="chart-container" style="height: 420px; background: rgba(255,255,255,0.02); border-radius: 10px; padding: 16px; border: 1px solid rgba(255,255,255,0.05);">
                         <div id="modalGapChart" style="width: 100%; height: 100%;"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="page-transition.js"></script>
 </body>
 </html>

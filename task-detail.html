@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>任务详情 - U Energy</title>
@@ -27,7 +28,7 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 100px 20px 24px;
+            padding: 88px var(--page-padding, 24px) 40px;
             min-height: calc(100vh - 200px);
         }
         
@@ -37,7 +38,7 @@
             gap: 0;
             margin-bottom: 30px;
             background: var(--color-bg-card);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 4px;
             border: 1px solid var(--color-border);
         }
@@ -52,7 +53,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            border-radius: 8px;
+            border-radius: 10px;
             position: relative;
         }
         
@@ -76,7 +77,7 @@
             width: 40px;
             height: 3px;
             background: #00ff88;
-            border-radius: 2px;
+            border-radius: 6px;
         }
         
         /* Tab Content */
@@ -110,7 +111,7 @@
             border: 2px solid #00ff88;
             color: #00ff88;
             padding: 10px 24px;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
@@ -307,7 +308,7 @@
             display: inline-flex;
             align-items: center;
             padding: 4px 12px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 12px;
             font-weight: 600;
         }
@@ -340,7 +341,7 @@
             display: inline-flex;
             align-items: center;
             padding: 6px 14px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
         }
@@ -408,7 +409,7 @@
             border: 1px solid var(--color-border);
             color: var(--color-text);
             padding: 8px 12px;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 14px;
             min-width: 120px;
             transition: all 0.3s;
@@ -430,7 +431,7 @@
         .btn {
             padding: 8px 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             color: rgba(255, 255, 255, 0.8);
             cursor: pointer;
             font-size: 14px;
@@ -480,7 +481,7 @@
         .stat-card {
             background: linear-gradient(135deg, rgba(0, 255, 136, 0.05), rgba(30, 127, 255, 0.05));
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 20px;
             text-align: center;
         }
@@ -1248,5 +1249,6 @@
             URL.revokeObjectURL(url);
         }
     </script>
+    <script src="page-transition.js"></script>
 </body>
 </html>

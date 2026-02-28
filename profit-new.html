@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="profit.title">获利 - AlwaysControl</title>
@@ -106,7 +107,7 @@
             display: inline-flex;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 4px;
             gap: 4px;
         }
@@ -116,7 +117,7 @@
             background: rgba(255, 255, 255, 0.05);
             color: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 10px 24px;
             font-size: 14px;
             font-weight: 500;
@@ -148,7 +149,7 @@
         /* Ensure container width is maintained */
         .container {
             max-width: 95%;
-            padding: 100px 10px 24px;
+            padding: 88px var(--page-padding, 24px) 40px;
             margin: 0 auto;
         }
 
@@ -450,7 +451,7 @@
             padding: 6px 14px;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 18px;
+            border-radius: 16px;
             color: var(--color-text-secondary);
             cursor: pointer;
             font-size: 12px;
@@ -481,7 +482,7 @@
             padding: 8px 16px;
             background: transparent;
             border: 1px solid var(--color-primary);
-            border-radius: 6px;
+            border-radius: 10px;
             color: var(--color-primary);
             cursor: pointer;
             font-size: 14px;
@@ -523,7 +524,7 @@
             padding: 8px 12px;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 6px;
+            border-radius: 10px;
             color: var(--color-text-secondary);
             cursor: pointer;
             font-size: 12px;
@@ -552,7 +553,7 @@
             padding: 6px 12px;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 15px;
+            border-radius: 16px;
             color: var(--color-text-secondary);
             cursor: pointer;
             font-size: 12px;
@@ -606,7 +607,7 @@
             background: var(--color-danger);
             color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -622,7 +623,7 @@
         @media (max-width: 1200px) {
             .container {
                 max-width: 98%;
-                padding: 120px 8px 40px;
+                padding: 88px var(--page-padding, 24px) 40px;
             }
             
             .stats-grid {
@@ -643,7 +644,7 @@
         @media (max-width: 768px) {
             .container {
                 max-width: 100%;
-                padding: 120px 5px 40px;
+                padding: 88px var(--page-padding, 24px) 40px;
             }
             
             .stats-grid {
@@ -2406,5 +2407,6 @@
         });
     </script>
     <script src="components/global-notifications.js"></script>
+    <script src="page-transition.js"></script>
 </body>
 </html>

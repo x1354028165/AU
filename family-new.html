@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n-key="family.title">家庭 - U Energy</title>
@@ -34,7 +35,7 @@
             width: 100%;
             max-width: 1920px;
             margin: 0 auto;
-            padding: 100px 20px 24px;
+            padding: 88px var(--page-padding, 24px) 40px;
             min-height: calc(100vh - 200px);
         }
         
@@ -57,7 +58,7 @@
             padding: 10px 14px;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 6px;
+            border-radius: 10px;
             color: var(--color-text);
             font-size: 14px;
             cursor: pointer;
@@ -85,7 +86,7 @@
             right: 0;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 6px;
+            border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             z-index: 1000;
             max-height: 300px;
@@ -355,7 +356,7 @@
             width: 20px;
             height: 20px;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+            border-radius: 6px;
             background: rgba(255, 255, 255, 0.05);
             cursor: pointer;
             position: relative;
@@ -740,7 +741,7 @@
         
         @media (max-width: 768px) {
             .container {
-                padding: 100px 10px 24px;
+                padding: 88px var(--page-padding, 24px) 40px;
             }
 
             .page-title {
@@ -887,7 +888,7 @@
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 16px;
             font-size: 12px;
             font-weight: 500;
         }
@@ -938,7 +939,7 @@
         .operation-mode-badge {
             display: inline-block;
             padding: 4px 8px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 11px;
             font-weight: 500;
             text-align: center;
@@ -999,7 +1000,7 @@
             padding: 8px 16px;
             background: linear-gradient(135deg, rgba(0, 185, 107, 0.1), rgba(30, 127, 255, 0.1));
             border: 1px solid var(--color-primary);
-            border-radius: 8px;
+            border-radius: 10px;
             color: var(--color-primary);
             cursor: pointer;
             font-size: 12px;
@@ -1060,7 +1061,7 @@
             padding: 8px 16px;
             background: linear-gradient(135deg, rgba(0, 185, 107, 0.1), rgba(30, 127, 255, 0.1));
             border: 1px solid var(--color-primary);
-            border-radius: 8px;
+            border-radius: 10px;
             color: var(--color-primary);
             cursor: pointer;
             font-size: 12px;
@@ -1140,7 +1141,7 @@
             justify-content: center;
             background: transparent;
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
             color: var(--color-text-secondary);
@@ -1284,7 +1285,7 @@
 
         .drawer-action-btn {
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid var(--color-border);
             background: var(--color-bg-secondary);
             color: var(--color-text);
@@ -1337,7 +1338,7 @@
         .revenue-card {
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 20px;
             text-align: center;
         }
@@ -1382,7 +1383,7 @@
         .drawer-chart-container {
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 20px;
             margin-bottom: 16px;
         }
@@ -1408,7 +1409,7 @@
         .drawer-chart-control {
             padding: 6px 12px;
             border: 1px solid var(--color-border);
-            border-radius: 6px;
+            border-radius: 10px;
             background: var(--color-bg-card);
             color: var(--color-text-secondary);
             font-size: 12px;
@@ -1434,7 +1435,7 @@
             padding: 8px 16px;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             color: var(--color-text);
             font-size: 14px;
         }
@@ -2527,13 +2528,13 @@
             content.innerHTML = `
                 <!-- Summary Cards -->
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px;">
-                    <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; text-align: center;">
+                    <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 10px; padding: 20px; text-align: center;">
                         <div style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 10px;">
                             ${window.i18n && window.i18n.currentLanguage === 'en' ? 'Total Feed-in' : '馈网量'}
                         </div>
                         <div style="font-size: 22px; font-weight: 600; color: var(--color-primary);">${totalDischarge} kWh</div>
                     </div>
-                    <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; text-align: center;">
+                    <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 10px; padding: 20px; text-align: center;">
                         <div style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 10px;">
                             ${window.i18n && window.i18n.currentLanguage === 'en' ? 'Total Profit' : '总获利'}
                         </div>
@@ -2542,7 +2543,7 @@
                 </div>
                 
                 <!-- Data Table -->
-                <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden;">
+                <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 10px; overflow: hidden;">
                     <div style="max-height: 70vh; overflow-y: auto;">
                         <table style="width: 100%; border-collapse: collapse;">
                             <thead>
@@ -2822,7 +2823,7 @@
                                     <button class="drawer-chart-control active" onclick="updateProfitChart('day', this)" data-view="day">${window.i18n ? window.i18n.getText('family.drawer.day') : '天'}</button>
                                     <button class="drawer-chart-control" onclick="updateProfitChart('month', this)" data-view="month">${window.i18n ? window.i18n.getText('family.drawer.month') : '月'}</button>
                                     <button class="drawer-chart-control" onclick="updateProfitChart('year', this)" data-view="year">${window.i18n ? window.i18n.getText('family.drawer.year') : '年'}</button>
-                                    <input type="date" id="profitDatePicker" class="drawer-chart-date-picker" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;" onchange="onProfitDateChange(event)">
+                                    <input type="date" id="profitDatePicker" class="drawer-chart-date-picker" style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer;" onchange="onProfitDateChange(event)">
                                 </div>
                             </div>
                             <div id="profitChart" class="drawer-chart"></div>
@@ -2944,7 +2945,7 @@
                                 display: inline-flex;
                                 align-items: center;
                                 padding: 4px 12px;
-                                border-radius: 12px;
+                                border-radius: 10px;
                                 font-size: 12px;
                                 font-weight: 600;
                             }
@@ -2998,13 +2999,13 @@
                         </div>
                         
                         <div class="dispatch-pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px;">
-                            <button class="pagination-btn" onclick="changeDispatchPage(-1)" style="padding: 6px 12px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: 4px; cursor: pointer;" ${currentPage === 1 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                            <button class="pagination-btn" onclick="changeDispatchPage(-1)" style="padding: 6px 12px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: 6px; cursor: pointer;" ${currentPage === 1 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                                 ← ${window.i18n ? window.i18n.getText('common.previous') : '上一页'}
                             </button>
                             <span style="color: var(--color-text-secondary); font-size: 14px;">
                                 ${currentPage} / ${totalPages}
                             </span>
-                            <button class="pagination-btn" onclick="changeDispatchPage(1)" style="padding: 6px 12px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: 4px; cursor: pointer;" ${currentPage === totalPages ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                            <button class="pagination-btn" onclick="changeDispatchPage(1)" style="padding: 6px 12px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: 6px; cursor: pointer;" ${currentPage === totalPages ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                                 ${window.i18n ? window.i18n.getText('common.next') : '下一页'} →
                             </button>
                         </div>
@@ -3408,7 +3409,7 @@
             const modalContent = document.createElement('div');
             modalContent.style.cssText = `
                 background: var(--color-bg-card, #1a1a1a);
-                border-radius: 12px;
+                border-radius: 10px;
                 padding: 24px;
                 width: 400px;
                 max-width: 90%;
@@ -3449,7 +3450,7 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        border-radius: 4px;
+                        border-radius: 6px;
                         transition: all 0.3s;
                     }
                     #exportDetailModal .modal-close:hover {
@@ -3485,7 +3486,7 @@
                         padding: 10px 12px;
                         background: var(--color-bg, #000);
                         border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
-                        border-radius: 8px;
+                        border-radius: 10px;
                         color: var(--color-text, #fff);
                         font-size: 14px;
                         transition: all 0.3s;
@@ -3517,7 +3518,7 @@
                     }
                     #exportDetailModal .btn {
                         padding: 10px 20px;
-                        border-radius: 8px;
+                        border-radius: 10px;
                         font-size: 14px;
                         font-weight: 600;
                         cursor: pointer;
@@ -3552,7 +3553,7 @@
                     <button class="modal-close" onclick="closeExportDetailModal()">✕</button>
                 </div>
                 <div class="modal-body">
-                    <div class="user-scope-hint" style="background: rgba(30, 127, 255, 0.1); border: 1px solid rgba(30, 127, 255, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                    <div class="user-scope-hint" style="background: rgba(30, 127, 255, 0.1); border: 1px solid rgba(30, 127, 255, 0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 16px;">👥</span>
                         <span style="color: var(--color-text-secondary); font-size: 14px;">${window.i18n ? window.i18n.getText('family.exportScope.label') : '用户：'}</span>
                         <span style="color: var(--color-accent); font-weight: 600; font-size: 14px;">${userScopeText}</span>
@@ -4207,7 +4208,7 @@
                                 } else if (op.type === 'discharging') {
                                     color = '#ffd700';
                                 }
-                                html += `<div style="margin: 4px 0; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; border-left: 3px solid ${color};">`;
+                                html += `<div style="margin: 4px 0; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 6px; border-left: 3px solid ${color};">`;
                                 html += `<span style="color: ${color}; font-weight: 500;">${op.text}</span>`;
                                 html += `<span style="color: rgba(255,255,255,0.5); font-size: 11px; margin-left: 8px;">${op.time}</span>`;
                                 html += `</div>`;
@@ -4404,5 +4405,6 @@
         }
     </script>
     <script src="components/global-notifications.js"></script>
+    <script src="page-transition.js"></script>
 </body>
 </html>

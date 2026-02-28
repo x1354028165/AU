@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>推送策略 - AlwaysControl</title>
@@ -37,7 +38,7 @@
             padding: 0;
             overflow-x: hidden;
             color: var(--color-text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sans);
         }
         
         /* 强制应用正确的主题 */
@@ -78,7 +79,7 @@
         /* 编辑按钮样式 */
         .edit-button {
             padding: 10px 24px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -167,7 +168,7 @@
             width: 100%;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 12px 16px;
             padding-left: 40px;
             color: var(--color-text);
@@ -223,7 +224,7 @@
         .region-input {
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 6px;
+            border-radius: 10px;
             padding: 8px 12px;
             color: var(--color-text);
             font-size: 14px;
@@ -249,7 +250,7 @@
             align-items: center;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
             width: 200px;
         }
@@ -321,7 +322,7 @@
             appearance: none;
             width: 18px;
             height: 18px;
-            border-radius: 4px;
+            border-radius: 6px;
             background: var(--color-bg);
             border: 1.5px solid var(--color-border);
             cursor: pointer;
@@ -443,7 +444,7 @@
 
         .btn {
             padding: 10px 24px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -614,7 +615,7 @@
             width: 100%;
             height: 2px;
             background: #00ff88;
-            border-radius: 1px;
+            border-radius: 6px;
         }
 
         /* 策略头部样式 */
@@ -663,7 +664,7 @@
         .peak-setting-card {
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 24px;
             transition: all 0.3s ease;
         }
@@ -718,7 +719,7 @@
         .config-item {
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 24px;
             display: flex;
             flex-direction: column;
@@ -743,7 +744,7 @@
             appearance: none;
             height: 6px;
             background: var(--color-border);
-            border-radius: 3px;
+            border-radius: 6px;
             outline: none;
         }
 
@@ -859,7 +860,7 @@
             flex: 1;
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 24px;
         }
 
@@ -893,7 +894,7 @@
             gap: 12px;
             padding: 12px;
             background: var(--color-bg);
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         .user-avatar {
@@ -924,7 +925,7 @@
 
         .activity-level {
             padding: 4px 8px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 12px;
             font-weight: 500;
         }
@@ -1051,7 +1052,7 @@
             width: 44px;
             height: 24px;
             background: rgba(255,255,255,0.1);
-            border-radius: 12px;
+            border-radius: 10px;
             position: relative;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -1089,7 +1090,7 @@
             height: 32px;
             background: rgba(0,0,0,0.05);
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1115,7 +1116,7 @@
             align-items: center;
             gap: 12px;
             padding: 12px 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 16px;
         }
 
@@ -1138,7 +1139,7 @@
             background: var(--color-primary);
             color: #fff;
             padding: 4px 8px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 12px;
             font-weight: 500;
         }
@@ -1198,7 +1199,7 @@
 
         .btn {
             padding: 8px 16px;
-            border-radius: 6px;
+            border-radius: 10px;
             border: none;
             font-size: 14px;
             font-weight: 500;
@@ -1297,7 +1298,7 @@
             align-items: center;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 6px;
+            border-radius: 10px;
             overflow: hidden;
         }
 
@@ -1340,7 +1341,7 @@
         .charge-discharge-module {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 20px;
             transition: all 0.3s ease;
         }
@@ -1416,7 +1417,7 @@
         .point-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 16px;
             transition: all 0.3s ease;
         }
@@ -1455,7 +1456,7 @@
             padding: 12px 16px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
+            border-radius: 10px;
             color: var(--color-text-secondary);
             font-size: 14px;
             font-style: italic;
@@ -1543,7 +1544,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
+            border-radius: 6px;
             transition: all 0.3s ease;
         }
 
@@ -1559,7 +1560,7 @@
         .peak-prediction-section {
             background: rgba(0, 185, 107, 0.05);
             border: 1px solid rgba(0, 185, 107, 0.2);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
             margin-bottom: 24px;
         }
@@ -1602,7 +1603,7 @@
         .peak-percentage {
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
-            border-radius: 6px;
+            border-radius: 10px;
             padding: 12px;
             text-align: center;
         }
@@ -1683,7 +1684,7 @@
             max-width: calc(100vw - 40px);
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             z-index: 10000;
             opacity: 0;
@@ -1737,7 +1738,7 @@
             font-size: 20px;
             cursor: pointer;
             padding: 4px;
-            border-radius: 4px;
+            border-radius: 6px;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
@@ -1767,7 +1768,7 @@
             background: linear-gradient(135deg, #00ff88, #00dd77);
             color: #000;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 15px;
             margin: 0 2px;
@@ -1779,7 +1780,7 @@
             background: linear-gradient(135deg, #ff6b6b, #ff5252);
             color: #fff;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 15px;
             margin: 0 2px;
@@ -1791,7 +1792,7 @@
             background: linear-gradient(135deg, #ffc107, #ff9800);
             color: #000;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 15px;
             margin: 0 2px;
@@ -3628,5 +3629,6 @@
         <button type="button" class="btn btn-primary" id="bottomSaveBtn" data-i18n-key="pushStrategy.buttons.save">保存</button>
     </div>
     <script src="components/global-notifications.js"></script>
+    <script src="page-transition.js"></script>
 </body>
 </html>

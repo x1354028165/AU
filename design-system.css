@@ -1,0 +1,305 @@
+/* ============================================
+   X ENERGI Design System v1.0
+   全局统一设计规范
+   ============================================ */
+
+/* === CSS Variables (Design Tokens) === */
+:root {
+    /* 品牌色 */
+    --color-primary: #00ff88;
+    --color-primary-hover: #00e67a;
+    --color-primary-active: #00cc6c;
+    --color-primary-dim: rgba(0, 255, 136, 0.15);
+    
+    /* 功能色 */
+    --color-danger: #ff4757;
+    --color-danger-hover: #ff3344;
+    --color-warning: #ffa502;
+    --color-info: #007aff;
+    --color-success: #00ff88;
+    
+    /* 背景层级 */
+    --bg-base: #000000;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --bg-card-hover: rgba(255, 255, 255, 0.06);
+    --bg-elevated: rgba(255, 255, 255, 0.08);
+    --bg-input: rgba(255, 255, 255, 0.05);
+    --bg-input-focus: rgba(255, 255, 255, 0.08);
+    --bg-table-header: rgba(255, 255, 255, 0.06);
+    --bg-table-row-hover: rgba(255, 255, 255, 0.04);
+    --bg-table-row-stripe: rgba(255, 255, 255, 0.02);
+    
+    /* 文字颜色 */
+    --text-primary: rgba(255, 255, 255, 0.9);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --text-tertiary: rgba(255, 255, 255, 0.4);
+    --text-disabled: rgba(255, 255, 255, 0.25);
+    
+    /* 边框 */
+    --border-default: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    --border-focus: var(--color-primary);
+    
+    /* 圆角 - 统一 3 档 */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-full: 999px;
+    
+    /* 间距 - 基于 4px 栅格 */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+    
+    /* 页面布局 */
+    --page-max-width: 1400px;
+    --page-padding: 24px;
+    --header-height: 64px;
+    --content-top: calc(var(--header-height) + var(--space-lg));
+    
+    /* 字体 */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    --font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+    
+    /* 字号 */
+    --text-xs: 12px;
+    --text-sm: 13px;
+    --text-base: 14px;
+    --text-lg: 16px;
+    --text-xl: 20px;
+    --text-2xl: 24px;
+    --text-3xl: 32px;
+    
+    /* 阴影 */
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.6);
+    
+    /* 过渡 */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 350ms ease;
+}
+
+/* === 页面过渡动画（解决闪屏） === */
+@keyframes pageFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body {
+    background: var(--bg-base) !important;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 页面内容区淡入动画 */
+.page-content,
+.main-content,
+[class*="container"]:not(.header):not([class*="nav"]) {
+    animation: pageFadeIn 0.3s ease-out;
+}
+
+/* === 统一页面布局 === */
+.page-wrapper {
+    max-width: var(--page-max-width);
+    margin: 0 auto;
+    padding: var(--content-top) var(--page-padding) var(--space-2xl);
+}
+
+/* === 页面标题 === */
+.page-title {
+    font-size: var(--text-3xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-lg) 0;
+}
+
+/* === 卡片 === */
+.ds-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    transition: background var(--transition-fast);
+}
+
+.ds-card:hover {
+    background: var(--bg-card-hover);
+}
+
+/* === 按钮规范 === */
+.ds-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-base);
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    height: 36px;
+    line-height: 1;
+}
+
+.ds-btn-primary {
+    background: var(--color-primary);
+    color: #000;
+}
+
+.ds-btn-primary:hover {
+    background: var(--color-primary-hover);
+}
+
+.ds-btn-outline {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+}
+
+.ds-btn-outline:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card);
+}
+
+.ds-btn-danger {
+    background: transparent;
+    color: var(--color-danger);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+.ds-btn-danger:hover {
+    background: rgba(255, 71, 87, 0.1);
+}
+
+/* === 输入框 === */
+.ds-input {
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-base);
+    height: 36px;
+    transition: all var(--transition-fast);
+    outline: none;
+}
+
+.ds-input:focus {
+    border-color: var(--color-primary);
+    background: var(--bg-input-focus);
+    box-shadow: 0 0 0 2px var(--color-primary-dim);
+}
+
+.ds-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* === 表格 === */
+.ds-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ds-table th {
+    background: var(--bg-table-header);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: var(--text-sm);
+    text-align: left;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.ds-table td {
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--border-default);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+}
+
+.ds-table tr:hover td {
+    background: var(--bg-table-row-hover);
+}
+
+/* === 标签/徽章 === */
+.ds-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 500;
+}
+
+.ds-badge-success {
+    background: rgba(0, 255, 136, 0.15);
+    color: var(--color-primary);
+}
+
+.ds-badge-danger {
+    background: rgba(255, 71, 87, 0.15);
+    color: var(--color-danger);
+}
+
+.ds-badge-warning {
+    background: rgba(255, 165, 2, 0.15);
+    color: var(--color-warning);
+}
+
+/* === 筛选栏 === */
+.ds-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+/* === Select 下拉 === */
+.ds-select {
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-md);
+    font-size: var(--text-base);
+    height: 36px;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    transition: all var(--transition-fast);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.ds-select:focus {
+    border-color: var(--color-primary);
+}
+
+/* === 页面过渡 loading 条 === */
+.page-loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--color-primary);
+    z-index: 99999;
+    transition: width 0.3s ease;
+}

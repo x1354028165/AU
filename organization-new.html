@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>组织 - U Energy</title>
@@ -32,7 +33,7 @@
         .container {
             max-width: 95%;
             margin: 0 auto;
-            padding: 100px 10px 24px;
+            padding: 88px var(--page-padding, 24px) 40px;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -271,7 +272,7 @@
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 16px;
             font-size: 12px;
             font-weight: 500;
         }
@@ -482,7 +483,7 @@
             width: 100%;
             padding: 10px 16px;
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             background: var(--color-bg);
             color: var(--color-text);
             font-size: 14px;
@@ -542,7 +543,7 @@
         /* Permissions Tree */
         .permissions-section {
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 16px;
             background: var(--color-bg);
         }
@@ -591,7 +592,7 @@
 
         .tree-node {
             border: 1px solid var(--color-border);
-            border-radius: 6px;
+            border-radius: 10px;
             overflow: hidden;
         }
 
@@ -663,7 +664,7 @@
         .btn-cancel,
         .btn-confirm {
             padding: 10px 24px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -776,7 +777,7 @@
         .confirm-details {
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 16px;
             margin: 16px 0;
         }
@@ -806,7 +807,7 @@
             padding: 12px;
             background: rgba(255, 59, 48, 0.05);
             border: 1px solid rgba(255, 59, 48, 0.2);
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         .confirm-warning-icon {
@@ -830,7 +831,7 @@
         .btn-confirm-cancel,
         .btn-confirm-delete {
             padding: 10px 24px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -871,7 +872,7 @@
         .toast {
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 16px;
             min-width: 300px;
             display: flex;
@@ -960,7 +961,7 @@
         /* Responsive */
         @media (max-width: 768px) {
             .container {
-                padding: 100px 10px 24px;
+                padding: 88px var(--page-padding, 24px) 40px;
             }
 
             .page-title {
@@ -1018,7 +1019,7 @@
                 <div class="page-header-left">
                     <h1 class="page-title" data-i18n-key="organization.title">组织</h1>
                 </div>
-                <button class="edit-button" onclick="addOrganization()" style="width: 84px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border: 1px solid #00ff88; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #00ff88; color: #000;" 
+                <button class="edit-button" onclick="addOrganization()" style="width: 84px; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border: 1px solid #00ff88; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #00ff88; color: #000;" 
                         onmouseover="this.style.background='#00e67a'; this.style.borderColor='#00e67a'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 255, 136, 0.3)';" 
                         onmouseout="this.style.background='#00ff88'; this.style.borderColor='#00ff88'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                     <span data-i18n-key="organization.buttons.add">新建</span>
@@ -1790,5 +1791,6 @@
 
     </script>
     <script src="components/global-notifications.js"></script>
+    <script src="page-transition.js"></script>
 </body>
 </html>

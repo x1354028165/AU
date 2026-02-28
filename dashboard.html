@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>能源管理中心</title>
@@ -32,14 +33,14 @@
         #socEditModal input[type="range"]::-webkit-slider-track {
             height: 8px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         #socEditModal input[type="range"]::-moz-range-track {
             height: 8px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
@@ -185,12 +186,12 @@
 
         .region-overview-content::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+            border-radius: 6px;
         }
 
         .region-overview-content::-webkit-scrollbar-thumb {
             background: rgba(0, 255, 136, 0.3);
-            border-radius: 3px;
+            border-radius: 6px;
         }
 
         .region-overview-body {
@@ -203,7 +204,7 @@
             margin-bottom: 8px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s;
         }
@@ -394,7 +395,7 @@
         .condition-section {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 6px;
+            border-radius: 10px;
             padding: 12px;
         }
 
@@ -607,7 +608,7 @@
         .flip-card .flip-top {
             top: 0;
             background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
-            border-radius: 4px 4px 0 0;
+            border-radius: 6px 4px 0 0;
             border-bottom: 1px solid rgba(0,0,0,0.3);
         }
         .flip-card .flip-bottom {
@@ -643,7 +644,7 @@
             height: 50%;
             overflow: hidden;
             background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
-            border-radius: 4px 4px 0 0;
+            border-radius: 6px 4px 0 0;
             transform-origin: bottom center;
             backface-visibility: hidden;
             z-index: 5;
@@ -726,7 +727,7 @@
             margin-bottom: 8px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s;
         }
@@ -772,7 +773,7 @@
             color: rgba(255, 255, 255, 0.6);
             padding: 4px 12px;
             background: rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
+            border-radius: 16px;
         }
         .region-accordion-content {
             max-height: 0;
@@ -792,7 +793,7 @@
         .condition-section {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 12px;
         }
         .condition-section h4 {
@@ -1122,7 +1123,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sans);
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -1163,7 +1164,7 @@
             align-items: center;
             gap: 8px;
             padding: 8px 12px;
-            border-radius: 8px;
+            border-radius: 10px;
             color: rgba(255, 255, 255, 0.7);
             font-size: 14px;
             transition: all 0.3s;
@@ -1182,7 +1183,7 @@
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(30px) saturate(1.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 8px 0;
             display: none;
             min-width: 120px;
@@ -1732,7 +1733,7 @@
             gap: 8px;
             padding: 6px 8px;
             background: #1a1a1a;
-            border-radius: 8px;
+            border-radius: 10px;
             height: calc(100% / 4 - 3px);
         }
 
@@ -1771,7 +1772,7 @@
         .bottom-stat-card {
             padding: 8px;
             background: rgba(0, 0, 0, 0.4);
-            border-radius: 6px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -1859,7 +1860,7 @@
             flex: 1;
             padding: 15px;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
         }
@@ -2021,7 +2022,7 @@
             bottom: 0;
             background-color: rgba(255, 255, 255, 0.2);
             transition: .4s;
-            border-radius: 20px;
+            border-radius: 16px;
         }
 
         .slider:before {
@@ -2060,7 +2061,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: rgba(255, 255, 255, 0.7);
-            border-radius: 20px;
+            border-radius: 16px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s;
@@ -2124,7 +2125,7 @@
             padding: 12px !important;
             gap: 6px;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             height: 80px;
         }
@@ -2133,7 +2134,7 @@
             display: flex;
             align-items: center;
             padding: 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             transition: all 0.3s ease;
             height: 50%;
             justify-content: space-between;
@@ -2247,7 +2248,7 @@
             background: none;
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: rgba(255, 255, 255, 0.7);
-            border-radius: 20px;
+            border-radius: 16px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s;
@@ -2322,7 +2323,7 @@
         .stat-overview-card {
             background: rgba(26, 26, 26, 0.85);
             backdrop-filter: blur(25px) saturate(1.5);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 16px;
             display: flex;
             flex-direction: column;
@@ -2411,7 +2412,7 @@
             color: #1E7FFF !important;
             border: 1px dashed #1E7FFF !important;
             padding: 6px 12px !important;
-            border-radius: 12px !important;
+            border-radius: 10px !important;
             font-size: 11px !important;
             font-weight: 600 !important;
             display: inline-block !important;
@@ -2430,7 +2431,7 @@
             font-size: 13px;
             font-weight: 700;
             padding: 6px 12px;
-            border-radius: 20px;
+            border-radius: 16px;
             border-width: 1px;
         }
 
@@ -3070,7 +3071,7 @@
         /* Operation Type Styling */
         .operation-type {
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             font-size: 14px;
         }
@@ -3111,7 +3112,7 @@
         .warning-message {
             background: rgba(255, 193, 7, 0.1);
             border: 1px solid rgba(255, 193, 7, 0.3);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 16px;
             margin-top: 20px;
             text-align: center;
@@ -3335,7 +3336,7 @@
         .drawer-close-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             width: 36px;
             height: 36px;
             display: flex;
@@ -3416,7 +3417,7 @@
             padding: 16px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             text-align: center;
         }
 
@@ -3435,7 +3436,7 @@
         .drawer-table-container {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
         }
 
@@ -3489,7 +3490,7 @@
         .status-badge {
             display: inline-block;
             padding: 4px 12px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 12px;
             font-weight: 600;
         }
@@ -3571,7 +3572,7 @@
         .stat-card {
             background: rgba(255, 255, 255, 0.05);
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
         }
@@ -3617,7 +3618,7 @@
 
         .command-tag, .status-tag {
             padding: 4px 8px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 11px;
             font-weight: 500;
             text-transform: uppercase;
@@ -3660,12 +3661,12 @@
 
         .scrollable-list::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
+            border-radius: 6px;
         }
 
         .scrollable-list::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
+            border-radius: 6px;
         }
         
         /* 全局推送弹窗样式 */
@@ -3677,7 +3678,7 @@
             max-width: calc(100vw - 40px);
             background: var(--color-bg-card);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             z-index: 10000;
             opacity: 0;
@@ -3731,7 +3732,7 @@
             font-size: 20px;
             cursor: pointer;
             padding: 4px;
-            border-radius: 4px;
+            border-radius: 6px;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
@@ -3761,7 +3762,7 @@
             background: linear-gradient(135deg, #00ff88, #00dd77);
             color: #000;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 15px;
             margin: 0 2px;
@@ -3772,7 +3773,7 @@
             background: linear-gradient(135deg, #ffc107, #ff9800);
             color: #000;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 15px;
             margin: 0 2px;
@@ -3784,7 +3785,7 @@
             background: linear-gradient(135deg, #ff6b6b, #ff5252);
             color: #fff;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 15px;
             margin: 0 2px;
@@ -3796,7 +3797,7 @@
             background: linear-gradient(135deg, #ffc107, #ff9800);
             color: #000;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 700;
             font-size: 15px;
             margin: 0 2px;
@@ -3901,7 +3902,7 @@
             text-align: center;
             padding: 15px;
             background: var(--color-bg);
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid var(--color-border);
         }
         
@@ -3938,7 +3939,7 @@
             margin: 20px 0;
             padding: 20px;
             background: rgba(0, 255, 136, 0.1);
-            border-radius: 15px;
+            border-radius: 16px;
             border: 1px solid rgba(0, 255, 136, 0.2);
         }
 
@@ -4091,7 +4092,7 @@
 
         .price-stat-card {
             background: rgba(25, 25, 25, 0.9);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 16px;
             position: relative;
             display: flex;
@@ -4186,7 +4187,7 @@
         /* Date Selection Styles */
         .date-selection {
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -4214,7 +4215,7 @@
         .date-input {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 8px 12px;
             color: #fff;
             font-size: 14px;
@@ -4265,7 +4266,7 @@
         .quick-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
+            border-radius: 10px;
             padding: 6px 12px;
             color: rgba(255, 255, 255, 0.7);
             font-size: 12px;
@@ -4423,7 +4424,7 @@
     width: 4px;
     height: 24px;
     background: #4A9EFF;
-    border-radius: 2px;
+    border-radius: 6px;
 }
 
 .market-stat-value .menu-dots {
@@ -4460,7 +4461,7 @@
         .custom-card {
             height: 600px;
             background: rgba(255,255,255,0.03);
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 4px 24px rgba(0,255,136,0.04);
             margin-bottom: 20px;
@@ -4477,7 +4478,7 @@
             min-height: 605.2px;
             max-height: 605.2px;
             background: rgba(255,255,255,0.05);
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.1);
             box-shadow: 0 4px 24px rgba(0,255,136,0.04);
             margin-bottom: 0;
@@ -4575,16 +4576,16 @@
             <!-- Top Stats Row -->
         <div class="stats-row" style="align-items: stretch; margin-left: 0; margin-right: 0; width: 100%;">
             <!-- Power Station Management Card -->
-            <div class="custom-card power-station-card" style="width: 100%; height: 100% !important; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 24px rgba(0,255,136,0.04); margin-bottom: 0; display: flex; flex-direction: column; padding: 16px; overflow: visible; box-sizing: border-box; position: relative;">
+            <div class="custom-card power-station-card" style="width: 100%; height: 100% !important; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 24px rgba(0,255,136,0.04); margin-bottom: 0; display: flex; flex-direction: column; padding: 16px; overflow: visible; box-sizing: border-box; position: relative;">
                 <!-- Header -->
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                     <h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;">
                         <span data-i18n="station">电站管理</span>
-                        <span id="regionStatusText" style="font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; display: none;"></span>
+                        <span id="regionStatusText" style="font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px; display: none;"></span>
                     </h3>
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <span style="font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 500;" data-i18n="autoMode">智能托管</span>
-                        <div class="auto-toggle-switch" onclick="toggleAutoMode()" style="position: relative; width: 34px; height: 18px; background: rgba(255,255,255,0.1); border-radius: 9px; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.2);">
+                        <div class="auto-toggle-switch" onclick="toggleAutoMode()" style="position: relative; width: 34px; height: 18px; background: rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.2);">
                             <div id="autoToggleKnob" style="position: absolute; top: 1px; right: 1px; width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
                         </div>
                     </div>
@@ -4682,7 +4683,7 @@
                 <!-- 底部数据 -->
                 <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
                     <!-- 第一排：大卡片，3个指标竖排 icon→文字→数字 -->
-                    <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 14px 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;">
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 14px 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;">
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 0;">
                             <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(0,255,136,0.1); display: flex; align-items: center; justify-content: center;">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round"><rect x="6" y="7" width="12" height="14" rx="2"/><line x1="10" y1="7" x2="10" y2="4"/><line x1="14" y1="7" x2="14" y2="4"/><line x1="6" y1="13" x2="18" y2="13"/></svg>
@@ -4707,7 +4708,7 @@
                     </div>
                     <!-- 第二排：充电卡片 + 放电卡片 -->
                     <div style="display: flex; gap: 8px;">
-                        <div style="flex: 1; background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.12); border-radius: 12px; padding: 10px 12px;">
+                        <div style="flex: 1; background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.12); border-radius: 10px; padding: 10px 12px;">
                             <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 8px;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
                                 <span style="font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 600;" data-i18n="todayCharge">今日充电</span>
@@ -4717,7 +4718,7 @@
                                 <div style="font-size: 20px; font-weight: 700; color: #00ff88;" id="todayChargeCost">$0.00</div>
                             </div>
                         </div>
-                        <div style="flex: 1; background: rgba(255,193,7,0.05); border: 1px solid rgba(255,193,7,0.12); border-radius: 12px; padding: 10px 12px;">
+                        <div style="flex: 1; background: rgba(255,193,7,0.05); border: 1px solid rgba(255,193,7,0.12); border-radius: 10px; padding: 10px 12px;">
                             <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 8px;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
                                 <span style="font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 600;" data-i18n="todayDischarge">今日放电</span>
@@ -4785,8 +4786,8 @@
                                                         <span style="font-size: 12px; color: rgba(255, 255, 255, 0.7);" data-i18n="demand">需求</span>
                                                         <span style="font-size: 15px; font-weight: 700; color: #fff;">9,692 <span style="font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.7);">kWh</span></span>
                                                     </div>
-                                                    <div style="height: 16px; background: transparent; border-radius: 3px; overflow: hidden;">
-                                                        <div style="width: 100%; height: 100%; background: rgba(0, 255, 136, 0.5); border-radius: 3px; display: flex; align-items: center; justify-content: center;">
+                                                    <div style="height: 16px; background: transparent; border-radius: 6px; overflow: hidden;">
+                                                        <div style="width: 100%; height: 100%; background: rgba(0, 255, 136, 0.5); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                                                             <span style="font-size: 12px;">👤</span>
                                                         </div>
                                                     </div>
@@ -4797,7 +4798,7 @@
                                                         <span style="font-size: 12px; color: rgba(255, 255, 255, 0.7);" data-i18n="generation">发电</span>
                                                         <span style="font-size: 15px; font-weight: 700; color: #fff;">8,319 <span style="font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.7);">kWh</span></span>
                                                     </div>
-                                                    <div style="height: 16px; background: transparent; border-radius: 3px; overflow: hidden; position: relative;">
+                                                    <div style="height: 16px; background: transparent; border-radius: 6px; overflow: hidden; position: relative;">
                                                         <!-- 闪电发电部分 60% -->
                                                         <div style="width: 60%; height: 100%; background: rgba(0, 170, 255, 0.5); position: absolute; left: 0; top: 0; display: flex; align-items: center; justify-content: center;">
                                                             <span style="font-size: 12px;">⚡</span>
@@ -4858,7 +4859,7 @@
                         </div>
                         <div style="display:flex; align-items:center; gap:12px;">
                             <!-- Time Period Dropdown (on left) -->
-                            <select id="discharge-period-select" class="period-dropdown" onchange="handleDischargePeriodChange()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:6px 12px; color:#fff; font-size:13px; min-width:80px; cursor:pointer; outline:none;">
+                            <select id="discharge-period-select" class="period-dropdown" onchange="handleDischargePeriodChange()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius: 10px; padding:6px 12px; color:#fff; font-size:13px; min-width:80px; cursor:pointer; outline:none;">
                                 <option value="day" data-i18n="day">日</option>
                                 <option value="month" data-i18n="month">月</option>
                                 <option value="year" data-i18n="year">年</option>
@@ -4866,7 +4867,7 @@
                             </select>
                             <!-- Date Picker (shown on right when not cumulative) -->
                             <div id="discharge-date-picker" style="display:flex; align-items:center;">
-                                <input type="date" id="discharge-date-input" class="date-input" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:6px 12px; color:#fff; font-size:13px; min-width:140px;">
+                                <input type="date" id="discharge-date-input" class="date-input" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius: 10px; padding:6px 12px; color:#fff; font-size:13px; min-width:140px;">
                             </div>
                         </div>
                     </div>
@@ -4975,13 +4976,13 @@
                     
                     <!-- Bottom Stats Row -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                        <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 10px; padding: 20px; text-align: center;">
                             <div style="color: #00ff88; font-size: 32px; font-weight: 700; margin-bottom: 8px;">3</div>
                             <div style="color: rgba(255, 255, 255, 0.6); font-size: 13px;">
                                 <span data-i18n="usersExceedingTarget">Users Exceeding Target</span>
                             </div>
                         </div>
-                        <div style="background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.2); border-radius: 10px; padding: 20px; text-align: center;">
                             <div style="color: #ff6b6b; font-size: 32px; font-weight: 700; margin-bottom: 8px;">17</div>
                             <div style="color: rgba(255, 255, 255, 0.6); font-size: 13px;">
                                 <span data-i18n="usersNotExceedingTarget">Users Not Exceeding Target</span>
@@ -5003,7 +5004,7 @@
                             <div style="color: rgba(255, 255, 255, 0.6); font-size: 13px; margin-bottom: 8px;">
                                 <span data-i18n="todaysPrice">Today's Price</span>
                             </div>
-                            <div style="background: rgba(0, 255, 136, 0.2); color: #00ff88; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block;">
+                            <div style="background: rgba(0, 255, 136, 0.2); color: #00ff88; padding: 4px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; display: inline-block;">
                                 +5.2%
                             </div>
                         </div>
@@ -5012,14 +5013,14 @@
                             <div style="color: rgba(255, 255, 255, 0.6); font-size: 13px; margin-bottom: 8px;">
                                 <span data-i18n="avgDischargePrice">Avg Discharge Price</span>
                             </div>
-                            <div style="background: rgba(0, 255, 136, 0.2); color: #00ff88; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block;">
+                            <div style="background: rgba(0, 255, 136, 0.2); color: #00ff88; padding: 4px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; display: inline-block;">
                                 +3.8%
                             </div>
                         </div>
                     </div>
                     
                     <!-- Price Details Section -->
-                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px;">
+                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <span style="background: #00ff88; color: #000; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600;">
                                 <span data-i18n="sellPrice">Sell Price</span>
@@ -5126,7 +5127,7 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button id="progressMinimizeBtn" onclick="minimizeProgressDialog()" style="background: rgba(255, 255, 255, 0.1); border: none; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255, 255, 255, 0.7); transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">
+                    <button id="progressMinimizeBtn" onclick="minimizeProgressDialog()" style="background: rgba(255, 255, 255, 0.1); border: none; border-radius: 10px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255, 255, 255, 0.7); transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">
                         <span style="font-size: 14px;">−</span>
                     </button>
                 </div>
@@ -5153,15 +5154,15 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div style="font-size: 16px; font-weight: 600; color: #fff;" data-i18n="readDeviceSettings">1. 读取设备设置信息</div>
-                                <div id="step1Status" style="padding: 4px 12px; background: rgba(255, 193, 7, 0.2); color: #ffc107; border-radius: 12px; font-size: 12px; font-weight: 600;" data-i18n="reading">读取中</div>
+                                <div id="step1Status" style="padding: 4px 12px; background: rgba(255, 193, 7, 0.2); color: #ffc107; border-radius: 10px; font-size: 12px; font-weight: 600;" data-i18n="reading">读取中</div>
                             </div>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <div id="step1Progress" style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">1/100</div>
                         </div>
                         <!-- Progress Bar -->
-                        <div style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; overflow: hidden;">
-                            <div id="step1ProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00ff88, #00cc6a); border-radius: 2px; transition: width 0.3s ease;"></div>
+                        <div style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; overflow: hidden;">
+                            <div id="step1ProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00ff88, #00cc6a); border-radius: 6px; transition: width 0.3s ease;"></div>
                         </div>
                     </div>
                     
@@ -5170,15 +5171,15 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div style="font-size: 16px; font-weight: 600; color: #fff;" data-i18n="modifyDeviceSettings">2. 修改设备设置信息</div>
-                                <div id="step2Status" style="padding: 4px 12px; background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5); border-radius: 12px; font-size: 12px; font-weight: 600;" data-i18n="waiting">等待中</div>
+                                <div id="step2Status" style="padding: 4px 12px; background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5); border-radius: 10px; font-size: 12px; font-weight: 600;" data-i18n="waiting">等待中</div>
                             </div>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <div id="step2Progress" style="font-size: 14px; color: rgba(255, 255, 255, 0.7);">1/100</div>
                         </div>
                         <!-- Progress Bar -->
-                        <div style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; overflow: hidden;">
-                            <div id="step2ProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00ff88, #00cc6a); border-radius: 2px; transition: width 0.3s ease;"></div>
+                        <div style="width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; overflow: hidden;">
+                            <div id="step2ProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00ff88, #00cc6a); border-radius: 6px; transition: width 0.3s ease;"></div>
                         </div>
                     </div>
                 </div>
@@ -5297,7 +5298,7 @@
             <div class="drawer-header">
                 <h3 style="margin: 0; color: #fff; font-size: 20px;" data-i18n="deviceResponseStatistics">设备响应统计</h3>
                 <div style="display: flex; gap: 12px; align-items: center;">
-                    <button class="drawer-export-btn" onclick="exportDrawerData()" style="background: linear-gradient(135deg, #1e7fff, #0d5dd8); color: #fff; border: none; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(30, 127, 255, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <button class="drawer-export-btn" onclick="exportDrawerData()" style="background: linear-gradient(135deg, #1e7fff, #0d5dd8); color: #fff; border: none; padding: 8px 20px; border-radius: 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(30, 127, 255, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                         <span>📥</span>
                         <span data-i18n="export">导出</span>
                     </button>
@@ -5343,7 +5344,7 @@
 
     <!-- Auto Settings Panel -->
     <div class="auto-settings-panel" id="autoSettingsPanel" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10003; backdrop-filter: blur(15px) saturate(1.5);">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 500px; background: var(--color-bg-card); border-radius: 20px; padding: 24px; border: 1px solid var(--color-border); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 500px; background: var(--color-bg-card); border-radius: 16px; padding: 24px; border: 1px solid var(--color-border); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="margin: 0; color: #fff; font-size: 18px;" data-i18n="autoSettings">智能托管设置</h3>
                 <button onclick="closeAutoSettings()" style="background: none; border: none; color: rgba(255,255,255,0.7); font-size: 24px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">×</button>
@@ -5353,10 +5354,10 @@
             <div style="margin-bottom: 20px;">
                 <label style="display: block; color: rgba(255,255,255,0.8); font-size: 14px; margin-bottom: 8px;" data-i18n="autoModeType">智能托管类型</label>
                 <div style="display: flex; gap: 8px;">
-                    <button id="autoChargeBtn" class="auto-type-btn active" onclick="selectAutoType('charge')" style="flex: 1; padding: 12px; border: none; border-radius: 12px; background: #4CD964; color: #000; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <button id="autoChargeBtn" class="auto-type-btn active" onclick="selectAutoType('charge')" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: #4CD964; color: #000; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         <span data-i18n="autoCharge">智能充电</span>
                     </button>
-                    <button id="autoDischargeBtn" class="auto-type-btn" onclick="selectAutoType('discharge')" style="flex: 1; padding: 12px; border: none; border-radius: 12px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-weight: 500; cursor: pointer; transition: all 0.3s;">
+                    <button id="autoDischargeBtn" class="auto-type-btn" onclick="selectAutoType('discharge')" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-weight: 500; cursor: pointer; transition: all 0.3s;">
                         <span data-i18n="autoDischarge">智能放电</span>
                     </button>
                 </div>
@@ -5365,7 +5366,7 @@
             <!-- 充电模式配置(新的卡片式设计) -->
             <div id="chargeConfigSection" style="display: block;">
                 <!-- 说明文字 -->
-                <div style="margin-bottom: 12px; padding: 10px; background: rgba(76,217,100,0.08); border-left: 3px solid #4CD964; border-radius: 6px;">
+                <div style="margin-bottom: 12px; padding: 10px; background: rgba(76,217,100,0.08); border-left: 3px solid #4CD964; border-radius: 10px;">
                     <div style="color: rgba(255,255,255,0.9); font-size: 12px; line-height: 1.5;">
                         💡 <span data-i18n="chargeStrategyTip">为不同时间段设置不同的价格门槛，系统将同时监测所有时间段</span>
                     </div>
@@ -5373,7 +5374,7 @@
 
                 <!-- 添加时间段按钮 -->
                 <div style="margin-bottom: 16px;">
-                    <button onclick="addChargePlan()" style="width: 100%; padding: 12px; border: 2px dashed rgba(76,217,100,0.4); border-radius: 12px; background: rgba(76,217,100,0.05); color: #4CD964; font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button onclick="addChargePlan()" style="width: 100%; padding: 12px; border: 2px dashed rgba(76,217,100,0.4); border-radius: 10px; background: rgba(76,217,100,0.05); color: #4CD964; font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <span style="font-size: 20px; line-height: 1;">+</span>
                         <span data-i18n="addTimeSlot">添加时间段</span>
                     </button>
@@ -5388,7 +5389,7 @@
             <!-- 放电模式配置(新的卡片式设计) -->
             <div id="dischargeConfigSection" style="display: none;">
                 <!-- 说明文字 -->
-                <div style="margin-bottom: 12px; padding: 10px; background: rgba(255,193,7,0.08); border-left: 3px solid #FFC107; border-radius: 6px;">
+                <div style="margin-bottom: 12px; padding: 10px; background: rgba(255,193,7,0.08); border-left: 3px solid #FFC107; border-radius: 10px;">
                     <div style="color: rgba(255,255,255,0.9); font-size: 12px; line-height: 1.5;">
                         💡 <span data-i18n="dischargeStrategyTip">为不同时间段设置不同的价格门槛，系统将同时监测所有时间段</span>
                     </div>
@@ -5396,7 +5397,7 @@
 
                 <!-- 添加时间段按钮 -->
                 <div style="margin-bottom: 16px;">
-                    <button onclick="addDischargePlan()" style="width: 100%; padding: 12px; border: 2px dashed rgba(255,193,7,0.4); border-radius: 12px; background: rgba(255,193,7,0.05); color: #FFC107; font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button onclick="addDischargePlan()" style="width: 100%; padding: 12px; border: 2px dashed rgba(255,193,7,0.4); border-radius: 10px; background: rgba(255,193,7,0.05); color: #FFC107; font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <span style="font-size: 20px; line-height: 1;">+</span>
                         <span data-i18n="addTimeSlot">添加时间段</span>
                     </button>
@@ -5425,10 +5426,10 @@
 
             <!-- Action Buttons -->
             <div style="display: flex; gap: 12px;">
-                <button onclick="closeAutoSettings()" style="flex: 1; padding: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-weight: 500; cursor: pointer; transition: all 0.3s;">
+                <button onclick="closeAutoSettings()" style="flex: 1; padding: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-weight: 500; cursor: pointer; transition: all 0.3s;">
                     <span data-i18n="cancel">取消</span>
                 </button>
-                <button onclick="saveAutoSettings()" style="flex: 1; padding: 12px; border: none; border-radius: 12px; background: var(--color-primary); color: #000; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                <button onclick="saveAutoSettings()" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: var(--color-primary); color: #000; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                     <span data-i18n="saveSettings">保存设置</span>
                 </button>
             </div>
@@ -5588,7 +5589,7 @@
             const modalContent = document.createElement('div');
             modalContent.style.cssText = `
                 background: linear-gradient(145deg, #1e1e2e 0%, #252535 100%);
-                border-radius: 20px;
+                border-radius: 16px;
                 padding: 0;
                 width: 520px;
                 max-width: 90%;
@@ -5608,22 +5609,22 @@
 
                     <!-- AI 能力说明 - 2x2 网格 -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                        <div style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 12px; padding: 14px;">
+                        <div style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 10px; padding: 14px;">
                             <div style="font-size: 20px; margin-bottom: 6px;">📊</div>
                             <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('aiPriceAnalysis') : '实时价格分析'}</div>
                             <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('aiPriceAnalysisDesc') : '持续监测AEMO现货价格与需求走势'}</div>
                         </div>
-                        <div style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 12px; padding: 14px;">
+                        <div style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 10px; padding: 14px;">
                             <div style="font-size: 20px; margin-bottom: 6px;">⚡</div>
                             <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('aiSmartCharge') : '智能充电决策'}</div>
                             <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('aiSmartChargeDesc') : '自动识别低价窗口，以最低成本完成充电'}</div>
                         </div>
-                        <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.15); border-radius: 12px; padding: 14px;">
+                        <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.15); border-radius: 10px; padding: 14px;">
                             <div style="font-size: 20px; margin-bottom: 6px;">💰</div>
                             <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('aiSmartDischarge') : '最优放电时机'}</div>
                             <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('aiSmartDischargeDesc') : '精准捕捉高价时段放电，最大化馈网收益'}</div>
                         </div>
-                        <div style="background: rgba(100, 180, 255, 0.05); border: 1px solid rgba(100, 180, 255, 0.15); border-radius: 12px; padding: 14px;">
+                        <div style="background: rgba(100, 180, 255, 0.05); border: 1px solid rgba(100, 180, 255, 0.15); border-radius: 10px; padding: 14px;">
                             <div style="font-size: 20px; margin-bottom: 6px;">🔋</div>
                             <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('aiBatteryManage') : '电池健康管理'}</div>
                             <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('aiBatteryManageDesc') : '智能管理SOC区间，兼顾收益与电池寿命'}</div>
@@ -5631,7 +5632,7 @@
                     </div>
 
                     <!-- 提示 -->
-                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 8px;">
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 14px;">🤖</span>
                         <span style="font-size: 12px; color: rgba(255, 255, 255, 0.6);">
                             ${i18n ? i18n.getText('aiCustodyHint') : 'AI将7×24小时持续运行，您可随时手动干预或关闭托管'}
@@ -5640,10 +5641,10 @@
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 20px 28px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-                    <button onclick="closeAutoModeConfirmDialog()" style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <button onclick="closeAutoModeConfirmDialog()" style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         ${i18n ? i18n.getText('cancel') : '取消'}
                     </button>
-                    <button onclick="confirmEnableAutoMode()" style="background: linear-gradient(135deg, #00ff88, #00dd77); color: #000; padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; border: none;">
+                    <button onclick="confirmEnableAutoMode()" style="background: linear-gradient(135deg, #00ff88, #00dd77); color: #000; padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; border: none;">
                         ${i18n ? i18n.getText('confirmEnable') : '确认启用'}
                     </button>
                 </div>
@@ -5725,7 +5726,7 @@
                     </div>
                     
                     <!-- 警告提示 -->
-                    <div style="background: rgba(255, 184, 0, 0.1); border: 1px solid rgba(255, 184, 0, 0.3); border-radius: 8px; padding: 12px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px;">
+                    <div style="background: rgba(255, 184, 0, 0.1); border: 1px solid rgba(255, 184, 0, 0.3); border-radius: 10px; padding: 12px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px;">
                         <span style="font-size: 16px; margin-top: 2px;">⚠️</span>
                         <div>
                             <p style="font-size: 13px; color: rgba(255, 184, 0, 0.9); margin: 0 0 4px 0; font-weight: 600;">
@@ -5739,10 +5740,10 @@
                 </div>
                 
                 <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 20px 28px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-                    <button onclick="closeDisableAutoModeConfirmDialog()" style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <button onclick="closeDisableAutoModeConfirmDialog()" style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         ${window.i18n ? window.i18n.getText('cancel') : '取消'}
                     </button>
-                    <button onclick="confirmDisableAutoMode()" style="background: linear-gradient(135deg, #ff6b6b, #ff5252); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; border: none;">
+                    <button onclick="confirmDisableAutoMode()" style="background: linear-gradient(135deg, #ff6b6b, #ff5252); color: #fff; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; border: none;">
                         ${window.i18n ? window.i18n.getText('confirmDisable') : '确认关闭'}
                     </button>
                 </div>
@@ -5786,7 +5787,7 @@
                 background: rgba(0, 0, 0, 0.9);
                 color: white;
                 padding: 6px 12px;
-                border-radius: 4px;
+                border-radius: 6px;
                 font-size: 12px;
                 z-index: 10000;
                 white-space: nowrap;
@@ -6217,7 +6218,7 @@
                             : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>`;
                         const title = isEn ? (isC ? 'Charge' : 'Discharge') : (isC ? '充电' : '放电');
                         if (list.length === 0) {
-                            return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px;text-align:center;color:rgba(255,255,255,0.55);font-size:12px;">
+                            return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius: 10px;padding:14px;text-align:center;color:rgba(255,255,255,0.55);font-size:12px;">
                                 <div style="margin-bottom:2px;">${icon}</div>${isEn ? 'No ' + title.toLowerCase() + ' window' : '无' + title + '窗口'}</div>`;
                         }
                         const sorted = list.sort((a, b) => a.startIdx - b.startIdx);
@@ -6233,7 +6234,7 @@
                             ? (isEn ? 'Est. Cost' : '预计成本')
                             : (isEn ? 'Est. Revenue' : '预计收入');
                         const amountColor = isC ? '#00ff88' : '#ffc107';
-                        return `<div style="background:${bg};border:1px solid ${border};border-radius:10px;padding:12px;">
+                        return `<div style="background:${bg};border:1px solid ${border};border-radius: 10px;padding:12px;">
                             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
                                 <div style="display:flex;align-items:center;gap:5px;">
                                     <span style="font-size:14px;">${icon}</span>
@@ -6595,7 +6596,7 @@
             card.style.cssText = `
                 background: linear-gradient(145deg, rgba(76,217,100,0.1) 0%, rgba(76,217,100,0.05) 100%);
                 border: 1px solid rgba(76,217,100,0.3);
-                border-radius: 12px;
+                border-radius: 10px;
                 padding: 14px;
                 margin-bottom: 10px;
                 transition: all 0.3s;
@@ -6614,7 +6615,7 @@
                         border: 1px solid rgba(255,59,48,0.3);
                         color: #FF3B30;
                         padding: 3px 10px;
-                        border-radius: 5px;
+                        border-radius: 10px;
                         font-size: 11px;
                         cursor: pointer;
                         transition: all 0.3s;
@@ -6628,11 +6629,11 @@
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <input type="time" value="${plan.timeRange.start}"
                             onchange="updateChargePlan('${plan.id}', 'timeStart', this.value)"
-                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(76,217,100,0.3); border-radius: 8px; color: #fff; font-size: 13px;">
+                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(76,217,100,0.3); border-radius: 10px; color: #fff; font-size: 13px;">
                         <span style="color: rgba(255,255,255,0.5); font-size: 12px;">至</span>
                         <input type="time" value="${plan.timeRange.end}"
                             onchange="updateChargePlan('${plan.id}', 'timeEnd', this.value)"
-                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(76,217,100,0.3); border-radius: 8px; color: #fff; font-size: 13px;">
+                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(76,217,100,0.3); border-radius: 10px; color: #fff; font-size: 13px;">
                     </div>
                 </div>
 
@@ -6651,7 +6652,7 @@
                         <input type="number" value="${plan.priceThreshold}" step="1"
                             ${plan.priceEnabled ? '' : 'disabled'}
                             onchange="updateChargePlan('${plan.id}', 'priceThreshold', this.value)"
-                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(76,217,100,0.3); border-radius: 8px; color: #fff; font-size: 13px;">
+                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(76,217,100,0.3); border-radius: 10px; color: #fff; font-size: 13px;">
                         <span style="color: rgba(255,255,255,0.6); font-size: 12px; min-width: 50px;">$/MWh</span>
                     </div>
                 </div>
@@ -6735,7 +6736,7 @@
             card.style.cssText = `
                 background: linear-gradient(145deg, rgba(255,193,7,0.1) 0%, rgba(255,193,7,0.05) 100%);
                 border: 1px solid rgba(255,193,7,0.3);
-                border-radius: 12px;
+                border-radius: 10px;
                 padding: 14px;
                 margin-bottom: 10px;
                 transition: all 0.3s;
@@ -6754,7 +6755,7 @@
                         border: 1px solid rgba(255,59,48,0.3);
                         color: #FF3B30;
                         padding: 3px 10px;
-                        border-radius: 5px;
+                        border-radius: 10px;
                         font-size: 11px;
                         cursor: pointer;
                         transition: all 0.3s;
@@ -6768,11 +6769,11 @@
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <input type="time" value="${plan.timeRange.start}"
                             onchange="updateDischargePlan('${plan.id}', 'timeStart', this.value)"
-                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,193,7,0.3); border-radius: 8px; color: #fff; font-size: 13px;">
+                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,193,7,0.3); border-radius: 10px; color: #fff; font-size: 13px;">
                         <span style="color: rgba(255,255,255,0.5); font-size: 12px;">至</span>
                         <input type="time" value="${plan.timeRange.end}"
                             onchange="updateDischargePlan('${plan.id}', 'timeEnd', this.value)"
-                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,193,7,0.3); border-radius: 8px; color: #fff; font-size: 13px;">
+                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,193,7,0.3); border-radius: 10px; color: #fff; font-size: 13px;">
                     </div>
                 </div>
 
@@ -6791,7 +6792,7 @@
                         <input type="number" value="${plan.priceThreshold}" step="1"
                             ${plan.priceEnabled ? '' : 'disabled'}
                             onchange="updateDischargePlan('${plan.id}', 'priceThreshold', this.value)"
-                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,193,7,0.3); border-radius: 8px; color: #fff; font-size: 13px;">
+                            style="flex: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,193,7,0.3); border-radius: 10px; color: #fff; font-size: 13px;">
                         <span style="color: rgba(255,255,255,0.6); font-size: 12px; min-width: 50px;">$/MWh</span>
                     </div>
                 </div>
@@ -7279,7 +7280,7 @@
                 right: 20px;
                 background: var(--color-bg-card);
                 border: 1px solid var(--color-border);
-                border-radius: 12px;
+                border-radius: 10px;
                 padding: 16px;
                 color: #fff;
                 z-index: 10000;
@@ -8208,7 +8209,7 @@
                 background: linear-gradient(135deg, #00ff88, #00aaff);
                 color: #000;
                 padding: 20px 40px;
-                border-radius: 12px;
+                border-radius: 10px;
                 font-size: 18px;
                 font-weight: 600;
                 z-index: 999999;
@@ -10231,7 +10232,7 @@
                                 const statusText = window.i18n ? window.i18n.getText('status') : '状态';
                                 const regionText = window.i18n ? window.i18n.getText('region') : '区域';
                                 
-                                return `<div style="padding: 12px; background: rgba(0,0,0,0.8); border-radius: 8px; color: white; border: 1px solid rgba(255,255,255,0.2);">
+                                return `<div style="padding: 12px; background: rgba(0,0,0,0.8); border-radius: 10px; color: white; border: 1px solid rgba(255,255,255,0.2);">
                                     <div style="color: #00ff88; font-weight: 600; font-size: 14px; margin-bottom: 8px;">${deviceText} ${params.data.id}</div>
                                     <div style="margin: 4px 0; font-size: 13px; display: flex; justify-content: space-between;">
                                         <span style="color: rgba(255,255,255,0.8);">${statusText}:</span> 
@@ -10249,7 +10250,7 @@
                                 const statusText = window.i18n ? window.i18n.getText('status') : '状态';
                                 const normalText = window.i18n ? window.i18n.getText('normalOperation') : '正常运行';
                                 
-                                return `<div style="padding: 12px; background: rgba(0,0,0,0.8); border-radius: 8px; color: white; border: 1px solid rgba(255,255,255,0.2);">
+                                return `<div style="padding: 12px; background: rgba(0,0,0,0.8); border-radius: 10px; color: white; border: 1px solid rgba(255,255,255,0.2);">
                                     <div style="color: ${params.data.color}; font-weight: 600; font-size: 14px; margin-bottom: 8px;">${params.data.name} ${stateText}</div>
                                     <div style="margin: 4px 0; font-size: 13px; display: flex; justify-content: space-between;">
                                         <span style="color: rgba(255,255,255,0.8);">${deviceCountText}:</span> 
@@ -12486,7 +12487,7 @@
             dialog.style.cssText = `
                 background: rgba(20, 20, 30, 0.95);
                 border: 1px solid rgba(255, 255, 255, 0.2);
-                border-radius: 12px;
+                border-radius: 10px;
                 padding: 24px;
                 max-width: 400px;
                 width: 90%;
@@ -12510,7 +12511,7 @@
                         color: #000;
                         border: none;
                         padding: 10px 20px;
-                        border-radius: 6px;
+                        border-radius: 10px;
                         font-size: 13px;
                         font-weight: 600;
                         cursor: pointer;
@@ -12523,7 +12524,7 @@
                         color: rgba(255, 255, 255, 0.8);
                         border: 1px solid rgba(255, 255, 255, 0.2);
                         padding: 10px 20px;
-                        border-radius: 6px;
+                        border-radius: 10px;
                         font-size: 13px;
                         font-weight: 600;
                         cursor: pointer;
@@ -12536,7 +12537,7 @@
                         color: rgba(255, 255, 255, 0.6);
                         border: 1px solid rgba(255, 255, 255, 0.1);
                         padding: 10px 20px;
-                        border-radius: 6px;
+                        border-radius: 10px;
                         font-size: 13px;
                         font-weight: 600;
                         cursor: pointer;
@@ -15432,15 +15433,15 @@
                 <p id="operationResultMessage" style="color: rgba(255, 255, 255, 0.8); margin-bottom: 24px; font-size: 14px;"></p>
                 
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
-                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; text-align: center;">
+                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 16px; text-align: center;">
                         <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-bottom: 8px;" data-i18n="operationType">操作类型</div>
                         <div id="resultOperationType" style="font-size: 16px; font-weight: 600;"></div>
                     </div>
-                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; text-align: center;">
+                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 16px; text-align: center;">
                         <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-bottom: 8px;" data-i18n="targetDevices">目标设备</div>
                         <div id="resultTargetDevices" style="font-size: 16px; font-weight: 600; color: #fff;">500</div>
                     </div>
-                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; text-align: center;">
+                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 16px; text-align: center;">
                         <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-bottom: 8px;" data-i18n="estimatedDuration">预计时长</div>
                         <div style="font-size: 16px; font-weight: 600; color: #fff;">15-30 <span data-i18n="minutes">分钟</span></div>
                     </div>
@@ -15461,8 +15462,8 @@
                 </div>
             </div>
             <div style="padding: 32px 24px; min-height: 100px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                <button style="background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 8px 16px; font-size: 14px; cursor: pointer; transition: all 0.3s;" onclick="closeOperationResultModal()" onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'" data-i18n="close">关闭</button>
-                <button style="background: #00ff88; color: #000; border: none; border-radius: 8px; padding: 8px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onclick="viewDetailsFromResult()" onmouseover="this.style.background='#00dd77'" onmouseout="this.style.background='#00ff88'">
+                <button style="background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; padding: 8px 16px; font-size: 14px; cursor: pointer; transition: all 0.3s;" onclick="closeOperationResultModal()" onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'" data-i18n="close">关闭</button>
+                <button style="background: #00ff88; color: #000; border: none; border-radius: 10px; padding: 8px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onclick="viewDetailsFromResult()" onmouseover="this.style.background='#00dd77'" onmouseout="this.style.background='#00ff88'">
                     <span data-i18n="viewDetails">查看详情</span>
                 </button>
             </div>
@@ -15485,11 +15486,11 @@
                 <!-- 操作类型和影响设备信息 -->
                 <div class="modal-info-grid" style="display: flex; flex-direction: column; gap: 0; margin-bottom: 20px;">
                     <div style="display: flex; gap: 16px;">
-                        <div class="modal-info-item" style="flex: 1; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px; transition: all 0.3s;">
+                        <div class="modal-info-item" style="flex: 1; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 16px 20px; transition: all 0.3s;">
                             <div class="modal-info-label" style="color: rgba(255, 255, 255, 0.6); font-size: 13px; margin-bottom: 6px; font-weight: 400;" data-i18n="operationType">操作类型</div>
                             <div class="modal-info-value" id="operationTypeDisplay" style="color: #00ff88; font-size: 18px; font-weight: 600; letter-spacing: 0.3px;">充电</div>
                         </div>
-                        <div class="modal-info-item" style="flex: 1; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px; transition: all 0.3s;">
+                        <div class="modal-info-item" style="flex: 1; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 16px 20px; transition: all 0.3s;">
                             <div class="modal-info-label" style="color: rgba(255, 255, 255, 0.6); font-size: 13px; margin-bottom: 6px; font-weight: 400;">可调度设备</div>
                             <div class="modal-info-value" id="targetDevicesDisplay" style="color: #fff; font-size: 18px; font-weight: 600;">500个</div>
                         </div>
@@ -15499,22 +15500,22 @@
                 <p style="color: rgba(255, 255, 255, 0.5); margin: 0 0 20px 0; font-size: 13px; font-weight: 400; line-height: 1.4; text-align: left;">💡 点击下方数字查看设备详情</p>
 
                 <!-- 设备状态统计 - 可点击 -->
-                <div class="status-summary" style="background: linear-gradient(145deg, rgba(0, 255, 136, 0.08), rgba(0, 255, 136, 0.04)); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 12px; padding: 20px; backdrop-filter: blur(20px) saturate(1.5);">
+                <div class="status-summary" style="background: linear-gradient(145deg, rgba(0, 255, 136, 0.08), rgba(0, 255, 136, 0.04)); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 10px; padding: 20px; backdrop-filter: blur(20px) saturate(1.5);">
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
                         <!-- 下发成功 -->
-                        <div onclick="openDeviceStatusDrawerFromModal('success')" style="text-align: center; cursor: pointer; padding: 12px; border-radius: 8px; transition: all 0.3s; background: rgba(255, 255, 255, 0.03);" onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.transform='translateY(0)'">
+                        <div onclick="openDeviceStatusDrawerFromModal('success')" style="text-align: center; cursor: pointer; padding: 12px; border-radius: 10px; transition: all 0.3s; background: rgba(255, 255, 255, 0.03);" onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.transform='translateY(0)'">
                             <div id="modalSuccessCount" style="font-size: 36px; font-weight: 700; color: #00ff88; line-height: 1;">450</div>
                             <div style="color: rgba(255, 255, 255, 0.7); font-size: 13px; margin-top: 8px; font-weight: 500;" data-i18n="success">下发成功</div>
                         </div>
 
                         <!-- 执行中 -->
-                        <div onclick="openDeviceStatusDrawerFromModal('executing')" style="text-align: center; cursor: pointer; padding: 12px; border-radius: 8px; transition: all 0.3s; background: rgba(255, 255, 255, 0.03);" onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.transform='translateY(0)'">
+                        <div onclick="openDeviceStatusDrawerFromModal('executing')" style="text-align: center; cursor: pointer; padding: 12px; border-radius: 10px; transition: all 0.3s; background: rgba(255, 255, 255, 0.03);" onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.transform='translateY(0)'">
                             <div id="modalExecutingCount" style="font-size: 36px; font-weight: 700; color: #1e7fff; line-height: 1;">0</div>
                             <div style="color: rgba(255, 255, 255, 0.7); font-size: 13px; margin-top: 8px; font-weight: 500;" data-i18n="executing">执行中</div>
                         </div>
 
                         <!-- 下发失败 -->
-                        <div onclick="openDeviceStatusDrawerFromModal('failed')" style="text-align: center; cursor: pointer; padding: 12px; border-radius: 8px; transition: all 0.3s; background: rgba(255, 255, 255, 0.03);" onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.transform='translateY(0)'">
+                        <div onclick="openDeviceStatusDrawerFromModal('failed')" style="text-align: center; cursor: pointer; padding: 12px; border-radius: 10px; transition: all 0.3s; background: rgba(255, 255, 255, 0.03);" onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.transform='translateY(0)'">
                             <div id="modalFailedCount" style="font-size: 36px; font-weight: 700; color: #ff6b6b; line-height: 1;">50</div>
                             <div style="color: rgba(255, 255, 255, 0.7); font-size: 13px; margin-top: 8px; font-weight: 500;" data-i18n="failed">下发失败</div>
                         </div>
@@ -15594,7 +15595,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: all 0.3s;
         }
         
@@ -15609,7 +15610,7 @@
         
         .command-info {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
         }
@@ -15639,7 +15640,7 @@
         
         .operation-type {
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 16px;
             font-size: 14px;
         }
         
@@ -15661,7 +15662,7 @@
         .warning-message {
             background: rgba(255, 193, 7, 0.1);
             border: 1px solid rgba(255, 193, 7, 0.3);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 16px;
             color: #ffc107;
             font-size: 14px;
@@ -15751,7 +15752,7 @@
         
         .station-card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -15771,7 +15772,7 @@
         
         .station-status {
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 16px;
             font-size: 12px;
         }
         
@@ -15860,7 +15861,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 16px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 20px;
         }
         
@@ -16878,7 +16879,7 @@
                     // 为选中状态优化样式，确保在彩色背景上的可读性
                     if (isSelected) {
                         const borderStyle = (status === 'autoCharge' || status === 'autoDischarge') ? 'dashed' : 'solid';
-                        statusBadgeHTML = `<span style="background: rgba(0,0,0,0.3); color: #000; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; border: 1px ${borderStyle} #000;">${statusText}</span>`;
+                        statusBadgeHTML = `<span style="background: rgba(0,0,0,0.3); color: #000; padding: 6px 12px; border-radius: 16px; font-size: 13px; font-weight: 700; border: 1px ${borderStyle} #000;">${statusText}</span>`;
                     } else {
                         const statusStyle = getStatusStyle(status, false);
                         statusBadgeHTML = `<span style="${statusStyle.cssText}">${statusText}</span>`;
@@ -17044,7 +17045,7 @@
             const textColor = isActive ? '#000' : style.color;
             const borderColor = isActive ? '#000' : style.border;
             
-            const cssText = `background: ${style.bg}; color: ${textColor}; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; border: 1px ${style.borderStyle} ${borderColor};`;
+            const cssText = `background: ${style.bg}; color: ${textColor}; padding: 6px 12px; border-radius: 16px; font-size: 13px; font-weight: 700; border: 1px ${style.borderStyle} ${borderColor};`;
             
             return { cssText, text };
         }
@@ -17643,7 +17644,7 @@
                 height: 48px;
                 top: 6px;
                 background: linear-gradient(135deg, ${color}, ${gradientColor});
-                border-radius: 8px;
+                border-radius: 10px;
                 cursor: move;
                 display: flex;
                 align-items: center;
@@ -17970,7 +17971,7 @@
                 background: rgba(0, 0, 0, 0.9);
                 color: white;
                 padding: 8px 12px;
-                border-radius: 4px;
+                border-radius: 6px;
                 font-size: 12px;
                 z-index: 10000;
                 white-space: nowrap;
@@ -19055,16 +19056,16 @@
         function createTimeSegmentElement(segment, index, type) {
             const segmentDiv = document.createElement('div');
             segmentDiv.className = 'time-segment';
-            segmentDiv.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 6px; background: rgba(255,255,255,0.05); border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);';
+            segmentDiv.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);';
             
             const color = type === 'charge' ? '#00ff88' : '#FFC107';
             
             segmentDiv.innerHTML = `
                 <span style="color: ${color}; font-size: 12px; min-width: 20px; font-weight: 500;">${index + 1}.</span>
-                <input type="time" value="${segment.start}" data-index="${index}" data-field="start" data-type="${type}" class="time-input" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 6px; border-radius: 3px; font-size: 11px; outline: none; width: 70px;">
+                <input type="time" value="${segment.start}" data-index="${index}" data-field="start" data-type="${type}" class="time-input" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 6px; border-radius: 6px; font-size: 11px; outline: none; width: 70px;">
                 <span style="color: rgba(255,255,255,0.6); font-size: 12px;">-</span>
-                <input type="time" value="${segment.end}" data-index="${index}" data-field="end" data-type="${type}" class="time-input" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 6px; border-radius: 3px; font-size: 11px; outline: none; width: 70px;">
-                <button onclick="removeTimeSegment(${index}, '${type}')" style="background: rgba(255,0,0,0.2); border: 1px solid rgba(255,0,0,0.3); color: #ff6b6b; padding: 2px 6px; border-radius: 3px; font-size: 10px; cursor: pointer; transition: all 0.3s;">×</button>
+                <input type="time" value="${segment.end}" data-index="${index}" data-field="end" data-type="${type}" class="time-input" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 6px; border-radius: 6px; font-size: 11px; outline: none; width: 70px;">
+                <button onclick="removeTimeSegment(${index}, '${type}')" style="background: rgba(255,0,0,0.2); border: 1px solid rgba(255,0,0,0.3); color: #ff6b6b; padding: 2px 6px; border-radius: 6px; font-size: 10px; cursor: pointer; transition: all 0.3s;">×</button>
             `;
             
             return segmentDiv;
@@ -19263,7 +19264,7 @@
                     width: ${widthPercent1}%;
                     height: 24px;
                     background: ${color};
-                    border-radius: 12px;
+                    border-radius: 10px;
                     top: 4px;
                     opacity: 0.8;
                     transition: all 0.3s;
@@ -19286,7 +19287,7 @@
                     width: ${widthPercent2}%;
                     height: 24px;
                     background: ${color};
-                    border-radius: 12px;
+                    border-radius: 10px;
                     top: 4px;
                     opacity: 0.8;
                     transition: all 0.3s;
@@ -19314,7 +19315,7 @@
                     width: ${widthPercent}%;
                     height: 24px;
                     background: ${color};
-                    border-radius: 12px;
+                    border-radius: 10px;
                     top: 4px;
                     opacity: 0.8;
                     transition: all 0.3s;
@@ -19888,7 +19889,7 @@
                 top: ${topPosition}px;
                 height: 18px;
                 background: ${color};
-                border-radius: 4px;
+                border-radius: 6px;
                 left: ${startPercent}%;
                 width: ${width}%;
                 opacity: 0.9;
@@ -20010,7 +20011,7 @@
                 height: 100%;
                 background: ${bgColor};
                 border: 1px solid ${color};
-                border-radius: 4px;
+                border-radius: 6px;
                 cursor: pointer;
                 transition: all 0.2s ease;
             `;
@@ -20147,7 +20148,7 @@
                 padding: 6px 12px;
                 background: ${bgColor};
                 border: 1px solid ${borderColor};
-                border-radius: 6px;
+                border-radius: 10px;
                 font-size: 12px;
                 color: ${color};
                 font-weight: 500;
@@ -20195,7 +20196,7 @@
                 border: 1px solid rgba(255,255,255,0.2);
                 color: #fff;
                 padding: 2px 4px;
-                border-radius: 3px;
+                border-radius: 6px;
                 font-size: 11px;
                 outline: none;
                 width: 60px;
@@ -20228,7 +20229,7 @@
                 border: 1px solid ${color};
                 color: ${color};
                 padding: 2px 6px;
-                border-radius: 3px;
+                border-radius: 6px;
                 font-size: 10px;
                 cursor: pointer;
             `;
@@ -20824,14 +20825,14 @@
             <div class="modal-header" style="padding: 24px 32px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.02); position: sticky; top: 0; z-index: 1;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #fff;" data-i18n="settings">设置</h3>
-                    <span id="modalRegionName" style="padding: 4px 12px; background: var(--color-primary); color: #000; border-radius: 20px; font-size: 12px; font-weight: 600;">NSW</span>
+                    <span id="modalRegionName" style="padding: 4px 12px; background: var(--color-primary); color: #000; border-radius: 16px; font-size: 12px; font-weight: 600;">NSW</span>
                 </div>
                 <button onclick="closeConditionSettingsModal()" style="background: none; border: none; color: rgba(255,255,255,0.6); font-size: 24px; cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">×</button>
             </div>
             
             <div class="modal-body" style="padding: 24px 32px; overflow-y: auto; flex: 1; min-height: 0;">
                 <!-- SOC设置 -->
-                <div style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; margin-bottom: 24px;">
+                <div style="background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; margin-bottom: 24px;">
                     <div style="color: rgba(255,255,255,0.9); font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
                         🔋 <span data-i18n="socSettings">SOC设置</span>
                     </div>
@@ -20843,7 +20844,7 @@
                                 <span style="font-size: 14px; color: #00ff88; font-weight: 600;" data-i18n="chargeStopSOC">充电停止SOC</span>
                                 <div style="display: flex; align-items: center; gap: 4px;">
                                     <input type="number" id="modalChargeStopSOC" value="90" min="0" max="100" 
-                                           style="background: rgba(255,255,255,0.1); border: 1px solid rgba(0, 255, 136, 0.3); color: #00ff88; font-size: 12px; font-weight: 700; padding: 4px 8px; width: 50px; border-radius: 4px; text-align: center; outline: none;" 
+                                           style="background: rgba(255,255,255,0.1); border: 1px solid rgba(0, 255, 136, 0.3); color: #00ff88; font-size: 12px; font-weight: 700; padding: 4px 8px; width: 50px; border-radius: 6px; text-align: center; outline: none;" 
                                            oninput="var bar = document.getElementById('modalChargeSOCBar'); var dot = document.getElementById('modalChargeSOCDot'); if(bar) bar.style.width = this.value + '%'; if(dot) dot.style.left = this.value + '%'; updateModalChargeSOC(this.value);" 
                                            onchange="var bar = document.getElementById('modalChargeSOCBar'); var dot = document.getElementById('modalChargeSOCDot'); if(bar) bar.style.width = this.value + '%'; if(dot) dot.style.left = this.value + '%'; updateModalChargeSOC(this.value);"
                                            onkeyup="var bar = document.getElementById('modalChargeSOCBar'); var dot = document.getElementById('modalChargeSOCDot'); if(bar) bar.style.width = this.value + '%'; if(dot) dot.style.left = this.value + '%'; updateModalChargeSOC(this.value);">
@@ -20851,8 +20852,8 @@
                                 </div>
                             </div>
                             <div style="position: relative;">
-                                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; position: relative;">
-                                    <div id="modalChargeSOCBar" style="width: 90%; height: 100%; background: #00ff88; border-radius: 4px; transition: width 0.3s;"></div>
+                                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 6px; position: relative;">
+                                    <div id="modalChargeSOCBar" style="width: 90%; height: 100%; background: #00ff88; border-radius: 6px; transition: width 0.3s;"></div>
                                     <div id="modalChargeSOCDot" style="position: absolute; left: 90%; width: 16px; height: 16px; background: #00ff88; border-radius: 50%; transform: translateX(-50%); top: 50%; margin-top: -8px; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); cursor: grab; transition: left 0.3s; z-index: 5;"></div>
                                 </div>
                                 <input type="range" id="modalChargeSOCSlider" min="0" max="100" value="90" 
@@ -20868,7 +20869,7 @@
                                 <span style="font-size: 14px; color: #ffc107; font-weight: 600;" data-i18n="dischargeStopSOC">放电停止SOC</span>
                                 <div style="display: flex; align-items: center; gap: 4px;">
                                     <input type="number" id="modalDischargeStopSOC" value="20" min="0" max="100" 
-                                           style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107; font-size: 12px; font-weight: 700; padding: 4px 8px; width: 50px; border-radius: 4px; text-align: center; outline: none;" 
+                                           style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107; font-size: 12px; font-weight: 700; padding: 4px 8px; width: 50px; border-radius: 6px; text-align: center; outline: none;" 
                                            oninput="var bar = document.getElementById('modalDischargeSOCBar'); var dot = document.getElementById('modalDischargeSOCDot'); if(bar) { bar.style.left = this.value + '%'; bar.style.width = (100 - this.value) + '%'; } if(dot) dot.style.left = this.value + '%'; updateModalDischargeSOC(this.value);" 
                                            onchange="var bar = document.getElementById('modalDischargeSOCBar'); var dot = document.getElementById('modalDischargeSOCDot'); if(bar) { bar.style.left = this.value + '%'; bar.style.width = (100 - this.value) + '%'; } if(dot) dot.style.left = this.value + '%'; updateModalDischargeSOC(this.value);"
                                            onkeyup="var bar = document.getElementById('modalDischargeSOCBar'); var dot = document.getElementById('modalDischargeSOCDot'); if(bar) { bar.style.left = this.value + '%'; bar.style.width = (100 - this.value) + '%'; } if(dot) dot.style.left = this.value + '%'; updateModalDischargeSOC(this.value);">
@@ -20876,8 +20877,8 @@
                                 </div>
                             </div>
                             <div style="position: relative;">
-                                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; position: relative;">
-                                    <div id="modalDischargeSOCBar" style="position: absolute; left: 20%; width: 80%; height: 100%; background: #ffc107; border-radius: 4px; transition: width 0.3s, left 0.3s;"></div>
+                                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 6px; position: relative;">
+                                    <div id="modalDischargeSOCBar" style="position: absolute; left: 20%; width: 80%; height: 100%; background: #ffc107; border-radius: 6px; transition: width 0.3s, left 0.3s;"></div>
                                     <div id="modalDischargeSOCDot" style="position: absolute; left: 20%; width: 16px; height: 16px; background: #ffc107; border-radius: 50%; transform: translateX(-50%); top: 50%; margin-top: -8px; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); cursor: grab; transition: left 0.3s; z-index: 5;"></div>
                                 </div>
                                 <input type="range" id="modalDischargeSOCSlider" min="0" max="100" value="20" 
@@ -20896,17 +20897,17 @@
                 <div id="autoModeConditions" style="display: block;">
 
                 <!-- 时间条件设置 -->
-                <div style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; margin-bottom: 24px;">
+                <div style="background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; margin-bottom: 24px;">
                     <div style="color: rgba(255,255,255,0.9); font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
                         ⏰ <span data-i18n="timeConditionSettings">分时段价格策略</span>
                     </div>
-                    <div style="margin-bottom: 20px; padding: 12px; background: rgba(0, 150, 255, 0.08); border-left: 3px solid #0096ff; border-radius: 4px; font-size: 13px; color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+                    <div style="margin-bottom: 20px; padding: 12px; background: rgba(0, 150, 255, 0.08); border-left: 3px solid #0096ff; border-radius: 6px; font-size: 13px; color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
                         <span data-i18n="multiPeriodStrategyTip">💡 为不同时间段设置不同价格阈值，系统将同时监测所有时间段，任意条件满足即触发相应操作。勾选价格条件可启用/禁用该时段的价格限制。</span>
                     </div>
                     
                     <!-- 24小时时间轴显示 -->
                     <div style="margin-bottom: 24px;">
-                        <div id="timelineDisplay" style="position: relative; height: 30px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); overflow: visible;">
+                        <div id="timelineDisplay" style="position: relative; height: 30px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); overflow: visible;">
                             <!-- 小时刻度线 -->
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 24px;">
                                 <!-- 主要刻度线 (每6小时) -->
@@ -20944,7 +20945,7 @@
                         <div>
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                                 <h4 style="font-size: 14px; font-weight: 600; color: #00ff88; margin: 0;" data-i18n="chargeTime" data-text-zh="充电时间" data-text-en="Charge Time">充电时间</h4>
-                                <button onclick="addTimePeriod('charge')" style="background: transparent; border: 1px dashed rgba(0, 255, 136, 0.4); color: #00ff88; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                <button onclick="addTimePeriod('charge')" style="background: transparent; border: 1px dashed rgba(0, 255, 136, 0.4); color: #00ff88; padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer;">
                                     + <span data-i18n="add" data-text-zh="添加" data-text-en="Add">添加</span>
                                 </button>
                             </div>
@@ -20955,7 +20956,7 @@
                         <div>
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                                 <h4 style="font-size: 14px; font-weight: 600; color: #ffc107; margin: 0;" data-i18n="dischargeTime" data-text-zh="放电时间" data-text-en="Discharge Time">放电时间</h4>
-                                <button onclick="addTimePeriod('discharge')" style="background: transparent; border: 1px dashed rgba(255, 193, 7, 0.4); color: #ffc107; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                <button onclick="addTimePeriod('discharge')" style="background: transparent; border: 1px dashed rgba(255, 193, 7, 0.4); color: #ffc107; padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer;">
                                     + <span data-i18n="add" data-text-zh="添加" data-text-en="Add">添加</span>
                                 </button>
                             </div>
@@ -20972,7 +20973,7 @@
                             gap: 6px;
                             padding: 8px 10px;
                             background: rgba(255, 255, 255, 0.03);
-                            border-radius: 4px;
+                            border-radius: 6px;
                             border: 1px solid rgba(255, 255, 255, 0.08);
                             transition: all 0.3s ease;
                             min-width: 0;
@@ -20997,7 +20998,7 @@
                             padding: 4px 6px;
                             background: rgba(255, 255, 255, 0.05);
                             border: 1px solid rgba(255, 255, 255, 0.1);
-                            border-radius: 4px;
+                            border-radius: 6px;
                             color: rgba(255, 255, 255, 0.9);
                             font-size: 12px;
                             text-align: center;
@@ -21028,7 +21029,7 @@
                             color: #ff6b6b;
                             font-size: 12px;
                             cursor: pointer;
-                            border-radius: 3px;
+                            border-radius: 6px;
                             transition: all 0.3s ease;
                             flex-shrink: 0;
                         }
@@ -21043,8 +21044,8 @@
                 
                 <!-- Modal Footer Buttons -->
                 <div style="display: flex; justify-content: flex-end; gap: 12px; margin: 32px 24px 24px 24px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-                    <button onclick="closeConditionSettingsModal()" style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;" data-i18n="cancel">取消</button>
-                    <button onclick="saveConditionSettings()" style="background: linear-gradient(135deg, #00ff88, #00dd77); color: #000; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; border: none;" data-i18n="saveSettings">保存设置</button>
+                    <button onclick="closeConditionSettingsModal()" style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;" data-i18n="cancel">取消</button>
+                    <button onclick="saveConditionSettings()" style="background: linear-gradient(135deg, #00ff88, #00dd77); color: #000; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; border: none;" data-i18n="saveSettings">保存设置</button>
                 </div>
                 
                 </div>
@@ -21068,13 +21069,13 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <label style="color: #00ff88; font-size: 14px; font-weight: 600;" data-i18n="chargeStopSOC">充电停止SOC</label>
                         <div style="display: flex; align-items: center; gap: 4px;">
-                            <input type="number" id="modalChargeSOCInput" min="0" max="100" value="90" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 8px; border-radius: 4px; width: 50px; font-size: 13px; outline: none; transition: all 0.2s;" oninput="updateModalChargeSOCFromInput(this.value)" onfocus="this.style.borderColor='rgba(0,255,136,0.5)'; this.style.background='rgba(255,255,255,0.15)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.background='rgba(255,255,255,0.1)'">
+                            <input type="number" id="modalChargeSOCInput" min="0" max="100" value="90" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 8px; border-radius: 6px; width: 50px; font-size: 13px; outline: none; transition: all 0.2s;" oninput="updateModalChargeSOCFromInput(this.value)" onfocus="this.style.borderColor='rgba(0,255,136,0.5)'; this.style.background='rgba(255,255,255,0.15)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.background='rgba(255,255,255,0.1)'">
                             <span style="color: rgba(255,255,255,0.7); font-size: 14px;">%</span>
                         </div>
                     </div>
                     <div style="position: relative; width: 100%; height: 32px; display: flex; align-items: center;">
-                        <div style="width: 100%; height: 8px; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05)); border-radius: 4px; position: absolute; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05);">
-                            <div id="modalChargeSOCProgressBar" style="width: 90%; height: 100%; background: linear-gradient(90deg, #00ff88 0%, #00dd77 50%, #00ff88 100%); border-radius: 4px; transition: width 0.3s ease; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; overflow: hidden;">
+                        <div style="width: 100%; height: 8px; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05)); border-radius: 6px; position: absolute; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <div id="modalChargeSOCProgressBar" style="width: 90%; height: 100%; background: linear-gradient(90deg, #00ff88 0%, #00dd77 50%, #00ff88 100%); border-radius: 6px; transition: width 0.3s ease; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; overflow: hidden;">
                                 <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%); animation: shimmer 2s infinite;"></div>
                             </div>
                         </div>
@@ -21089,13 +21090,13 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <label style="color: #ffc107; font-size: 14px; font-weight: 600;" data-i18n="dischargeStopSOC">放电停止SOC</label>
                         <div style="display: flex; align-items: center; gap: 4px;">
-                            <input type="number" id="modalDischargeSOCInput" min="0" max="100" value="20" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 8px; border-radius: 4px; width: 50px; font-size: 13px; outline: none; transition: all 0.2s;" oninput="updateModalDischargeSOCFromInput(this.value)" onfocus="this.style.borderColor='rgba(255,193,7,0.5)'; this.style.background='rgba(255,255,255,0.15)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.background='rgba(255,255,255,0.1)'">
+                            <input type="number" id="modalDischargeSOCInput" min="0" max="100" value="20" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 8px; border-radius: 6px; width: 50px; font-size: 13px; outline: none; transition: all 0.2s;" oninput="updateModalDischargeSOCFromInput(this.value)" onfocus="this.style.borderColor='rgba(255,193,7,0.5)'; this.style.background='rgba(255,255,255,0.15)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.background='rgba(255,255,255,0.1)'">
                             <span style="color: rgba(255,255,255,0.7); font-size: 14px;">%</span>
                         </div>
                     </div>
                     <div style="position: relative; width: 100%; height: 32px; display: flex; align-items: center;">
-                        <div style="width: 100%; height: 8px; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05)); border-radius: 4px; position: absolute; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05);">
-                            <div id="modalDischargeSOCProgressBar" style="position: absolute; left: 20%; width: 80%; height: 100%; background: linear-gradient(90deg, #ffc107 0%, #ff9800 50%, #ffc107 100%); border-radius: 4px; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(255, 193, 7, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; overflow: hidden;">
+                        <div style="width: 100%; height: 8px; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.05)); border-radius: 6px; position: absolute; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <div id="modalDischargeSOCProgressBar" style="position: absolute; left: 20%; width: 80%; height: 100%; background: linear-gradient(90deg, #ffc107 0%, #ff9800 50%, #ffc107 100%); border-radius: 6px; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(255, 193, 7, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; overflow: hidden;">
                                 <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%); animation: shimmer 2s infinite;"></div>
                             </div>
                         </div>
@@ -22123,5 +22124,6 @@
             }
         }, 100);
     </script>
+    <script src="page-transition.js"></script>
 </body>
 </html>

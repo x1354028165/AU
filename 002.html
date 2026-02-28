@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="report.title">报表 - AlwaysControl</title>
@@ -106,7 +107,7 @@
             display: inline-flex;
             background: var(--color-bg);
             border: 1px solid var(--color-border);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 4px;
             gap: 4px;
         }
@@ -115,7 +116,7 @@
             background: rgba(255,255,255,0.05);
             color: rgba(255,255,255,0.6);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 10px 24px;
             font-size: 14px;
             font-weight: 500;
@@ -131,7 +132,7 @@
             box-shadow: 0 4px 12px rgba(0,255,136,0.3); font-weight: 600;
         }
 
-        .container { max-width: 95%; padding: 100px 10px 24px; margin: 0 auto; }
+        .container { max-width: 95%; padding: 88px var(--page-padding, 24px) 40px; margin: 0 auto; }
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; }
         .page-title { font-size: 48px; font-weight: 500; color: var(--color-text); margin: 0; letter-spacing: -2px; }
 
@@ -153,7 +154,7 @@
         .chart-controls { display: flex; gap: 8px; margin-left: auto; }
         .chart-controls .filter-tab {
             padding: 6px 12px; background: var(--color-bg); border: 1px solid var(--color-border);
-            border-radius: 15px; color: var(--color-text-secondary); cursor: pointer; font-size: 12px; transition: all 0.3s ease; white-space: nowrap;
+            border-radius: 16px; color: var(--color-text-secondary); cursor: pointer; font-size: 12px; transition: all 0.3s ease; white-space: nowrap;
         }
         .chart-controls .filter-tab:hover { background: var(--color-border); border-color: var(--color-primary); color: var(--color-text); }
         .chart-controls .filter-tab.active { background: var(--color-primary); border-color: var(--color-primary); color: #000; font-weight: 600; }
@@ -166,14 +167,14 @@
         .table-controls { display: flex; align-items: center; gap: 20px; }
         .export-btn {
             padding: 8px 16px; background: transparent; border: 1px solid var(--color-primary);
-            border-radius: 6px; color: var(--color-primary); cursor: pointer; font-size: 14px;
+            border-radius: 10px; color: var(--color-primary); cursor: pointer; font-size: 14px;
             font-weight: 500; transition: all 0.3s; display: flex; align-items: center; gap: 6px; white-space: nowrap;
         }
         .export-btn:hover { background: var(--color-primary); color: #000; transform: translateY(-1px); }
         .table-scroll-wrapper { overflow-x: auto; width: 100%; }
         .table-scroll-wrapper::-webkit-scrollbar { height: 6px; }
-        .table-scroll-wrapper::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
-        .table-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+        .table-scroll-wrapper::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 6px; }
+        .table-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 6px; }
         .data-table { width: 100%; border-collapse: collapse; color: var(--color-text); min-width: 900px; }
         .data-table th { background: var(--color-bg); padding: 10px 12px; text-align: left; font-weight: 600; color: var(--color-text-secondary); border-bottom: 1px solid var(--color-border); white-space: nowrap; font-size: 13px; }
         .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--color-border); transition: background-color 0.2s ease; white-space: nowrap; }
@@ -186,12 +187,12 @@
         .profit-negative { color: #ff6b6b; }
 
         @media (max-width: 1200px) {
-            .container { max-width: 98%; padding: 120px 8px 40px; }
+            .container { max-width: 98%; padding: 88px var(--page-padding, 24px) 40px; }
             .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
             .charts-section { gap: 24px; }
         }
         @media (max-width: 768px) {
-            .container { max-width: 100%; padding: 120px 5px 40px; }
+            .container { max-width: 100%; padding: 88px var(--page-padding, 24px) 40px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
             .charts-section { grid-template-columns: 1fr; gap: 20px; }
             .page-title { font-size: 28px; }
@@ -707,5 +708,6 @@
             loadTableData();
         }
     </script>
+    <script src="page-transition.js"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="design-system.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Station Detail - Daily Analysis</title>
@@ -89,7 +90,7 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 14px;
         }
 
@@ -118,7 +119,7 @@
         .legend-line {
             width: 30px;
             height: 3px;
-            border-radius: 2px;
+            border-radius: 6px;
         }
 
         .legend-dot {
@@ -140,7 +141,7 @@
             align-items: center;
             padding: 8px 12px;
             background: var(--color-bg);
-            border-radius: 6px;
+            border-radius: 10px;
             transition: all 0.2s ease;
         }
 
@@ -158,7 +159,7 @@
         .hour-bar {
             flex: 1;
             height: 24px;
-            border-radius: 4px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             padding: 0 12px;
@@ -199,7 +200,7 @@
         .stat-icon {
             width: 48px;
             height: 48px;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -614,5 +615,6 @@
             showToast('success', (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Data loaded' : '数据加载完成'), `已加载 ${selectedStation} 在 ${selectedDate} 的详细数据`);
         }, 500);
     </script>
+    <script src="page-transition.js"></script>
 </body>
 </html>
