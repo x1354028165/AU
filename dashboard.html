@@ -4511,6 +4511,11 @@
             // Redirect to login page if not logged in
             window.location.href = 'vpp-login.html';
         }
+        // Owner should not access dispatch center — redirect to station
+        const _dashRole = localStorage.getItem('userRole');
+        if (_dashRole === 'owner') {
+            window.location.href = 'station.html';
+        }
     </script>
     
     <!-- Header Container for HeaderNav Component -->

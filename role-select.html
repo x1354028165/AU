@@ -511,7 +511,7 @@ applyTranslations();
 // Role selection
 function selectRole(role) {
     localStorage.setItem('userRole', role);
-    window.location.href = 'dashboard.html';
+    window.location.href = role === 'owner' ? 'station.html' : 'dashboard.html';
 }
 
 // Logout
