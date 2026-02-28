@@ -2256,9 +2256,10 @@
                 'idle': { i18nKey: 'station.status_idle', class: 'idle' }
             };
             const s = statusMap[status] || statusMap['idle'];
+            const t = (k, f) => window.i18n ? window.i18n.getText(k) : f;
             const modeIcon = autoMode ? '🤖' : '👤';
-            const modeText = autoMode ? '智能' : '手动';
-            const modeTitle = autoMode ? '智能托管模式' : '人工控制模式';
+            const modeText = autoMode ? t('station.mode_auto', 'Auto') : t('station.mode_manual', 'Manual');
+            const modeTitle = autoMode ? t('station.mode_auto_title', 'Auto Mode') : t('station.mode_manual_title', 'Manual Mode');
             const modeClass = autoMode ? 'auto' : 'manual';
             return `<span class="status-badge ${s.class}"><span class="mode-icon ${modeClass}" title="${modeTitle}">${modeIcon} ${modeText}</span><span class="status-dot"></span><span data-i18n="${s.i18nKey}"></span></span>`;
         }
@@ -2345,7 +2346,7 @@
 
             let paginationHTML = `
                 <div class="pagination-info">
-                    共 ${totalItems} 条，第 ${currentPage}/${totalPages} 页
+                    ${window.i18n ? window.i18n.getText('common.total') : '共'} ${totalItems} ${window.i18n ? window.i18n.getText('common.items') : '条'}${window.i18n ? ', ' : '，'}${window.i18n ? window.i18n.getText('common.page') : '第'} ${currentPage}/${totalPages} ${window.i18n ? '' : '页'}
                 </div>
                 <div class="pagination-buttons">
                     <button class="page-btn" onclick="(${onPageChange.toString()})(1)" ${currentPage === 1 ? 'disabled' : ''}>«</button>
