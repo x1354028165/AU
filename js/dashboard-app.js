@@ -5,7 +5,6 @@
                         const pad = n => String(n).padStart(2, '0');
                         const ts = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' 23:59:59';
                         const isEn = window.i18n?.currentLanguage?.startsWith('en');
-                        document.getElementById('dataCutoffLabel').textContent = (isEn ? '* Data as of ' : '* 统计截止 ') + ts;
                     })();
                 
 
@@ -15736,7 +15735,6 @@
         
         // 用 id 精确替换
         const idMap = {
-            'dataCutoffLabel': '* ' + T('dataCutoff', 'Data as of') + ' ',
             'stationStatusLabel': T('expectedExecution', 'Waiting for Execution'),
         };
         
@@ -15744,7 +15742,6 @@
             const el = document.getElementById(id);
             if (el && el.textContent.match(/[\u4e00-\u9fff]/)) {
                 // 保留动态部分
-                if (id === 'dataCutoffLabel') {
                     const dateMatch = el.textContent.match(/\d{4}[-/]\d{2}[-/]\d{2}.*/);
                     el.textContent = text + (dateMatch ? dateMatch[0] : '');
                 } else {
@@ -15967,7 +15964,6 @@
         const now = new Date();
         const ts = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
         const isEn = window.i18n && window.i18n.currentLanguage && window.i18n.currentLanguage.startsWith('en');
-        if (el('dataCutoffLabel')) el('dataCutoffLabel').textContent = (isEn ? '* Updated ' : '* 更新于 ') + ts;
     }
     
     if (document.readyState === 'complete') {
