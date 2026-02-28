@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Management - AU BESS Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0a0a0a;
+            --color-surface: #1a1a2e;
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-text: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --color-primary: #00ff88;
+            --color-accent: #1e7fff;
+            --color-warning: #ff9500;
+            --color-danger: #ff3b30;
+            --color-success: #00ff88;
+            --color-info: #007aff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background: var(--color-bg) !important;
+            width: 100vw;
+            min-height: 100vh;
+            color: var(--color-text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: var(--color-bg);
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 100px 10px 40px;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Header Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 20px;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--color-primary);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-link {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--color-primary);
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-title .material-icons {
+            font-size: 36px;
+            color: var(--color-primary);
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .filter-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            color: var(--color-text);
+            font-size: 14px;
+            min-width: 140px;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' fill-opacity='0.5' d='M6 8.5L1.5 4h9z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--color-primary);
+        }
+
+        .date-input {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            color: var(--color-text);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 160px;
+        }
+
+        .date-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--color-primary);
+        }
+
+        .search-input {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            color: var(--color-text);
+            font-size: 14px;
+            min-width: 200px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--color-primary);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Status Tabs */
+        .status-tabs {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 0 0 16px;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 24px;
+        }
+
+        .status-tab {
+            padding: 12px 0;
+            background: transparent;
+            border: none;
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .status-tab:hover {
+            color: var(--color-text);
+        }
+
+        .status-tab.active {
+            color: var(--color-primary);
+        }
+
+        .status-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-primary);
+        }
+
+        .tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2px 8px;
+            margin-left: 8px;
+            font-size: 12px;
+            min-width: 20px;
+            height: 20px;
+        }
+
+        .status-tab.active .tab-count {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--color-primary);
+        }
+
+        /* Alarm Table */
+        .alarm-table-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .alarm-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .alarm-table th {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            border-bottom: 1px solid var(--color-border);
+            white-space: nowrap;
+        }
+
+        .alarm-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .alarm-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .sortable-header {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sort-icon {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .sort-icon.active {
+            color: var(--color-primary);
+        }
+
+        /* Alarm Level Badge */
+        .alarm-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .alarm-level-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .alarm-level-dot.critical {
+            background: var(--color-danger);
+            box-shadow: 0 0 6px rgba(255, 59, 48, 0.5);
+        }
+
+        .alarm-level-dot.warning {
+            background: var(--color-warning);
+            box-shadow: 0 0 6px rgba(255, 149, 0, 0.5);
+        }
+
+        .alarm-level-dot.info {
+            background: var(--color-info);
+            box-shadow: 0 0 6px rgba(0, 122, 255, 0.5);
+        }
+
+        /* Alarm Status Badge */
+        .alarm-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .alarm-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .alarm-status-dot.active {
+            background: var(--color-danger);
+            box-shadow: 0 0 6px rgba(255, 59, 48, 0.5);
+        }
+
+        .alarm-status-dot.acknowledged {
+            background: var(--color-warning);
+            box-shadow: 0 0 6px rgba(255, 149, 0, 0.5);
+        }
+
+        .alarm-status-dot.resolved {
+            background: var(--color-success);
+            box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-detail {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            border-radius: 6px;
+            color: var(--color-primary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-detail:hover {
+            background: var(--color-primary);
+            color: var(--color-bg);
+        }
+
+        .btn-acknowledge {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--color-warning);
+            border-radius: 6px;
+            color: var(--color-warning);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-acknowledge:hover {
+            background: var(--color-warning);
+            color: var(--color-bg);
+        }
+
+        .btn-resolve {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--color-success);
+            border-radius: 6px;
+            color: var(--color-success);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-resolve:hover {
+            background: var(--color-success);
+            color: var(--color-bg);
+        }
+
+        /* Station Info */
+        .station-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .station-name {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .station-location {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Alarm Description */
+        .alarm-description {
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-text);
+        }
+
+        .pagination-btn.active {
+            background: var(--color-primary);
+            color: var(--color-bg);
+            border-color: var(--color-primary);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Export Button */
+        .btn-export {
+            padding: 10px 20px;
+            background: rgba(30, 127, 255, 0.1);
+            border: 1px solid rgba(30, 127, 255, 0.3);
+            border-radius: 8px;
+            color: var(--color-accent);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-export:hover {
+            background: rgba(30, 127, 255, 0.2);
+            border-color: var(--color-accent);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 98%;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            
+            .status-tabs {
+                overflow-x: auto;
+                padding-bottom: 16px;
+                gap: 16px;
+            }
+            
+            .alarm-table-container {
+                overflow-x: auto;
+            }
+            
+            .alarm-table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="material-icons">battery_charging_full</span>
+                AU BESS
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="alarm-management.html" class="nav-link active">Alarms</a>
+                <a href="#" class="nav-link">Analytics</a>
+                <a href="#" class="nav-link">Reports</a>
+                <a href="#" class="nav-link">Settings</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="material-icons">warning</span>
+                Alarm Management
+            </h1>
+            <button class="btn-export">
+                <span class="material-icons">download</span>
+                Export Report
+            </button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Station:</label>
+                    <select class="filter-select" id="stationFilter">
+                        <option value="">All Stations</option>
+                        <option value="sydney-north">Sydney North BESS</option>
+                        <option value="melbourne-west">Melbourne West BESS</option>
+                        <option value="brisbane-south">Brisbane South BESS</option>
+                        <option value="adelaide-central">Adelaide Central BESS</option>
+                        <option value="perth-east">Perth East BESS</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Severity:</label>
+                    <select class="filter-select" id="severityFilter">
+                        <option value="">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="warning">Warning</option>
+                        <option value="info">Information</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Date Range:</label>
+                    <input type="date" class="date-input" id="startDate">
+                    <span style="color: var(--color-text-secondary);">to</span>
+                    <input type="date" class="date-input" id="endDate">
+                </div>
+            </div>
+            
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Search:</label>
+                    <input type="text" class="search-input" placeholder="Search alarms by description, component..." id="searchInput">
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Tabs -->
+        <div class="status-tabs">
+            <button class="status-tab active" data-status="all">
+                All Alarms <span class="tab-count">127</span>
+            </button>
+            <button class="status-tab" data-status="active">
+                Active <span class="tab-count">23</span>
+            </button>
+            <button class="status-tab" data-status="acknowledged">
+                Acknowledged <span class="tab-count">45</span>
+            </button>
+            <button class="status-tab" data-status="resolved">
+                Resolved <span class="tab-count">59</span>
+            </button>
+        </div>
+
+        <!-- Alarm Table -->
+        <div class="alarm-table-container">
+            <table class="alarm-table">
+                <thead>
+                    <tr>
+                        <th>
+                            <div class="sortable-header">
+                                Timestamp
+                                <span class="material-icons sort-icon">keyboard_arrow_down</span>
+                            </div>
+                        </th>
+                        <th>Station</th>
+                        <th>Component</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                        <th>Description</th>
+                        <th>Duration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2026-02-28 09:45:23</td>
+                        <td>
+                            <div class="station-info">
+                                <div class="station-name">Sydney North BESS</div>
+                                <div class="station-location">NSW, Australia</div>
+                            </div>
+                        </td>
+                        <td>Battery Module 03</td>
+                        <td>
+                            <div class="alarm-level">
+                                <span class="alarm-level-dot critical"></span>
+                                Critical
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-status">
+                                <span class="alarm-status-dot active"></span>
+                                Active
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-description">
+                                Battery temperature exceeding safe operating limits (65°C). Cooling system intervention required.
+                            </div>
+                        </td>
+                        <td>2h 15m</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-acknowledge">Acknowledge</button>
+                                <button class="btn-detail">Details</button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>2026-02-28 08:23:17</td>
+                        <td>
+                            <div class="station-info">
+                                <div class="station-name">Melbourne West BESS</div>
+                                <div class="station-location">VIC, Australia</div>
+                            </div>
+                        </td>
+                        <td>Power Converter 02</td>
+                        <td>
+                            <div class="alarm-level">
+                                <span class="alarm-level-dot warning"></span>
+                                Warning
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-status">
+                                <span class="alarm-status-dot acknowledged"></span>
+                                Acknowledged
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-description">
+                                Power conversion efficiency below optimal threshold (92.5%). Performance monitoring required.
+                            </div>
+                        </td>
+                        <td>3h 42m</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-resolve">Resolve</button>
+                                <button class="btn-detail">Details</button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>2026-02-28 07:56:09</td>
+                        <td>
+                            <div class="station-info">
+                                <div class="station-name">Brisbane South BESS</div>
+                                <div class="station-location">QLD, Australia</div>
+                            </div>
+                        </td>
+                        <td>Grid Connection</td>
+                        <td>
+                            <div class="alarm-level">
+                                <span class="alarm-level-dot info"></span>
+                                Info
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-status">
+                                <span class="alarm-status-dot resolved"></span>
+                                Resolved
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-description">
+                                Grid frequency deviation detected (50.2 Hz). System automatically adjusted to maintain stability.
+                            </div>
+                        </td>
+                        <td>Resolved</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-detail">Details</button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>2026-02-28 06:12:44</td>
+                        <td>
+                            <div class="station-info">
+                                <div class="station-name">Adelaide Central BESS</div>
+                                <div class="station-location">SA, Australia</div>
+                            </div>
+                        </td>
+                        <td>HVAC System</td>
+                        <td>
+                            <div class="alarm-level">
+                                <span class="alarm-level-dot warning"></span>
+                                Warning
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-status">
+                                <span class="alarm-status-dot active"></span>
+                                Active
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-description">
+                                HVAC system load higher than expected. Check ventilation filters and cooling capacity.
+                            </div>
+                        </td>
+                        <td>5h 48m</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-acknowledge">Acknowledge</button>
+                                <button class="btn-detail">Details</button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>2026-02-28 04:33:18</td>
+                        <td>
+                            <div class="station-info">
+                                <div class="station-name">Perth East BESS</div>
+                                <div class="station-location">WA, Australia</div>
+                            </div>
+                        </td>
+                        <td>Safety System</td>
+                        <td>
+                            <div class="alarm-level">
+                                <span class="alarm-level-dot critical"></span>
+                                Critical
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-status">
+                                <span class="alarm-status-dot acknowledged"></span>
+                                Acknowledged
+                            </div>
+                        </td>
+                        <td>
+                            <div class="alarm-description">
+                                Emergency stop system activation due to smoke detection. Manual inspection required before reset.
+                            </div>
+                        </td>
+                        <td>7h 27m</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-resolve">Resolve</button>
+                                <button class="btn-detail">Details</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    Showing 1-5 of 127 alarms
+                </div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" disabled>
+                        <span class="material-icons">keyboard_arrow_left</span>
+                    </button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">...</button>
+                    <button class="pagination-btn">26</button>
+                    <button class="pagination-btn">
+                        <span class="material-icons">keyboard_arrow_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize alarm management functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date range (last 7 days)
+            const endDate = new Date();
+            const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+
+            // Status tab functionality
+            const statusTabs = document.querySelectorAll('.status-tab');
+            statusTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    statusTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter table based on status
+                    const status = this.dataset.status;
+                    filterAlarmsByStatus(status);
+                });
+            });
+
+            // Filter functionality
+            document.getElementById('stationFilter').addEventListener('change', filterAlarms);
+            document.getElementById('severityFilter').addEventListener('change', filterAlarms);
+            document.getElementById('searchInput').addEventListener('input', filterAlarms);
+
+            // Export functionality
+            document.querySelector('.btn-export').addEventListener('click', function() {
+                exportAlarmsReport();
+            });
+
+            // Action button functionality
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-acknowledge')) {
+                    acknowledgeAlarm(e.target);
+                } else if (e.target.classList.contains('btn-resolve')) {
+                    resolveAlarm(e.target);
+                } else if (e.target.classList.contains('btn-detail')) {
+                    showAlarmDetails(e.target);
+                }
+            });
+        });
+
+        function filterAlarmsByStatus(status) {
+            // Implementation for filtering alarms by status
+            console.log('Filtering by status:', status);
+        }
+
+        function filterAlarms() {
+            // Implementation for combined filtering
+            const station = document.getElementById('stationFilter').value;
+            const severity = document.getElementById('severityFilter').value;
+            const search = document.getElementById('searchInput').value;
+            
+            console.log('Filtering alarms:', { station, severity, search });
+        }
+
+        function acknowledgeAlarm(button) {
+            // Implementation for acknowledging alarm
+            const row = button.closest('tr');
+            const statusCell = row.querySelector('.alarm-status');
+            statusCell.innerHTML = `
+                <div class="alarm-status">
+                    <span class="alarm-status-dot acknowledged"></span>
+                    Acknowledged
+                </div>
+            `;
+            
+            // Update action buttons
+            const actionsCell = row.querySelector('.action-buttons');
+            actionsCell.innerHTML = `
+                <button class="btn-resolve">Resolve</button>
+                <button class="btn-detail">Details</button>
+            `;
+        }
+
+        function resolveAlarm(button) {
+            // Implementation for resolving alarm
+            const row = button.closest('tr');
+            const statusCell = row.querySelector('.alarm-status');
+            statusCell.innerHTML = `
+                <div class="alarm-status">
+                    <span class="alarm-status-dot resolved"></span>
+                    Resolved
+                </div>
+            `;
+            
+            // Update duration cell
+            const durationCell = row.cells[6];
+            durationCell.textContent = 'Resolved';
+            
+            // Update action buttons
+            const actionsCell = row.querySelector('.action-buttons');
+            actionsCell.innerHTML = `
+                <button class="btn-detail">Details</button>
+            `;
+        }
+
+        function showAlarmDetails(button) {
+            // Implementation for showing alarm details
+            alert('Alarm details modal would open here');
+        }
+
+        function exportAlarmsReport() {
+            // Implementation for exporting alarm report
+            alert('Alarm report export functionality would be implemented here');
+        }
+    </script>
+</body>
+</html>
