@@ -5715,12 +5715,12 @@ class I18n {
             </div>
         `;
         
-        // 插入到header-right中message-center前面
+        // 插入到header-right中角色切换按钮前面
         const headerRight = document.querySelector('.header-right');
         if (headerRight) {
-            const messageCenter = headerRight.querySelector('.message-center');
-            if (messageCenter) {
-                messageCenter.insertAdjacentHTML('beforebegin', selectorHTML);
+            const roleBtn = headerRight.querySelector('.role-switch-btn');
+            if (roleBtn) {
+                roleBtn.insertAdjacentHTML('beforebegin', selectorHTML);
             } else {
                 headerRight.insertAdjacentHTML('afterbegin', selectorHTML);
             }

@@ -155,9 +155,9 @@ class HeaderNav {
                     ${navHTML}
                 </div>
                 <div class="header-right">
+                    ${languageIcon}
                     ${roleSwitchBtn}
                     ${messageCenter}
-                    ${languageIcon}
                     ${settingsIcon}
                     ${languageSelector}
                     ${themeToggleBtn}
