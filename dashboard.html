@@ -5526,35 +5526,35 @@
 
             modalContent.innerHTML = `
                 <div style="padding: 24px 28px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.02);">
-                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #fff;">${i18n ? i18n.getText('confirmAutoMode') : '确认启用智能托管'}</h3>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #fff;">${i18n ? i18n.getText('dashboard.confirmAutoMode') : '确认启用智能托管'}</h3>
                 </div>
 
                 <div style="padding: 24px 28px;">
                     <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin: 0 0 20px 0;">
-                        ${i18n ? i18n.getText('autoModeDescription') : '启用后，AI将实时分析市场数据，自动寻找最优充放电时机，最大化您的收益。'}
+                        ${i18n ? i18n.getText('dashboard.autoModeDesc') : '启用后，AI将实时分析市场数据，自动寻找最优充放电时机，最大化您的收益。'}
                     </p>
 
                     <!-- AI 能力说明 - 2x2 网格 -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                         <div style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 10px; padding: 14px;">
                             <div style="font-size: 20px; margin-bottom: 6px;">📊</div>
-                            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('aiPriceAnalysis') : '实时价格分析'}</div>
-                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('aiPriceAnalysisDesc') : '持续监测AEMO现货价格与需求走势'}</div>
+                            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('dashboard.aiPriceAnalysis') : '实时价格分析'}</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('dashboard.aiPriceAnalysisDesc') : '持续监测AEMO现货价格与需求走势'}</div>
                         </div>
                         <div style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 10px; padding: 14px;">
                             <div style="font-size: 20px; margin-bottom: 6px;">⚡</div>
-                            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('aiSmartCharge') : '智能充电决策'}</div>
-                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('aiSmartChargeDesc') : '自动识别低价窗口，以最低成本完成充电'}</div>
+                            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('dashboard.aiSmartCharge') : '智能充电决策'}</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('dashboard.aiSmartChargeDesc') : '自动识别低价窗口，以最低成本完成充电'}</div>
                         </div>
                         <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.15); border-radius: 10px; padding: 14px;">
                             <div style="font-size: 20px; margin-bottom: 6px;">💰</div>
-                            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('aiSmartDischarge') : '最优放电时机'}</div>
-                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('aiSmartDischargeDesc') : '精准捕捉高价时段放电，最大化馈网收益'}</div>
+                            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('dashboard.aiSmartDischarge') : '最优放电时机'}</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('dashboard.aiSmartDischargeDesc') : '精准捕捉高价时段放电，最大化馈网收益'}</div>
                         </div>
                         <div style="background: rgba(100, 180, 255, 0.05); border: 1px solid rgba(100, 180, 255, 0.15); border-radius: 10px; padding: 14px;">
                             <div style="font-size: 20px; margin-bottom: 6px;">🔋</div>
-                            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('aiBatteryManage') : '电池健康管理'}</div>
-                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('aiBatteryManageDesc') : '智能管理SOC区间，兼顾收益与电池寿命'}</div>
+                            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;">${i18n ? i18n.getText('dashboard.aiBatteryManage') : '电池健康管理'}</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.5;">${i18n ? i18n.getText('dashboard.aiBatteryManageDesc') : '智能管理SOC区间，兼顾收益与电池寿命'}</div>
                         </div>
                     </div>
 
@@ -5562,7 +5562,7 @@
                     <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 14px;">🤖</span>
                         <span style="font-size: 12px; color: rgba(255, 255, 255, 0.6);">
-                            ${i18n ? i18n.getText('aiCustodyHint') : 'AI将7×24小时持续运行，您可随时手动干预或关闭托管'}
+                            ${i18n ? i18n.getText('dashboard.aiCustodyHint') : 'AI将7×24小时持续运行，您可随时手动干预或关闭托管'}
                         </span>
                     </div>
                 </div>
@@ -5641,14 +5641,14 @@
             modalContent.innerHTML = `
                 <div style="padding: 24px 28px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.02);">
                     <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #fff;">
-                        ${window.i18n ? window.i18n.getText('confirmDisableAutoMode') : '确认关闭智能托管'}
+                        ${window.i18n ? window.i18n.getText('dashboard.confirmDisableAutoMode') : '确认关闭智能托管'}
                     </h3>
                 </div>
                 
                 <div style="padding: 24px 28px;">
                     <div style="margin-bottom: 20px;">
                         <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; margin: 0 0 16px 0;">
-                            ${window.i18n ? window.i18n.getText('disableAutoModeDescription') : '关闭智能托管后，AI将停止智能分析，您需要手动控制充放电。'}
+                            ${window.i18n ? window.i18n.getText('dashboard.disableAutoModeDesc') : '关闭智能托管后，AI将停止智能分析，您需要手动控制充放电。'}
                         </p>
                     </div>
                     
