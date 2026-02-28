@@ -22,8 +22,8 @@
             const now = new Date();
             let idCounter = 1;
 
-            // Generate 6 unprocessed alarms (recent, within last 2 days)
-            for (let i = 0; i < 6; i++) {
+            // Generate 5 unprocessed alarms (recent, within last 2 days)
+            for (let i = 0; i < 5; i++) {
                 const hoursAgo = Math.floor(Math.random() * 48); // 0-48 hours ago
                 const alarmTime = new Date(now.getTime() - hoursAgo * 3600000 - Math.floor(Math.random() * 3600000));
                 alarms.push({
@@ -42,8 +42,8 @@
                 });
             }
 
-            // Generate 30 processed alarms spread across last 7 days
-            for (let i = 0; i < 30; i++) {
+            // Generate 2 processed alarms
+            for (let i = 0; i < 2; i++) {
                 const daysAgo = Math.floor(i / 5); // 0-5 days ago
                 const hoursOffset = (i % 5) * 3 + Math.floor(Math.random() * 3);
                 const alarmTime = new Date(now.getTime() - daysAgo * 86400000 - hoursOffset * 3600000);
