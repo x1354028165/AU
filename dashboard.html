@@ -10878,6 +10878,12 @@
             const socEl = document.getElementById('confirmCurrentSOC');
             if (socEl) socEl.textContent = currentSOC + '%';
             
+            // 确保所有行可见（停止弹窗会隐藏部分行）
+            const avgCostRow = document.getElementById('confirmAvgBatteryCost');
+            if (avgCostRow && avgCostRow.parentElement && avgCostRow.parentElement.parentElement) avgCostRow.parentElement.parentElement.style.display = '';
+            const estRow = document.getElementById('confirmEstDuration');
+            if (estRow && estRow.parentElement && estRow.parentElement.parentElement) estRow.parentElement.parentElement.style.display = '';
+            
             // 当前电价（低于均价=绿色适合买，高于=红色）
             const cpEl = document.getElementById('confirmCurrentPrice');
             if (cpEl) {
@@ -11606,6 +11612,30 @@
             }
             if (costBenefitItem && costBenefitItem.parentElement) {
                 costBenefitItem.parentElement.style.display = 'none';
+            }
+            
+            // 停止弹窗：只显示操作类型 + SOC + 当前电价
+            const _soc = typeof getCurrentBatteryLevel === 'function' ? getCurrentBatteryLevel() : 50;
+            const _priceEl = document.getElementById('currentPrice');
+            const _priceNum = _priceEl ? parseFloat(_priceEl.textContent.replace(/[^0-9.-]/g, '')) || 0 : 0;
+            
+            const socEl = document.getElementById('confirmCurrentSOC');
+            if (socEl) socEl.textContent = _soc + '%';
+            
+            const cpEl = document.getElementById('confirmCurrentPrice');
+            if (cpEl) {
+                cpEl.textContent = '$' + _priceNum.toFixed(0) + '/MWh';
+                cpEl.style.color = _priceNum <= 0 ? '#00ff88' : '#ff6b6b';
+            }
+            
+            // 隐藏停止操作不需要的字段（电池均价、充满时长、预计成本）
+            const avgCostRow = document.getElementById('confirmAvgBatteryCost');
+            if (avgCostRow && avgCostRow.parentElement && avgCostRow.parentElement.parentElement) {
+                avgCostRow.parentElement.parentElement.style.display = 'none';  // 整个第二行
+            }
+            const estRow = document.getElementById('confirmEstDuration');
+            if (estRow && estRow.parentElement && estRow.parentElement.parentElement) {
+                estRow.parentElement.parentElement.style.display = 'none';  // 整个第三行
             }
             
             // 设置pending operation为停止操作
