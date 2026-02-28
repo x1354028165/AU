@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="stylesheet" href="design-system.css">
+    <script src="page-transition.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Station Detail - Daily Analysis</title>
@@ -615,6 +616,5 @@
             showToast('success', (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Data loaded' : '数据加载完成'), `已加载 ${selectedStation} 在 ${selectedDate} 的详细数据`);
         }, 500);
     </script>
-    <script src="page-transition.js"></script>
 </body>
 </html>

@@ -99,7 +99,7 @@ class HeaderNav {
         
         // 创建简单的消息中心图标，总是显示
         const messageCenter = `
-            <div class="simple-message-icon" onclick="window.location.href='message-center.html'" style="cursor: pointer; padding: 0 10px;">
+            <div class="simple-message-icon" onclick="window.__navigate ? window.__navigate('message-center.html') : (window.location.href='message-center.html')" style="cursor: pointer; padding: 0 10px;">
                 <span style="font-size: 20px;">🔔</span>
             </div>
         `;
@@ -109,7 +109,7 @@ class HeaderNav {
         
         // 创建设置图标
         const settingsIcon = `
-            <div class="settings-icon" onclick="window.location.href='settings.html'" style="cursor: pointer; padding: 0 10px;">
+            <div class="settings-icon" onclick="window.__navigate ? window.__navigate('settings.html') : (window.location.href='settings.html')" style="cursor: pointer; padding: 0 10px;">
                 <span style="font-size: 20px;">⚙️</span>
             </div>
         `;
@@ -118,7 +118,7 @@ class HeaderNav {
         const userAvatar = this.showUserAvatar ? '<div id="userDropdownContainer"></div>' : '';
         
         const backButton = this.showBackButton ? `
-            <button class="back-button" onclick="location.href='${this.backButtonUrl}'" style="
+            <button class="back-button" onclick="window.__navigate ? window.__navigate('${this.backButtonUrl}') : (location.href='${this.backButtonUrl}')" style="
                 background: transparent;
                 border: 1px solid var(--color-border);
                 color: var(--color-text);
@@ -198,7 +198,7 @@ class HeaderNav {
     createMessageCenterHTML() {
         // 简单的消息中心图标，点击跳转，没有任何徽章
         return `
-            <div class="message-center" onclick="window.location.href='message-center.html'" style="cursor: pointer; position: relative;">
+            <div class="message-center" onclick="window.__navigate ? window.__navigate('message-center.html') : (window.location.href='message-center.html')" style="cursor: pointer; position: relative;">
                 <span class="message-icon">🔔</span>
             </div>
         `;
