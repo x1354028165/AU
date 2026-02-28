@@ -8,13 +8,13 @@
         let sortField = 'time';
         let sortOrder = 'desc';
 
-        // Mock alarm data
+        // Mock alarm data — dynamically generated relative to current date
         function generateMockAlarms() {
             const descriptions = ['总压高', '绝缘低', '单体压差大', '单体电压高', '温度过高', 'SOC过低', '通信中断', '过流告警'];
             const levels = ['alarm', 'fault'];
             const levelNames = { alarm: '告警', fault: '故障' };
             const devices = ['BMS', 'PCS', 'EMS', 'METER'];
-            const stations = ['Logistics Distribution', 'Solar Farm Alpha', 'Battery Station Beta', 'Grid Hub Gamma'];
+            const stations = ['Hornsdale Power Reserve', 'Wandoan BESS', 'Torrens Island BESS', 'Broken Hill Solar Farm'];
             const statuses = ['unprocessed', 'processed'];
             const statusNames = { unprocessed: '未处理', processed: '已处理' };
 
@@ -22,17 +22,19 @@
             const now = new Date();
             let idCounter = 1;
 
-            // Generate 4 unprocessed alarms (matching the screenshot)
-            for (let i = 0; i < 4; i++) {
+            // Generate 6 unprocessed alarms (recent, within last 2 days)
+            for (let i = 0; i < 6; i++) {
+                const hoursAgo = Math.floor(Math.random() * 48); // 0-48 hours ago
+                const alarmTime = new Date(now.getTime() - hoursAgo * 3600000 - Math.floor(Math.random() * 3600000));
                 alarms.push({
                     id: idCounter++,
-                    time: new Date(2026, 1, 5, 11, 50, 0), // 2026-02-05 11:50:00
-                    timezone: 'UTC+10:00',
-                    description: descriptions[i],
-                    level: 'alarm',
-                    levelName: '告警',
-                    device: 'BMS',
-                    station: 'Logistics Distribution',
+                    time: alarmTime,
+                    timezone: 'AEST',
+                    description: descriptions[i % descriptions.length],
+                    level: levels[i % 2],
+                    levelName: levelNames[levels[i % 2]],
+                    device: devices[i % devices.length],
+                    station: stations[i % stations.length],
                     status: 'unprocessed',
                     statusName: '未处理',
                     recoveryTime: null,
@@ -40,10 +42,12 @@
                 });
             }
 
-            // Generate 20 processed alarms with varied data
-            for (let i = 0; i < 20; i++) {
-                const alarmTime = new Date(2026, 1, 5 - Math.floor(i / 5), 10 - (i % 5), 30 + (i % 4) * 10, 0);
-                const recoveryTime = new Date(alarmTime.getTime() + (30 + Math.random() * 90) * 60000); // 30-120 minutes later
+            // Generate 30 processed alarms spread across last 7 days
+            for (let i = 0; i < 30; i++) {
+                const daysAgo = Math.floor(i / 5); // 0-5 days ago
+                const hoursOffset = (i % 5) * 3 + Math.floor(Math.random() * 3);
+                const alarmTime = new Date(now.getTime() - daysAgo * 86400000 - hoursOffset * 3600000);
+                const recoveryTime = new Date(alarmTime.getTime() + (30 + Math.random() * 90) * 60000);
                 const descIndex = i % descriptions.length;
                 const levelIndex = i % 2;
                 const deviceIndex = i % devices.length;
@@ -52,7 +56,7 @@
                 alarms.push({
                     id: idCounter++,
                     time: alarmTime,
-                    timezone: 'UTC+10:00',
+                    timezone: 'AEST',
                     description: descriptions[descIndex],
                     level: levels[levelIndex],
                     levelName: levelNames[levels[levelIndex]],
@@ -642,7 +646,7 @@
             // 角色权限：运维方隐藏处理按钮 + 数据过滤（必须在 initPage 前）
             const _role = localStorage.getItem('userRole') || 'operator';
             if (_role === 'operator') {
-                const operatorStations = ['Logistics Distribution', 'Solar Farm Alpha'];
+                const operatorStations = ['Hornsdale Power Reserve', 'Wandoan BESS'];
                 window._operatorStationFilter = operatorStations;
             }
 
