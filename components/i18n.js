@@ -66,6 +66,17 @@ class I18n {
         // 定义多语言文本
         this.translations = {
             zh: {
+                // 运维方管理 mgmt keys
+                mgmt_op_name: "运维方名称",
+                mgmt_account: "登录账号",
+                mgmt_contact: "联系人",
+                mgmt_password: "密码",
+                mgmt_assign_stations: "分配电站",
+                mgmt_assigned_count: "已分配电站数",
+                mgmt_lease_end: "租赁到期日",
+                mgmt_btn_add: "新建运维方",
+                mgmt_status_active: "正常",
+                mgmt_status_expired: "已到期",
                 // 通用翻译
                 brand: "品牌",
                 model: "型号",
@@ -2690,6 +2701,17 @@ class I18n {
             },
             
             en: {
+                // Operator mgmt keys
+                mgmt_op_name: "Operator Name",
+                mgmt_account: "Account",
+                mgmt_contact: "Contact",
+                mgmt_password: "Password",
+                mgmt_assign_stations: "Assign Stations",
+                mgmt_assigned_count: "Stations",
+                mgmt_lease_end: "Lease Expiry",
+                mgmt_btn_add: "Add Operator",
+                mgmt_status_active: "Active",
+                mgmt_status_expired: "Expired",
                 // Common translations
                 brand: "Brand",
                 model: "Model",
