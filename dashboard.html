@@ -5007,33 +5007,22 @@
             </div>
             
             <div class="modal-body" style="padding: 36px;">
-                <div class="modal-info-grid" id="confirmInfoGrid" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-                    <!-- 第一行：操作类型 + 当前SOC -->
-                    <div style="display: flex; gap: 12px;">
-                        <div style="flex: 1; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px;">
-                            <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.operationType">操作类型</div>
-                            <div id="confirmOperationType" style="color: #00ff88; font-size: 18px; font-weight: 700;">充电</div>
-                        </div>
-                        <div style="flex: 1; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px;">
-                            <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.currentSOC">当前 SOC</div>
-                            <div id="confirmCurrentSOC" style="color: #ffc107; font-size: 18px; font-weight: 700;">72%</div>
-                        </div>
-                    </div>
-                    <!-- 第二行：当前电价 -->
+                <div class="modal-info-grid" id="confirmInfoGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
                     <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px;">
-                        <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.currentPrice">当前电价</div>
-                        <div id="confirmCurrentPrice" style="font-size: 18px; font-weight: 700;">$85/MWh</div>
+                        <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.operationType">操作类型</div>
+                        <div id="confirmOperationType" style="color: #00ff88; font-size: 18px; font-weight: 700;">充电</div>
                     </div>
-                    <!-- 第三行：预计充满时长 + 预计成本 -->
-                    <div style="display: flex; gap: 12px;">
-                        <div style="flex: 1; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px;">
-                            <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.estFullTime">预计充满时长</div>
-                            <div id="confirmEstDuration" style="color: #00ff88; font-size: 18px; font-weight: 700;">2h 15min</div>
-                        </div>
-                        <div style="flex: 1; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px;">
-                            <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.estCost">预计成本</div>
-                            <div id="confirmEstCost" style="color: #ffc107; font-size: 18px; font-weight: 700;">$191</div>
-                        </div>
+                    <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px;">
+                        <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.currentSOC">当前 SOC</div>
+                        <div id="confirmCurrentSOC" style="color: #ffc107; font-size: 18px; font-weight: 700;">72%</div>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px;">
+                        <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.estFullTime">预计充满时长</div>
+                        <div id="confirmEstDuration" style="color: #00ff88; font-size: 18px; font-weight: 700;">2h 15min</div>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px;">
+                        <div style="color: rgba(255, 255, 255, 0.5); font-size: 12px; margin-bottom: 6px;" data-i18n="dashboard.modal.estCost">预计成本</div>
+                        <div id="confirmEstCost" style="color: #ffc107; font-size: 18px; font-weight: 700;">$191</div>
                     </div>
                 </div>
             </div>
@@ -10872,11 +10861,11 @@
             const socEl = document.getElementById('confirmCurrentSOC');
             if (socEl) socEl.textContent = currentSOC + '%';
             
-            // 确保所有行可见（停止弹窗会隐藏部分行）
-            const avgCostRow = document.getElementById('confirmAvgBatteryCost');
-            if (avgCostRow && avgCostRow.parentElement && avgCostRow.parentElement.parentElement) avgCostRow.parentElement.parentElement.style.display = '';
-            const estRow = document.getElementById('confirmEstDuration');
-            if (estRow && estRow.parentElement && estRow.parentElement.parentElement) estRow.parentElement.parentElement.style.display = '';
+            // 确保所有卡片可见（停止弹窗会隐藏部分卡片）
+            const estDurCard = document.getElementById('confirmEstDuration');
+            if (estDurCard && estDurCard.parentElement) estDurCard.parentElement.style.display = '';
+            const estCostCard = document.getElementById('confirmEstCost');
+            if (estCostCard && estCostCard.parentElement) estCostCard.parentElement.style.display = '';
             
             // 当前电价（低于均价=绿色适合买，高于=红色）
             const cpEl = document.getElementById('confirmCurrentPrice');
@@ -11624,15 +11613,11 @@
                 cpEl.style.color = _priceNum <= 0 ? '#00ff88' : '#ff6b6b';
             }
             
-            // 隐藏停止操作不需要的字段（电池均价、充满时长、预计成本）
-            const avgCostRow = document.getElementById('confirmAvgBatteryCost');
-            if (avgCostRow && avgCostRow.parentElement && avgCostRow.parentElement.parentElement) {
-                avgCostRow.parentElement.parentElement.style.display = 'none';  // 整个第二行
-            }
-            const estRow = document.getElementById('confirmEstDuration');
-            if (estRow && estRow.parentElement && estRow.parentElement.parentElement) {
-                estRow.parentElement.parentElement.style.display = 'none';  // 整个第三行
-            }
+            // 隐藏停止操作不需要的字段（预计时长、预计成本）
+            const estDurCard = document.getElementById('confirmEstDuration');
+            if (estDurCard && estDurCard.parentElement) estDurCard.parentElement.style.display = 'none';
+            const estCostCard = document.getElementById('confirmEstCost');
+            if (estCostCard && estCostCard.parentElement) estCostCard.parentElement.style.display = 'none';
             
             // 设置pending operation为停止操作
             pendingOperation = 'stop';
