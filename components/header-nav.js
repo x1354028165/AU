@@ -101,7 +101,7 @@ class HeaderNav {
         
         // 创建简单的消息中心图标，总是显示
         const messageCenter = `
-            <div class="simple-message-icon" onclick="window.__navigate ? window.__navigate('message-center.html') : (window.location.href='message-center.html')" style="cursor: pointer; padding: 0 10px;">
+            <div class="simple-message-icon" style="display:none;">
                 <span style="font-size: 20px;">🔔</span>
             </div>
         `;
