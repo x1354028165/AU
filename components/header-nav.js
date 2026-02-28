@@ -119,9 +119,9 @@ class HeaderNav {
             </div>
         `;
 
-        // 创建设置图标
+        // 设置图标（已移除）
         const settingsIcon = `
-            <div class="settings-icon" onclick="window.__navigate ? window.__navigate('settings.html') : (window.location.href='settings.html')" style="cursor: pointer; padding: 0 10px;">
+            <div class="settings-icon" style="display:none;">
                 <span style="font-size: 20px;">⚙️</span>
             </div>
         `;
