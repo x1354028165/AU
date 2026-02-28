@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AU BESS - Battery Energy Storage Management</title>
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/batch.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <!-- External Resources -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4ade80;
+            --secondary-color: #0ea5e9;
+            --accent-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background-color: #0a0a0a;
+            --surface-color: #1a1a2e;
+            --text-color: #ffffff;
+            --text-secondary: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+        }
+
+        .stat-item.highlight {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(14, 165, 233, 0.1));
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .stat-icon {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-color);
+            display: block;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.375rem;
+            border-radius: 0.75rem;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active,
+        .lang-btn:hover {
+            background: var(--primary-color);
+            color: #000;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--surface-color);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(74, 222, 128, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-color);
+        }
+
+        .date-badge {
+            background: rgba(74, 222, 128, 0.1);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* KPI Cards */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .kpi-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #000;
+        }
+
+        .kpi-content {
+            flex: 1;
+        }
+
+        .kpi-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-delta {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.375rem;
+        }
+
+        .kpi-delta.positive {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .kpi-delta.negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .kpi-target {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* System Health Block */
+        .system-health-block {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .sh-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .sh-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .sh-metric {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 0.75rem;
+        }
+
+        .sh-metric-icon {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .sh-metric-body {
+            flex: 1;
+        }
+
+        .sh-metric-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        .sh-metric-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-color);
+            display: block;
+        }
+
+        .sh-metric-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        .sh-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .sh-badge-green {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        .card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+        }
+
+        .legend-revenue .legend-dot { background: var(--primary-color); }
+        .legend-cost .legend-dot { background: var(--danger-color); }
+        .legend-profit .legend-dot { background: var(--secondary-color); }
+        .legend-baseline .legend-dot { background: var(--accent-color); }
+
+        /* Market Info */
+        .market-info {
+            space-y: 1rem;
+        }
+
+        .market-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .market-row:last-child {
+            border-bottom: none;
+        }
+
+        .market-row .label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .market-row .value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-peak {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .profit-highlight {
+            color: var(--primary-color);
+            font-size: 1.125rem;
+        }
+
+        .market-signal {
+            background: var(--gradient-primary);
+            color: #000;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-stats {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .nav-container {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-row {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .nav {
+                padding: 1rem;
+            }
+
+            .kpi-row {
+                grid-template-columns: 1fr;
+            }
+
+            .sh-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <h1><span class="material-icons logo-icon">battery_charging_full</span> AU BESS</h1>
+                <div class="subtitle">Australian Battery Energy Storage System | Smart Grid Management</div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="material-icons stat-icon">pie_chart</span>
+                    <div>
+                        <span class="stat-label" data-translate="portfolio_value">Portfolio Value</span>
+                        <span class="stat-value" id="portfolioValue">A$ 45.2M</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="material-icons stat-icon">trending_up</span>
+                    <div>
+                        <span class="stat-label" data-translate="monthly_roi">Monthly ROI</span>
+                        <span class="stat-value" id="monthlyROI">+23.4%</span>
+                    </div>
+                </div>
+                <div class="stat-item highlight">
+                    <span class="material-icons stat-icon">payments</span>
+                    <div>
+                        <span class="stat-label" data-translate="today_profit">Today's Profit</span>
+                        <span class="stat-value" id="todayProfit">A$ 127,850</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language Switcher -->
+            <div class="language-switcher">
+                <button class="lang-btn" data-lang="zh" onclick="changeLanguage('zh')">中文</button>
+                <button class="lang-btn active" data-lang="en" onclick="changeLanguage('en')">EN</button>
+                <button class="lang-btn" data-lang="pt" onclick="changeLanguage('pt')">PT</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="#portfolio" class="nav-item active" data-section="portfolio">
+                <span class="material-icons">dashboard</span> <span data-translate="portfolio_title">Portfolio</span>
+            </a>
+            <a href="#arbitrage" class="nav-item" data-section="arbitrage">
+                <span class="material-icons">swap_horiz</span> <span data-translate="arbitrage_title">Arbitrage</span>
+            </a>
+            <a href="#assets" class="nav-item" data-section="assets">
+                <span class="material-icons">battery_charging_full</span> <span data-translate="assets_title">Assets</span>
+            </a>
+            <a href="#reports" class="nav-item" data-section="reports">
+                <span class="material-icons">assessment</span> <span data-translate="reports_title">Reports</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Portfolio Section (Main Dashboard) -->
+        <section id="portfolio" class="section active">
+            <div class="section-header">
+                <h2><span class="material-icons">dashboard</span> <span data-translate="profit_dashboard">Profit Dashboard</span></h2>
+                <div class="date-badge" id="currentDate"></div>
+            </div>
+
+            <!-- KPI Cards Row -->
+            <div class="kpi-row">
+                <div class="kpi-card kpi-profit">
+                    <div class="kpi-icon"><span class="material-icons">trending_up</span></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label" data-translate="gross_revenue">Gross Revenue Today</span>
+                        <span class="kpi-value" id="kpiRevenue">A$ 285,450</span>
+                        <span class="kpi-delta positive">+15.2% <span data-translate="vs_yesterday">vs yesterday</span></span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-cost">
+                    <div class="kpi-icon"><span class="material-icons">receipt_long</span></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label" data-translate="loading_cost">Charging Cost</span>
+                        <span class="kpi-value" id="kpiCost">A$ 157,600</span>
+                        <span class="kpi-delta negative">-3.1% <span data-translate="vs_yesterday">vs yesterday</span></span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-net">
+                    <div class="kpi-icon"><span class="material-icons">account_balance_wallet</span></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label" data-translate="net_profit">Net Profit</span>
+                        <span class="kpi-value" id="kpiNet">A$ 127,850</span>
+                        <span class="kpi-delta positive">+23.4% <span data-translate="vs_yesterday">vs yesterday</span></span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-arb">
+                    <div class="kpi-icon"><span class="material-icons">swap_vert</span></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label" data-translate="arbitrage_spread">Arbitrage Spread</span>
+                        <span class="kpi-value" id="kpiSpread">A$ 0.47/kWh</span>
+                        <span class="kpi-delta positive" data-translate="window_open">Window Open</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Algorithm KPI Cards Row -->
+            <div class="kpi-row kpi-row-algo">
+                <div class="kpi-card kpi-alpha">
+                    <div class="kpi-icon"><span class="material-icons">psychology</span></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label" data-translate="optimization_alpha">Optimization Alpha</span>
+                        <span class="kpi-value" id="kpiAlphaValue">82.7%</span>
+                        <span class="kpi-delta positive" id="kpiAlphaDelta">+1.2%</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-mape">
+                    <div class="kpi-icon"><span class="material-icons">query_stats</span></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label" data-translate="forecast_mape">Forecast MAPE</span>
+                        <span class="kpi-value" id="kpiMAPEValue">15.2%</span>
+                        <span class="kpi-delta positive" id="kpiMAPEDelta">-2.1%</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-selfcon">
+                    <div class="kpi-icon"><span class="material-icons">solar_power</span></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label" data-translate="self_consumption_rate">Grid Efficiency</span>
+                        <span class="kpi-value" id="kpiSelfConValue">96.8%</span>
+                        <span class="kpi-delta positive" id="kpiSelfConDelta">+0.4%</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-dispatch">
+                    <div class="kpi-icon"><span class="material-icons">gps_fixed</span></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label" data-translate="bess_dispatch_accuracy">BESS Dispatch Accuracy</span>
+                        <span class="kpi-value" id="kpiDispatchValue">94.1%</span>
+                        <span class="kpi-delta positive" id="kpiDispatchDelta">+3.2% vs last week</span>
+                        <span class="kpi-target" data-translate="target_dispatch">Target: &gt;90%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Health Block -->
+            <div class="system-health-block" id="systemHealthBlock">
+                <div class="sh-header">
+                    <span class="material-icons">shield</span>
+                    <span data-translate="system_health">System Health</span>
+                </div>
+                <div class="sh-metrics">
+                    <div class="sh-metric">
+                        <span class="sh-metric-icon material-icons">signal_wifi_statusbar_connected_no_internet_4</span>
+                        <div class="sh-metric-body">
+                            <span class="sh-metric-label" data-translate="aemo_connection">AEMO Connection</span>
+                            <span class="sh-metric-value" id="shUptime">99.9%</span>
+                            <span class="sh-metric-sub">Last 30 days</span>
+                        </div>
+                        <span class="sh-badge sh-badge-green">● Operational</span>
+                    </div>
+                    <div class="sh-metric">
+                        <span class="sh-metric-icon material-icons">battery_charging_full</span>
+                        <div class="sh-metric-body">
+                            <span class="sh-metric-label" data-translate="battery_health">Battery Health</span>
+                            <span class="sh-metric-value" id="shBatteryHealth">✅ EXCELLENT</span>
+                            <span class="sh-metric-sub">Avg SoH: 98.4%</span>
+                        </div>
+                        <span class="sh-badge sh-badge-green">● Optimal</span>
+                    </div>
+                    <div class="sh-metric">
+                        <span class="sh-metric-icon material-icons">task_alt</span>
+                        <div class="sh-metric-body">
+                            <span class="sh-metric-label" data-translate="dispatch_success_rate">Dispatch Success Rate</span>
+                            <span class="sh-metric-value">
+                                <span id="dispatchSuccessCount">287</span> / <span id="dispatchTotalCount">295</span>
+                            </span>
+                            <span class="sh-metric-sub">This month · 97.3%</span>
+                        </div>
+                        <span class="sh-badge sh-badge-green">● On Track</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Charts -->
+            <div class="dashboard-grid">
+                <!-- Revenue Curve -->
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3><span class="material-icons">show_chart</span> <span data-translate="revenue_cost_24h">Revenue vs Cost Curve (24h)</span></h3>
+                        <div class="chart-legend">
+                            <span class="legend-item legend-revenue"><span class="legend-dot"></span> <span data-translate="revenue">Revenue</span></span>
+                            <span class="legend-item legend-cost"><span class="legend-dot"></span> <span data-translate="cost">Cost</span></span>
+                            <span class="legend-item legend-profit"><span class="legend-dot"></span> <span data-translate="accumulated_profit">Accumulated Profit</span></span>
+                            <span class="legend-item legend-baseline"><span class="legend-dot"></span> <span data-translate="shadow_benchmark">Benchmark (no BESS)</span></span>
+                        </div>
+                    </div>
+                    <canvas id="revenueCurveChart" width="800" height="400"></canvas>
+                </div>
+
+                <!-- Market Status -->
+                <div class="card">
+                    <h3><span class="material-icons">storefront</span> <span data-translate="market_conditions">Market Conditions</span></h3>
+                    <div class="market-info">
+                        <div class="market-row">
+                            <span class="label"><span data-translate="current_tariff">Current Rate</span>:</span>
+                            <span class="value" id="currentTariff">Peak</span>
+                            <span class="badge badge-peak" id="tariffBadge">A$ 0.285/kWh</span>
+                        </div>
+                        <div class="market-row">
+                            <span class="label"><span data-translate="charge_cost">Charge Cost</span>:</span>
+                            <span class="value" id="chargeCost">A$ 0.095/kWh</span>
+                        </div>
+                        <div class="market-row">
+                            <span class="label"><span data-translate="current_margin">Current Margin</span>:</span>
+                            <span class="value profit-highlight" id="currentMargin">A$ 0.190/kWh</span>
+                        </div>
+                        <div class="market-row">
+                            <span class="label"><span data-translate="next_window">Next Window</span>:</span>
+                            <span class="value" id="nextWindow">19:00 (Shoulder Rate)</span>
+                        </div>
+                        <div class="market-signal" id="marketSignal">
+                            <span class="material-icons">bolt</span>
+                            <span id="marketSignalText" data-translate="discharge_now">DISCHARGE NOW - Peak arbitrage active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Arbitrage Section -->
+        <section id="arbitrage" class="section">
+            <div class="section-header">
+                <h2><span class="material-icons">swap_horiz</span> <span data-translate="arbitrage_analysis">Arbitrage Analysis</span></h2>
+                <div class="date-badge">AEMO NEM Live</div>
+            </div>
+            <!-- Arbitrage content will be added here -->
+        </section>
+
+        <!-- Assets Section -->
+        <section id="assets" class="section">
+            <div class="section-header">
+                <h2><span class="material-icons">battery_charging_full</span> <span data-translate="battery_assets">Battery Assets</span></h2>
+                <div class="date-badge">5 Stations Active</div>
+            </div>
+            <!-- Assets content will be added here -->
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="section">
+            <div class="section-header">
+                <h2><span class="material-icons">assessment</span> <span data-translate="performance_reports">Performance Reports</span></h2>
+                <div class="date-badge">Generated Daily</div>
+            </div>
+            <!-- Reports content will be added here -->
+        </section>
+
+    </main>
+
+    <script>
+        // Initialize current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-AU', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update active section
+                const sectionId = this.getAttribute('data-section');
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Language switcher
+        function changeLanguage(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+            
+            // Language switching logic would go here
+            console.log('Language switched to:', lang);
+        }
+
+        // Initialize Chart.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('revenueCurveChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`),
+                        datasets: [{
+                            label: 'Revenue',
+                            data: [12, 8, 15, 25, 45, 85, 120, 180, 220, 280, 320, 285, 290, 310, 295, 275, 320, 380, 420, 380, 340, 280, 180, 85],
+                            borderColor: 'rgb(74, 222, 128)',
+                            backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Cost',
+                            data: [8, 6, 10, 15, 25, 45, 65, 95, 125, 155, 175, 165, 160, 170, 165, 155, 175, 205, 235, 205, 185, 155, 95, 45],
+                            borderColor: 'rgb(239, 68, 68)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#94a3b8'
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#94a3b8',
+                                    callback: function(value) {
+                                        return 'A$' + value + 'K';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Simulate real-time data updates
+        setInterval(() => {
+            // Update KPI values with small variations
+            const portfolioValue = document.getElementById('portfolioValue');
+            const todayProfit = document.getElementById('todayProfit');
+            
+            if (portfolioValue && todayProfit) {
+                const currentProfit = parseInt(todayProfit.textContent.replace(/[^\d]/g, ''));
+                const variation = Math.floor(Math.random() * 1000) - 500;
+                const newProfit = Math.max(0, currentProfit + variation);
+                todayProfit.textContent = `A$ ${newProfit.toLocaleString()}`;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

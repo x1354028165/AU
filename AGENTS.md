@@ -3,8 +3,7 @@
 ## 项目信息
 - 项目代号：aus-energy
 - 显示名：澳洲储能电站
-- 群聊模型：Claude Sonnet 4（日常对话，快速响应）
-- 干活模型：Claude Opus 4（spawn sub-agent 执行编码/部署任务）
+- **模型：Claude Opus 4**（所有任务统一用 Opus）
 
 ## 重要规则
 
