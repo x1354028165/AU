@@ -4799,21 +4799,21 @@
                     <!-- Today Metrics Row -->
                     <div style="display:flex; align-items:stretch; gap:0; margin-bottom:12px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.08); padding:10px 0;">
                         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px;">
-                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" data-i18n="dashboard.todayChargeLabel">Today Charge</div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" id="metricsChargeLabel">Today Charge</div>
                             <div style="font-size:18px; font-weight:700; color:#00ff88;" id="todayChargeAmount">2.45 MWh</div>
-                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span data-i18n="dashboard.costLabel">Cost</span> <span style="color:#ff6b6b; font-weight:600;" id="todayChargeCost">$108</span></div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span id="metricsCostLabel">Cost</span> <span style="color:#ff6b6b; font-weight:600;" id="todayChargeCost">$108</span></div>
                         </div>
                         <div style="width:1px; background:rgba(255,255,255,0.08); margin:6px 0;"></div>
                         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px;">
-                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" data-i18n="dashboard.todayDischargeLabel">Today Discharge</div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" id="metricsDischargeLabel">Today Discharge</div>
                             <div style="font-size:18px; font-weight:700; color:#ffc107;" id="todayDischargeAmount">2.18 MWh</div>
-                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span data-i18n="dashboard.revenueLabel">Revenue</span> <span style="color:#00ff88; font-weight:600;" id="todayDischargeRevenue">$523</span></div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span id="metricsRevenueLabel">Revenue</span> <span style="color:#00ff88; font-weight:600;" id="todayDischargeRevenue">$523</span></div>
                         </div>
                         <div style="width:1px; background:rgba(255,255,255,0.08); margin:6px 0;"></div>
                         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px;">
-                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" data-i18n="dashboard.netProfitLabel">Net Profit</div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" id="metricsProfitLabel">Net Profit</div>
                             <div style="font-size:18px; font-weight:700; color:#00ff88;" id="todayNetProfit">$415</div>
-                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span data-i18n="dashboard.vsYesterday">vs Yesterday</span> <span id="profitVsYesterday" style="color:#00ff88; font-weight:600;">↑ 12.3%</span></div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span id="metricsVsLabel">vs Yesterday</span> <span id="profitVsYesterday" style="color:#00ff88; font-weight:600;">↑ 12.3%</span></div>
                         </div>
                     </div>
                     <div id="powerRevenueChart" style="width:100%; height:calc(100% - 130px); min-height:0;"></div>
@@ -9173,19 +9173,26 @@
             }
 
             // Update labels based on period
-            var chargeLabel = document.querySelector('[data-i18n="dashboard.todayChargeLabel"]');
-            var dischLabel = document.querySelector('[data-i18n="dashboard.todayDischargeLabel"]');
-            var profitLabel = document.querySelector('[data-i18n="dashboard.netProfitLabel"]');
+            var chargeLabel = document.getElementById('metricsChargeLabel');
+            var dischLabel = document.getElementById('metricsDischargeLabel');
+            var profitLabel = document.getElementById('metricsProfitLabel');
+            var vsLabel = document.getElementById('metricsVsLabel');
+            var costLbl = document.getElementById('metricsCostLabel');
+            var revLbl = document.getElementById('metricsRevenueLabel');
+            var isZh = window.i18n && window.i18n.getCurrentLanguage() === 'zh';
             var periodLabels = {
-                day: { charge: t('dashboard.todayChargeLabel','Today Charge'), discharge: t('dashboard.todayDischargeLabel','Today Discharge'), profit: t('dashboard.netProfitLabel','Net Profit') },
-                month: { charge: 'Monthly Charge', discharge: 'Monthly Discharge', profit: 'Monthly Profit' },
-                year: { charge: 'Yearly Charge', discharge: 'Yearly Discharge', profit: 'Yearly Profit' },
-                cumulative: { charge: 'Total Charge', discharge: 'Total Discharge', profit: 'Total Profit' }
+                day: { charge: isZh ? '今日充电量' : 'Today Charge', discharge: isZh ? '今日放电量' : 'Today Discharge', profit: isZh ? '净利润' : 'Net Profit', vs: isZh ? '较昨日' : 'vs Yesterday', cost: isZh ? '成本' : 'Cost', rev: isZh ? '收入' : 'Revenue' },
+                month: { charge: isZh ? '本月充电量' : 'Monthly Charge', discharge: isZh ? '本月放电量' : 'Monthly Discharge', profit: isZh ? '月利润' : 'Monthly Profit', vs: isZh ? '较上月' : 'vs Last Month', cost: isZh ? '成本' : 'Cost', rev: isZh ? '收入' : 'Revenue' },
+                year: { charge: isZh ? '年充电量' : 'Yearly Charge', discharge: isZh ? '年放电量' : 'Yearly Discharge', profit: isZh ? '年利润' : 'Yearly Profit', vs: isZh ? '较去年' : 'vs Last Year', cost: isZh ? '成本' : 'Cost', rev: isZh ? '收入' : 'Revenue' },
+                cumulative: { charge: isZh ? '累计充电量' : 'Total Charge', discharge: isZh ? '累计放电量' : 'Total Discharge', profit: isZh ? '累计利润' : 'Total Profit', vs: isZh ? '总计' : 'Total', cost: isZh ? '成本' : 'Cost', rev: isZh ? '收入' : 'Revenue' }
             };
             var labels = periodLabels[period] || periodLabels.day;
             if (chargeLabel) chargeLabel.textContent = labels.charge;
             if (dischLabel) dischLabel.textContent = labels.discharge;
             if (profitLabel) profitLabel.textContent = labels.profit;
+            if (vsLabel) vsLabel.textContent = labels.vs;
+            if (costLbl) costLbl.textContent = labels.cost;
+            if (revLbl) revLbl.textContent = labels.rev;
 
             // Update chart
             powerRevenueChart.setOption({
@@ -16278,31 +16285,33 @@
         // Update power revenue chart when language changes
         window.updatePowerRevenueChartLanguage = function() {
             if (!powerRevenueChart) return;
-            
+            var t = function(key, fb) { return window.i18n ? window.i18n.getText(key) : fb; };
             powerRevenueChart.setOption({
                 legend: {
-                    data: [window.i18n.getText('input'), window.i18n.getText('output'), window.i18n.getText('profit')]
+                    data: [
+                        t('dashboard.chargeEnergy', 'Charge (MWh)'),
+                        t('dashboard.dischargeEnergy', 'Discharge (MWh)'),
+                        t('dashboard.chargeCostLegend', 'Charge Cost ($)'),
+                        t('dashboard.dischargeRevenueLegend', 'Discharge Revenue ($)'),
+                        t('dashboard.netProfitLegend', 'Net Profit ($)')
+                    ]
                 },
-                yAxis: [
-                    {
-                        name: window.i18n.getText('discharge')
-                    },
-                    {
-                        name: window.i18n.getText('profit')
-                    }
-                ],
+                yAxis: [{ name: 'MWh' }, { name: 'AUD ($)' }],
                 series: [
-                    {
-                        name: window.i18n.getText('input')
-                    },
-                    {
-                        name: window.i18n.getText('output')
-                    },
-                    {
-                        name: window.i18n.getText('profit')
-                    }
+                    { name: t('dashboard.chargeEnergy', 'Charge (MWh)') },
+                    { name: t('dashboard.dischargeEnergy', 'Discharge (MWh)') },
+                    { name: t('dashboard.chargeCostLegend', 'Charge Cost ($)') },
+                    { name: t('dashboard.dischargeRevenueLegend', 'Discharge Revenue ($)') },
+                    { name: t('dashboard.netProfitLegend', 'Net Profit ($)') }
                 ]
             });
+            // Also refresh metrics labels for current period
+            var periodSelect = document.getElementById('discharge-period-select');
+            if (periodSelect) {
+                var period = periodSelect.value || 'day';
+                var dateInput = document.getElementById('discharge-date-input');
+                updateDischargeChart(period, dateInput ? dateInput.value : '');
+            }
         };
         
         // Update market chart when language changes
