@@ -80,8 +80,10 @@ class I18n {
                     operationLog: "操作记录",
                     station: "电站",
                     report: "报表",
-                    faultAlarm: "故障",                    messageCenter: "消息中心",
-                    settings: "设置"
+                    faultAlarm: "故障",
+                    messageCenter: "消息中心",
+                    settings: "设置",
+                    switchRole: "切换角色"
                 },
                 analysis: {
                     realtime: "实时分析",
@@ -407,6 +409,8 @@ class I18n {
                 resetComplete: "重置完成",
                 searchCleared: "已清空搜索条件",
                 noData: "暂无数据",
+                    charge: "充电",
+                    discharge: "放电",
                 common: {
                     back: "返回",
                     cancel: "取消",
@@ -2310,6 +2314,7 @@ class I18n {
                     status_charging: "充电中",
                     status_discharging: "放电中",
                     status_idle: "待机",
+                    searchPlaceholder: "搜索电站名称...",
                     mode_auto: "智能",
                     mode_manual: "手动",
                     mode_auto_title: "智能托管模式",
@@ -2328,7 +2333,17 @@ class I18n {
                     dataLoaded: "数据加载完成",
                     autoStatus: "智能托管状态",
                     autoOn: "智能托管开启",
-                    autoOff: "智能托管关闭"
+                    autoOff: "智能托管关闭",
+                    chart: {
+                        actualPrice: "实际价格",
+                        forecastPrice: "预测价格",
+                        autoCharge: "智能充电",
+                        autoDischarge: "智能放电",
+                        manualCharge: "人工充电",
+                        manualDischarge: "人工放电",
+                        dispatchType: "调度类型",
+                        custodyBaseline: "托管基准"
+                    }
                 },
 
                 // Dashboard specific translations
@@ -2514,8 +2529,10 @@ class I18n {
                     operationLog: "Operation Log",
                     station: "Station",
                     report: "Report",
-                    faultAlarm: "Fault Alarm",                    messageCenter: "Message Center",
-                    settings: "Settings"
+                    faultAlarm: "Fault Alarm",
+                    messageCenter: "Message Center",
+                    settings: "Settings",
+                    switchRole: "Switch Role"
                 },
                 
                 // Running Data page translations
@@ -3203,6 +3220,8 @@ class I18n {
                     reset: "Reset",
                     loading: "Loading...",
                     noData: "No Data",
+                    charge: "Charge",
+                    discharge: "Discharge",
                     settings: "Settings",
                     logout: "Logout",
                     confirmLogout: "Confirm Logout",
@@ -4788,6 +4807,7 @@ class I18n {
                     status_charging: "Charging",
                     status_discharging: "Discharging",
                     status_idle: "Idle",
+                    searchPlaceholder: "Search station name...",
                     mode_auto: "Auto",
                     mode_manual: "Manual",
                     mode_auto_title: "Auto Mode",
@@ -4806,7 +4826,17 @@ class I18n {
                     dataLoaded: "Data Loaded",
                     autoStatus: "Auto Status",
                     autoOn: "Auto Mode On",
-                    autoOff: "Auto Mode Off"
+                    autoOff: "Auto Mode Off",
+                    chart: {
+                        actualPrice: "Actual Price",
+                        forecastPrice: "Forecast Price",
+                        autoCharge: "Auto Charge",
+                        autoDischarge: "Auto Discharge",
+                        manualCharge: "Manual Charge",
+                        manualDischarge: "Manual Discharge",
+                        dispatchType: "Dispatch Type",
+                        custodyBaseline: "Custody Baseline"
+                    }
                 },
 
                 // Dashboard specific translations

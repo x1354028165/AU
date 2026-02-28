@@ -107,6 +107,18 @@ class HeaderNav {
         // 创建语言切换图标（不可点击）
         const languageIcon = ``;
         
+        // 角色切换按钮
+        const roleSwitchText = this.i18n ? this.i18n.getText('nav.switchRole') : '切换角色';
+        const roleSwitchBtn = `
+            <div class="role-switch-btn" onclick="window.__navigate ? window.__navigate('role-select.html') : (window.location.href='role-select.html')" 
+                 style="cursor: pointer; padding: 4px 12px; margin: 0 8px; border: 1px solid rgba(0,255,136,0.3); border-radius: 6px; font-size: 13px; color: #00ff88; transition: all 0.3s; display: flex; align-items: center; gap: 4px;"
+                 onmouseover="this.style.background='rgba(0,255,136,0.1)'; this.style.borderColor='#00ff88'"
+                 onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(0,255,136,0.3)'">
+                <span style="font-size: 16px;">🔄</span>
+                <span data-i18n="nav.switchRole">${roleSwitchText}</span>
+            </div>
+        `;
+
         // 创建设置图标
         const settingsIcon = `
             <div class="settings-icon" onclick="window.__navigate ? window.__navigate('settings.html') : (window.location.href='settings.html')" style="cursor: pointer; padding: 0 10px;">
@@ -144,6 +156,7 @@ class HeaderNav {
                     ${navHTML}
                 </div>
                 <div class="header-right">
+                    ${roleSwitchBtn}
                     ${messageCenter}
                     ${languageIcon}
                     ${settingsIcon}

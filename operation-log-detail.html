@@ -1846,8 +1846,8 @@
 
             // ========== 动态生成 legend 数据 ==========
             const legendData = [
-                { name: '实际价格', icon: 'rect', itemStyle: { color: 'rgba(0,255,136,0.7)' } },
-                { name: '预测价格', icon: 'rect', itemStyle: { color: 'rgba(0,122,255,0.6)' } },
+                { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.actualPrice') : '实际价格'), icon: 'rect', itemStyle: { color: 'rgba(0,255,136,0.7)' } },
+                { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.forecastPrice') : '预测价格'), icon: 'rect', itemStyle: { color: 'rgba(0,122,255,0.6)' } },
                 { name: 'SOC', icon: 'rect', itemStyle: { color: 'rgba(138,43,226,0.8)' } }
             ];
 
@@ -1855,26 +1855,26 @@
             if (operationMode === 'manual') {
                 // 纯人工模式：显示人工充电和人工放电
                 legendData.push(
-                    { name: '人工充电', icon: 'rect', itemStyle: { color: '#FFB84D' } }, // 橙色
-                    { name: '人工放电', icon: 'rect', itemStyle: { color: '#FF6B6B' } }  // 红色
+                    { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.manualCharge') : '人工充电'), icon: 'rect', itemStyle: { color: '#FFB84D' } }, // 橙色
+                    { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.manualDischarge') : '人工放电'), icon: 'rect', itemStyle: { color: '#FF6B6B' } }  // 红色
                 );
             } else if (operationMode === 'automated') {
                 // 纯智能模式：显示智能充电和智能放电
                 legendData.push(
-                    { name: '智能充电', icon: 'rect', itemStyle: { color: '#00ff88' } }, // 绿色
-                    { name: '智能放电', icon: 'rect', itemStyle: { color: '#FFD60A' } }  // 黄色
+                    { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.autoCharge') : '智能充电'), icon: 'rect', itemStyle: { color: '#00ff88' } }, // 绿色
+                    { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.autoDischarge') : '智能放电'), icon: 'rect', itemStyle: { color: '#FFD60A' } }  // 黄色
                 );
             } else {
                 // 混合模式：分别显示智能和人工的充放电(4行)
                 legendData.push(
-                    { name: '智能充电', icon: 'rect', itemStyle: { color: '#00ff88' } }, // 绿色
-                    { name: '智能放电', icon: 'rect', itemStyle: { color: '#FFD60A' } }, // 黄色
-                    { name: '人工充电', icon: 'rect', itemStyle: { color: '#FFB84D' } }, // 橙色
-                    { name: '人工放电', icon: 'rect', itemStyle: { color: '#FF6B6B' } }  // 红色
+                    { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.autoCharge') : '智能充电'), icon: 'rect', itemStyle: { color: '#00ff88' } }, // 绿色
+                    { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.autoDischarge') : '智能放电'), icon: 'rect', itemStyle: { color: '#FFD60A' } }, // 黄色
+                    { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.manualCharge') : '人工充电'), icon: 'rect', itemStyle: { color: '#FFB84D' } }, // 橙色
+                    { name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.manualDischarge') : '人工放电'), icon: 'rect', itemStyle: { color: '#FF6B6B' } }  // 红色
                 );
             }
 
-            legendData.push({ name: '调度类型', icon: 'circle', itemStyle: { color: 'rgba(138, 43, 226, 0.9)' } });
+            legendData.push({ name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.dispatchType') : '调度类型'), icon: 'circle', itemStyle: { color: 'rgba(138, 43, 226, 0.9)' } });
 
             const option = {
                 backgroundColor: 'transparent',
@@ -1955,7 +1955,7 @@
                 series: [
                     {
                         // 实际价格（实线）
-                        name: '实际价格',
+                        name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.actualPrice') : '实际价格'),
                         type: 'line',
                         smooth: true,
                         showSymbol: false,
@@ -1968,7 +1968,7 @@
                     },
                     {
                         // 预测价格（虚线）
-                        name: '预测价格',
+                        name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.forecastPrice') : '预测价格'),
                         type: 'line',
                         smooth: true,
                         showSymbol: false,
@@ -1995,7 +1995,7 @@
                     },
                     {
                         // 智能充电操作标记（独立系列，可通过图例控制）
-                        name: '智能充电',
+                        name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.autoCharge') : '智能充电'),
                         type: 'line',
                         data: [],  // 空数据，不显示线条
                         yAxisIndex: 0,
@@ -2019,7 +2019,7 @@
                     },
                     {
                         // 智能放电操作标记（独立系列，可通过图例控制）
-                        name: '智能放电',
+                        name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.autoDischarge') : '智能放电'),
                         type: 'line',
                         data: [],  // 空数据，不显示线条
                         yAxisIndex: 0,
@@ -2043,7 +2043,7 @@
                     },
                     {
                         // 人工充电操作标记（独立系列，可通过图例控制）
-                        name: '人工充电',
+                        name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.manualCharge') : '人工充电'),
                         type: 'line',
                         data: [],  // 空数据，不显示线条
                         yAxisIndex: 0,
@@ -2067,7 +2067,7 @@
                     },
                     {
                         // 人工放电操作标记（独立系列，可通过图例控制）
-                        name: '人工放电',
+                        name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.manualDischarge') : '人工放电'),
                         type: 'line',
                         data: [],  // 空数据，不显示线条
                         yAxisIndex: 0,
@@ -2091,7 +2091,7 @@
                     },
                     {
                         // 人工/智能标记（显示操作来源）
-                        name: '调度类型',
+                        name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.dispatchType') : '调度类型'),
                         type: 'line',
                         data: [],  // 空数据，不显示线条
                         yAxisIndex: 1,  // 使用右侧 SOC 轴，让标记跟随 SOC 曲线
@@ -2161,7 +2161,7 @@
                                 result += `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);">`;
                                 ops.forEach(op => {
                                     const color = op.command === 'charge' ? '#00ff88' : '#FFD60A';
-                                    const text = op.command === 'charge' ? '充电' : '放电';
+                                    const text = op.command === 'charge' ? (window.i18n ? window.i18n.getText('common.charge') : '充电') : (window.i18n ? window.i18n.getText('common.discharge') : '放电');
                                     result += `<div style="margin-top: 3px; color: ${color};">● ${text} (${op.power}MW)</div>`;
                                 });
                                 result += `</div>`;
@@ -2397,7 +2397,7 @@
                 series: [
                     {
                         // 灰色背景（完整矩形）
-                        name: '托管基准',
+                        name: (window.i18n ? window.i18n.getText('operationLogDetail.chart.custodyBaseline') : '托管基准'),
                         type: 'line',
                         data: [],
                         showSymbol: false,
@@ -2484,7 +2484,7 @@
             const headers = ['时间', '指令类型', '来源', '功率(MW)', '持续时间(min)', '操作员', '结果'];
             const rows = operationsData.map(op => [
                 op.time,
-                op.command === 'charge' ? '充电' : '放电',
+                op.command === 'charge' ? (window.i18n ? window.i18n.getText('common.charge') : '充电') : (window.i18n ? window.i18n.getText('common.discharge') : '放电'),
                 op.source,
                 op.power,
                 op.duration,
