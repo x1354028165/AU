@@ -4654,8 +4654,8 @@
 
                 <!-- 底部数据 -->
                 <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
-                    <!-- 第一排：大卡片，3个指标竖排 icon→文字→数字 -->
-                    <div style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 14px 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;">
+                    <!-- 底部指标：SOC + 电池成本 -->
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 14px 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0;">
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 0;">
                             <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(0,255,136,0.1); display: flex; align-items: center; justify-content: center;">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round"><rect x="6" y="7" width="12" height="14" rx="2"/><line x1="10" y1="7" x2="10" y2="4"/><line x1="14" y1="7" x2="14" y2="4"/><line x1="6" y1="13" x2="18" y2="13"/></svg>
@@ -4663,14 +4663,13 @@
                             <div style="font-size: 10px; color: rgba(255,255,255,0.5);" data-i18n="currentSOC">当前SOC</div>
                             <div style="font-size: 20px; font-weight: 700; color: #00ff88;" id="currentSOCCard">72%</div>
                         </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 0; border-left: 1px solid rgba(255,255,255,0.06); border-right: 1px solid rgba(255,255,255,0.06);">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 0; border-left: 1px solid rgba(255,255,255,0.06);">
                             <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(255,107,107,0.1); display: flex; align-items: center; justify-content: center;">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                             </div>
                             <div style="font-size: 10px; color: rgba(255,255,255,0.5);" data-i18n="batteryCost">电池成本</div>
                             <div style="font-size: 20px; font-weight: 700; color: #ff6b6b;" id="batteryCostCard">$85.50</div>
                         </div>
-
                     </div>
                     <!-- 底部充放电卡片已移至顶部指标栏 -->
                 </div>
