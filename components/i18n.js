@@ -86,7 +86,21 @@ class I18n {
                     profit: "获利",
                     family: "家庭",
                     analysis: "分析",
-    
+                    organization: "组织",
+                    pushStrategy: "推送策略",
+                    operationLog: "操作记录",
+                    station: "电站",
+                    report: "报表",
+                    faultAlarm: "故障",
+                    messageCenter: "消息中心",
+                    settings: "设置",
+                    switchRole: "切换角色",
+                    dispatchCenter: "调度中心",
+                    clients: "客户",
+                    logs: "记录",
+                    roleOwner: "业主",
+                    roleOperator: "运维方"
+                },
                 operatorMgmt: {
                     title: "运维管理",
                     buttons: {
@@ -122,22 +136,6 @@ class I18n {
                         userName: "搜索运维方名称",
                         userEmail: "搜索联系邮箱"
                     }
-                },
-                organization: "组织",
-                    pushStrategy: "推送策略",
-                    operationLog: "操作记录",
-                    station: "电站",
-                    report: "报表",
-                    faultAlarm: "故障",
-                    messageCenter: "消息中心",
-                    settings: "设置",
-                    switchRole: "切换角色",
-
-                    dispatchCenter: "调度中心",
-                    clients: "客户",
-                    logs: "记录",
-                    roleOwner: "业主",
-                    roleOperator: "运维方",
                 },
                 analysis: {
                     realtime: "实时分析",
@@ -1410,44 +1408,7 @@ class I18n {
                     }
                 },
                 
-                // Organization page translations
 
-                operatorMgmt: {
-                    title: "Operator Management",
-                    buttons: {
-                        add: "Add Operator",
-                        search: "Search",
-                        reset: "Reset",
-                        export: "Export",
-                        refresh: "Refresh"
-                    },
-                    table: {
-                        name: "Operator Name",
-                        contact: "Contact",
-                        stations: "Assigned Stations",
-                        stationCount: "Stations",
-                        rentalEnd: "Rental Expiry",
-                        status: "Status",
-                        action: "Actions"
-                    },
-                    status: {
-                        active: "Active",
-                        inactive: "Inactive",
-                        allStatus: "All Status"
-                    },
-                    actions: {
-                        edit: "Edit",
-                        delete: "Delete"
-                    },
-                    modal: {
-                        addOperator: "Add Operator",
-                        editOperator: "Edit Operator"
-                    },
-                    placeholder: {
-                        userName: "Search operator name",
-                        userEmail: "Search contact email"
-                    }
-                },
                 organization: {
                     title: "组织",
                     subtitle: "管理组织成员和权限设置",
