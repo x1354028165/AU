@@ -8238,197 +8238,191 @@
         function initPowerRevenueChart() {
             powerRevenueChart = echarts.init(document.getElementById('powerRevenueChart'));
 
-            // Generate realistic Australian household energy data for 24 hours (48 data points, 30-min intervals)
-            // Adjusted based on current Australian season
-            function generateRealisticEnergyData() {
-                const inputData = [];  // Grid purchase (kW)
-                const outputData = []; // Solar + Battery feed-in (kW)
-                const profitData = [];  // Profit ($)
+            // Generate BESS energy data: charge/discharge quantities and financials
+            function generateBESSData() {
+                var chargeEnergy = [];   // MWh (negative for visual)
+                var chargeCost = [];     // $ (cost, negative)
+                var dischargeEnergy = []; // MWh (positive)
+                var dischargeRevenue = []; // $ (revenue, positive)
+                var netProfit = [];       // $ (revenue - cost)
 
-                // Grid purchase rate: ~$0.30/kWh, Feed-in rate: ~$0.08/kWh (Australian typical rates)
-                const gridRate = 0.30;
-                const feedInRate = 0.08;
-
-                // Get current month (1-12) to determine season
-                const currentMonth = new Date().getMonth() + 1;
-                const isSummer = currentMonth === 12 || currentMonth === 1 || currentMonth === 2; // Dec-Feb
-                const isWinter = currentMonth === 6 || currentMonth === 7 || currentMonth === 8; // Jun-Aug
-
-                // Seasonal multipliers for solar generation and grid purchase
-                const solarMultiplier = isSummer ? 1.3 : isWinter ? 0.6 : 1.0;
-                const gridMultiplier = isSummer ? 0.7 : isWinter ? 1.4 : 1.0;
-
-                for (let i = 0; i < 48; i++) {
-                    const hour = Math.floor(i / 2);
-                    const minute = (i % 2) * 30;
-
-                    let gridPurchase = 0;  // From grid
-                    let feedIn = 0;        // To grid
-
-                    // Night period (0:00-6:00): Low grid purchase, minimal feed-in
-                    if (hour >= 0 && hour < 6) {
-                        gridPurchase = (0.3 + Math.random() * 0.4) * gridMultiplier;
-                        feedIn = Math.random() * 0.1;
-                    }
-                    // Morning peak (6:00-9:00): Increasing grid purchase, solar starts
-                    else if (hour >= 6 && hour < 9) {
-                        gridPurchase = (1.5 + (hour - 6) * 0.8 + Math.random() * 0.5) * gridMultiplier;
-                        feedIn = Math.max(0, (hour - 6) * 0.8 + Math.random() * 0.5) * solarMultiplier;
-                    }
-                    // Mid-morning to afternoon (9:00-17:00): Solar peak, low grid purchase
-                    else if (hour >= 9 && hour < 17) {
-                        gridPurchase = (0.2 + Math.random() * 0.3) * gridMultiplier;
-
-                        // Solar peak around midday (12:00-15:00)
-                        if (hour >= 12 && hour < 15) {
-                            feedIn = (4.5 + Math.random() * 1.5) * solarMultiplier;
-                        } else if (hour >= 10 && hour < 12) {
-                            feedIn = (3.0 + Math.random() * 1.0) * solarMultiplier;
-                        } else if (hour >= 15 && hour < 17) {
-                            feedIn = (2.5 + Math.random() * 1.0) * solarMultiplier;
-                        } else {
-                            feedIn = (2.0 + Math.random() * 0.8) * solarMultiplier;
-                        }
-                    }
-                    // Evening peak (17:00-22:00): High grid purchase, declining solar
-                    else if (hour >= 17 && hour < 22) {
-                        gridPurchase = (2.5 + (hour - 17) * 0.3 + Math.random() * 0.8) * gridMultiplier;
-
-                        // Solar declining, some battery discharge
-                        if (hour < 19) {
-                            feedIn = Math.max(0, (1.5 - (hour - 17) * 0.5 + Math.random() * 0.3) * solarMultiplier);
-                        } else {
-                            feedIn = Math.random() * 0.3;
-                        }
-                    }
-                    // Late night (22:00-24:00): Decreasing grid purchase
-                    else {
-                        gridPurchase = (1.2 - (hour - 22) * 0.4 + Math.random() * 0.3) * gridMultiplier;
-                        feedIn = Math.random() * 0.1;
-                    }
-
-                    // Calculate profit: feed-in revenue only
-                    // Convert kW to kWh for 30-min interval (kW * 0.5h)
-                    const profit = feedIn * 0.5 * feedInRate;
-
-                    inputData.push(parseFloat(gridPurchase.toFixed(2)));
-                    outputData.push(parseFloat(feedIn.toFixed(2)));
-                    profitData.push(parseFloat(profit.toFixed(2)));
+                // AEMO spot price simulation ($/MWh)
+                function getSpotPrice(hour) {
+                    if (hour >= 0 && hour < 5) return 30 + Math.random() * 20;      // Off-peak
+                    if (hour >= 5 && hour < 7) return 60 + Math.random() * 30;      // Shoulder
+                    if (hour >= 7 && hour < 10) return 80 + Math.random() * 40;     // Morning peak
+                    if (hour >= 10 && hour < 15) return 50 + Math.random() * 30;    // Mid-day (solar surplus)
+                    if (hour >= 15 && hour < 17) return 90 + Math.random() * 60;    // Afternoon peak
+                    if (hour >= 17 && hour < 21) return 120 + Math.random() * 80;   // Evening peak
+                    return 40 + Math.random() * 25;                                  // Night
                 }
 
-                return { inputData, outputData, profitData };
+                // BESS operation: charge during low price, discharge during high price
+                for (var i = 0; i < 24; i++) {
+                    var price = getSpotPrice(i);
+                    var chgMWh = 0, dchMWh = 0;
+
+                    // Charge during off-peak/mid-day (low prices)
+                    if (i >= 1 && i < 5) {
+                        chgMWh = 0.8 + Math.random() * 0.4;  // ~0.8-1.2 MWh per hour
+                    } else if (i >= 10 && i < 14) {
+                        chgMWh = 0.5 + Math.random() * 0.3;  // Solar surplus charging
+                    }
+
+                    // Discharge during peaks
+                    if (i >= 7 && i < 9) {
+                        dchMWh = 0.4 + Math.random() * 0.3;  // Morning peak
+                    } else if (i >= 16 && i < 21) {
+                        dchMWh = 0.6 + Math.random() * 0.5;  // Evening peak (main revenue)
+                    }
+
+                    var costVal = chgMWh * price;     // Cost to charge
+                    var revVal = dchMWh * price;       // Revenue from discharge
+                    var profitVal = revVal - costVal;
+
+                    chargeEnergy.push(parseFloat((-chgMWh).toFixed(3)));
+                    chargeCost.push(parseFloat((-costVal).toFixed(2)));
+                    dischargeEnergy.push(parseFloat(dchMWh.toFixed(3)));
+                    dischargeRevenue.push(parseFloat(revVal.toFixed(2)));
+                    netProfit.push(parseFloat(profitVal.toFixed(2)));
+                }
+
+                return { chargeEnergy: chargeEnergy, chargeCost: chargeCost, dischargeEnergy: dischargeEnergy, dischargeRevenue: dischargeRevenue, netProfit: netProfit };
             }
 
-            const { inputData, outputData, profitData } = generateRealisticEnergyData();
+            var data = generateBESSData();
+            var hours = [];
+            for (var h = 0; h < 24; h++) { hours.push(h.toString().padStart(2, '0') + ':00'); }
 
-            const options = {
+            var t = function(key, fallback) { return window.i18n ? window.i18n.getText(key) : fallback; };
+
+            var options = {
                 tooltip: {
                     trigger: 'axis',
-                    backgroundColor: 'rgba(0,0,0,0.9)',
+                    backgroundColor: 'rgba(0,0,0,0.92)',
                     borderColor: 'rgba(255,255,255,0.1)',
-                    textStyle: { color: '#fff' },
-                    axisPointer: {
-                        type: 'cross',
-                        crossStyle: {
-                            color: 'var(--color-text-secondary)'
-                        }
+                    textStyle: { color: '#fff', fontSize: 12 },
+                    formatter: function(params) {
+                        var time = params[0].axisValue;
+                        var lines = ['<b>' + time + '</b>'];
+                        params.forEach(function(p) {
+                            var val = p.value;
+                            var unit = (p.seriesName.indexOf('MWh') > -1 || p.seriesName.indexOf('Charge') > -1 && p.seriesName.indexOf('$') === -1) ? ' MWh' : '';
+                            if (p.seriesName.indexOf('Cost') > -1 || p.seriesName.indexOf('Revenue') > -1 || p.seriesName.indexOf('Profit') > -1 || p.seriesName.indexOf('$') > -1) {
+                                unit = '';
+                                val = '$' + Math.abs(val).toFixed(0);
+                            } else {
+                                val = Math.abs(val).toFixed(2) + ' MWh';
+                            }
+                            lines.push(p.marker + ' ' + p.seriesName + ': ' + val);
+                        });
+                        return lines.join('<br>');
                     }
                 },
                 legend: {
                     data: [
-                        window.i18n ? window.i18n.getText('input') : 'Input',
-                        window.i18n ? window.i18n.getText('output') : 'Output',
-                        window.i18n ? window.i18n.getText('profit') : '获利'
+                        t('dashboard.chargeEnergy', 'Charge (MWh)'),
+                        t('dashboard.dischargeEnergy', 'Discharge (MWh)'),
+                        t('dashboard.chargeCostLegend', 'Charge Cost ($)'),
+                        t('dashboard.dischargeRevenueLegend', 'Discharge Revenue ($)'),
+                        t('dashboard.netProfitLegend', 'Net Profit ($)')
                     ],
-                    textStyle: { color: 'rgba(255, 255, 255, 0.7)' },
-                    top: 0
+                    textStyle: { color: 'rgba(255,255,255,0.7)', fontSize: 11 },
+                    top: 0,
+                    itemGap: 12,
+                    itemWidth: 14,
+                    itemHeight: 10
                 },
                 grid: {
                     left: '3%',
-                    right: '3%',
+                    right: '4%',
                     bottom: '3%',
-                    top: '15%',
+                    top: '14%',
                     containLabel: true
                 },
                 xAxis: {
                     type: 'category',
-                    data: Array.from({length: 48}, (_, i) => {
-                        const hour = Math.floor(i / 2);
-                        const minute = (i % 2) * 30;
-                        return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                    }),
-                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.2)' } },
-                    axisLabel: {
-                        color: 'rgba(255, 255, 255, 0.6)',
-                        interval: 5  // Show every 6th label to avoid crowding
-                    }
+                    data: hours,
+                    axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
+                    axisLabel: { color: 'rgba(255,255,255,0.6)', interval: 2 }
                 },
                 yAxis: [{
                     type: 'value',
-                    name: 'kW',
-                    nameTextStyle: { color: 'rgba(255, 255, 255, 0.6)' },
-                    min: 0,
-                    max: 8,
-                    interval: 1,
-                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.2)' } },
-                    axisLabel: {
-                        color: 'rgba(255, 255, 255, 0.6)',
-                        formatter: '{value}'
-                    },
-                    splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.1)' } }
+                    name: 'MWh',
+                    nameTextStyle: { color: 'rgba(255,255,255,0.6)' },
+                    axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
+                    axisLabel: { color: 'rgba(255,255,255,0.6)' },
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } }
                 }, {
                     type: 'value',
-                    name: window.i18n ? window.i18n.getText('profit') : '获利',
-                    nameTextStyle: { color: 'rgba(255, 255, 255, 0.6)' },
-                    min: 0,
-                    max: 0.3,
-                    interval: 0.05,
-                    axisLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.2)' } },
-                    axisLabel: {
-                        color: 'rgba(255, 255, 255, 0.6)',
-                        formatter: '${value}'
-                    },
+                    name: 'AUD ($)',
+                    nameTextStyle: { color: 'rgba(255,255,255,0.6)' },
+                    axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
+                    axisLabel: { color: 'rgba(255,255,255,0.6)', formatter: '${value}' },
                     splitLine: { show: false }
                 }],
-                series: [{
-                    name: window.i18n ? window.i18n.getText('input') : 'Input',
-                    type: 'line',
-                    data: inputData,
-                    lineStyle: {
-                        width: 3,
-                        color: '#00ff88'
+                series: [
+                    {
+                        name: t('dashboard.chargeEnergy', 'Charge (MWh)'),
+                        type: 'bar',
+                        stack: 'energy',
+                        data: data.chargeEnergy,
+                        itemStyle: { color: 'rgba(0,255,136,0.7)', borderRadius: [0,0,3,3] },
+                        barWidth: '35%'
                     },
-                    itemStyle: { color: '#00ff88' },
-                    symbol: 'circle',
-                    symbolSize: 6,
-                    smooth: true
-                }, {
-                    name: window.i18n ? window.i18n.getText('output') : 'Output',
-                    type: 'line',
-                    data: outputData,
-                    lineStyle: {
-                        width: 3,
-                        color: '#ffd700'
+                    {
+                        name: t('dashboard.dischargeEnergy', 'Discharge (MWh)'),
+                        type: 'bar',
+                        stack: 'energy',
+                        data: data.dischargeEnergy,
+                        itemStyle: { color: 'rgba(255,193,7,0.8)', borderRadius: [3,3,0,0] },
+                        barWidth: '35%'
                     },
-                    itemStyle: { color: '#ffd700' },
-                    symbol: 'circle',
-                    symbolSize: 6,
-                    smooth: true
-                }, {
-                    name: window.i18n ? window.i18n.getText('profit') : '获利',
-                    type: 'bar',
-                    yAxisIndex: 1,
-                    data: profitData,
-                    itemStyle: {
-                        color: '#1E7FFF',
-                        opacity: 0.8
+                    {
+                        name: t('dashboard.chargeCostLegend', 'Charge Cost ($)'),
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: data.chargeCost,
+                        lineStyle: { width: 2, color: '#ff6b6b', type: 'dashed' },
+                        itemStyle: { color: '#ff6b6b' },
+                        symbol: 'none',
+                        smooth: true
                     },
-                    barWidth: '30%'
-                }]
+                    {
+                        name: t('dashboard.dischargeRevenueLegend', 'Discharge Revenue ($)'),
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: data.dischargeRevenue,
+                        lineStyle: { width: 2, color: '#00ff88' },
+                        itemStyle: { color: '#00ff88' },
+                        symbol: 'none',
+                        smooth: true
+                    },
+                    {
+                        name: t('dashboard.netProfitLegend', 'Net Profit ($)'),
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: data.netProfit,
+                        lineStyle: { width: 3, color: '#ffd700' },
+                        itemStyle: { color: '#ffd700' },
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        smooth: true,
+                        areaStyle: {
+                            color: {
+                                type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                                colorStops: [
+                                    { offset: 0, color: 'rgba(255,215,0,0.15)' },
+                                    { offset: 1, color: 'rgba(255,215,0,0)' }
+                                ]
+                            }
+                        }
+                    }
+                ]
             };
             
             powerRevenueChart.setOption(options);
-            window.addEventListener('resize', throttle(() => {
+            window.addEventListener('resize', throttle(function() {
                 if (powerRevenueChart && typeof powerRevenueChart.resize === 'function') {
                     powerRevenueChart.resize();
                 }
