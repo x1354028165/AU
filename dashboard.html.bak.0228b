@@ -10905,13 +10905,11 @@
             if (operationType === 'discharge') {
                 if (durLabel) durLabel.textContent = currentLanguage === 'en' ? 'Est. Discharge Time' : '预计放完时长';
                 if (costLabel) costLabel.textContent = currentLanguage === 'en' ? 'Est. Revenue' : '预计收入';
-                if (ecEl) ecEl.style.color = '#ffd700';
-                if (edEl) edEl.style.color = '#ffd700';
+                if (ecEl) ecEl.style.color = '#00ff88';
             } else {
                 if (durLabel) durLabel.textContent = currentLanguage === 'en' ? 'Est. Full Charge Time' : '预计充满时长';
                 if (costLabel) costLabel.textContent = currentLanguage === 'en' ? 'Est. Cost' : '预计成本';
-                if (ecEl) ecEl.style.color = '#00ff88';
-                if (edEl) edEl.style.color = '#00ff88';
+                if (ecEl) ecEl.style.color = '#ffc107';
             }
             
             // 首先重置所有信息项为可见状态
@@ -10947,12 +10945,23 @@
                 if (durationItem) durationItem.style.display = 'none';
                 if (costBenefitItem) costBenefitItem.style.display = 'none';
             } else if (operationType === 'discharge' && !isStopOperation) {
-                // For discharge only (not stop discharge): hide extra fields (no profit row)
+                // For discharge only (not stop discharge): show predicted profit
                 if (estimatedPowerItem) estimatedPowerItem.style.display = 'none';
                 if (currentPriceItem) currentPriceItem.style.display = 'none';
                 if (durationItem) durationItem.style.display = 'none';
                 if (costBenefitItem) costBenefitItem.style.display = 'none';
                 
+                const profitRow = document.createElement('div');
+                profitRow.style.cssText = 'display: flex; gap: 20px; margin-top: 20px;';
+                const profitLabel = window.i18n ? window.i18n.getText('estimatedProfit') : '预计收益';
+                profitRow.innerHTML = `
+                    <div class="modal-info-item" style="flex: 1; max-width: calc(50% - 10px); background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 24px; transition: all 0.3s; display: flex; flex-direction: column;">
+                        <div class="modal-info-label" style="color: rgba(255, 255, 255, 0.6); font-size: 14px; margin-bottom: 8px; font-weight: 400;" data-i18n="estimatedProfit">${profitLabel}</div>
+                        <div class="modal-info-value" style="color: #ffd700; font-size: 20px; font-weight: 600;">+$${Math.floor(estimatedPower * parseInt(currentPrice.replace('$', '')) * 0.7)}</div>
+                    </div>
+                    <div style="flex: 1;"></div>
+                `;
+                confirmInfoGrid.appendChild(profitRow);
             }
             
             // Update warning message
