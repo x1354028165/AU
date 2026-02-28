@@ -724,6 +724,7 @@ class I18n {
                     },
                     filter: {
                         allRegions: "全部地区",
+                        allStations: "全部电站",
                         operatorPlaceholder: "请输入操作人员...",
                         allCommands: "全部命令",
                         charge: "充电",
@@ -788,6 +789,18 @@ class I18n {
                         normal: "正常",
                         warning: "警告",
                         error: "错误"
+                    },
+                    dailyStats: {
+                        title: "每日电站统计",
+                        date: "日期",
+                        station: "电站",
+                        chargeCount: "充电次数",
+                        dischargeCount: "放电次数",
+                        operationMode: "操作方式",
+                        modes: {
+                            manual: "人工",
+                            automated: "智能托管"
+                        }
                     }
                 },
                 
@@ -2137,19 +2150,6 @@ class I18n {
                         refresh: "刷新",
                     },
                 },
-                operationLog: {
-                    dailyStats: {
-                        chargeCount: "充电次数",
-                        date: "日期",
-                        dischargeCount: "放电次数",
-                        operationMode: "操作方式",
-                        station: "电站",
-                        title: "每日电站统计",
-                    },
-                    filter: {
-                        allStations: "全部电站",
-                    },
-                },
                 pushNotification: {
                     advanced: {
                         content: "NSW地区充电价格$300，还有15分钟到达最佳放电时机",
@@ -3044,6 +3044,7 @@ class I18n {
                     },
                     filter: {
                         allRegions: "All Regions",
+                        allStations: "All Stations",
                         operatorPlaceholder: "Enter operator name...",
                         allCommands: "All Commands",
                         charge: "Charge",
@@ -3108,6 +3109,18 @@ class I18n {
                         normal: "Normal",
                         warning: "Warning",
                         error: "Error"
+                    },
+                    dailyStats: {
+                        title: "Daily Station Statistics",
+                        date: "Date",
+                        station: "Station",
+                        chargeCount: "Charge Count",
+                        dischargeCount: "Discharge Count",
+                        operationMode: "Operation Mode",
+                        modes: {
+                            manual: "Manual",
+                            automated: "Automated"
+                        }
                     }
                 },
                 
@@ -4405,19 +4418,6 @@ class I18n {
                 messageCenter: {
                     buttons: {
                         refresh: "Refresh",
-                    },
-                },
-                operationLog: {
-                    dailyStats: {
-                        chargeCount: "Charge Count",
-                        date: "Date",
-                        dischargeCount: "Discharge Count",
-                        operationMode: "Operation Mode",
-                        station: "Station",
-                        title: "Daily Station Statistics",
-                    },
-                    filter: {
-                        allStations: "All Stations",
                     },
                 },
                 pushNotification: {

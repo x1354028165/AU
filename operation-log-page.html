@@ -1223,7 +1223,7 @@
                     <td style="text-align: center; color: #FFD60A; font-weight: 600;">${stat.dischargeCount}</td>
                     <td style="text-align: center;"><span class="status-badge" style="${operationModeClass}">${operationModeText}</span></td>
                     <td>
-                        <a href="#" class="action-link" style="color: #00ff88;" onclick="viewStationDailyDetails('${stat.date}', '${stat.station}', '${stat.operationMode}'); return false;">详情</a>
+                        <a href="#" class="action-link" style="color: #00ff88;" onclick="viewStationDailyDetails('${stat.date}', '${stat.station}', '${stat.operationMode}'); return false;">${t('operationLog.buttons.viewDetails', '详情')}</a>
                     </td>
                 `;
                 tbody.appendChild(row);

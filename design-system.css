@@ -1,5 +1,5 @@
 /* ============================================
-   X ENERGI Design System v1.0
+   X ENERGI Design System v2.0
    全局统一设计规范
    ============================================ */
 
@@ -20,9 +20,9 @@
     
     /* 背景层级 */
     --bg-base: #000000;
-    --bg-card: rgba(255, 255, 255, 0.03);
-    --bg-card-hover: rgba(255, 255, 255, 0.06);
-    --bg-elevated: rgba(255, 255, 255, 0.08);
+    --bg-card: rgba(23, 23, 23, 0.8);
+    --bg-card-hover: rgba(30, 30, 30, 0.85);
+    --bg-elevated: rgba(35, 35, 35, 0.9);
     --bg-input: rgba(255, 255, 255, 0.05);
     --bg-input-focus: rgba(255, 255, 255, 0.08);
     --bg-table-header: rgba(255, 255, 255, 0.06);
@@ -40,9 +40,9 @@
     --border-hover: rgba(255, 255, 255, 0.15);
     --border-focus: var(--color-primary);
     
-    /* 圆角 - 统一 3 档 */
-    --radius-sm: 6px;
-    --radius-md: 10px;
+    /* 圆角 */
+    --radius-sm: 8px;
+    --radius-md: 12px;
     --radius-lg: 16px;
     --radius-full: 999px;
     
@@ -55,7 +55,7 @@
     --space-2xl: 48px;
     
     /* 页面布局 */
-    --page-max-width: 1400px;
+    --page-max-width: 1440px;
     --page-padding: 24px;
     --header-height: 64px;
     --content-top: calc(var(--header-height) + var(--space-lg));
@@ -74,20 +74,25 @@
     --text-3xl: 32px;
     
     /* 阴影 */
-    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+    --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.4);
     --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.6);
     
     /* 过渡 */
     --transition-fast: 150ms ease;
-    --transition-normal: 250ms ease;
+    --transition-normal: 300ms ease;
     --transition-slow: 350ms ease;
 }
 
-/* === 页面过渡动画（解决闪屏） === */
+/* === 页面过渡动画 === */
 @keyframes pageFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes viewFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 body {
@@ -100,17 +105,26 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* 页面内容区淡入动画 */
+/* 页面内容淡入 */
 .page-content,
-.main-content,
-[class*="container"]:not(.header):not([class*="nav"]) {
+.main-content {
     animation: pageFadeIn 0.3s ease-out;
 }
 
-/* === 统一页面布局 === */
-.page-wrapper {
-    max-width: var(--page-max-width);
+/* 视图切换淡入 */
+.view-fade-in {
+    animation: viewFadeIn 0.3s ease-out forwards;
+}
+
+/* === 统一容器宽度 === */
+.container,
+.page-wrapper,
+.content-wrapper {
+    max-width: var(--page-max-width) !important;
     margin: 0 auto;
+}
+
+.page-wrapper {
     padding: var(--content-top) var(--page-padding) var(--space-2xl);
 }
 
@@ -122,61 +136,118 @@ body {
     margin: 0 0 var(--space-lg) 0;
 }
 
-/* === 卡片 === */
-.ds-card {
-    background: var(--bg-card);
+/* === 卡片 — 毛玻璃效果 === */
+.ds-card,
+.card,
+.stat-card,
+.info-card,
+.data-card,
+.summary-card,
+.filter-section,
+.chart-container,
+.table-container {
+    background: var(--bg-card) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
-    padding: var(--space-lg);
-    transition: background var(--transition-fast);
+    box-shadow: var(--shadow-card);
+    transition: background var(--transition-fast), transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
-.ds-card:hover {
-    background: var(--bg-card-hover);
+.ds-card:hover,
+.card:hover,
+.stat-card:hover,
+.info-card:hover,
+.data-card:hover,
+.summary-card:hover {
+    background: var(--bg-card-hover) !important;
+    box-shadow: var(--shadow-elevated);
 }
 
-/* === 按钮规范 === */
-.ds-btn {
+/* === 按钮规范 — 统一 hover 缩放 === */
+button,
+.btn,
+.ds-btn,
+[class*="btn-"],
+a.btn,
+.action-btn,
+.submit-btn {
+    transition: all var(--transition-normal);
+    cursor: pointer;
+}
+
+button:hover,
+.btn:hover,
+.ds-btn:hover,
+[class*="btn-"]:hover,
+a.btn:hover,
+.action-btn:hover,
+.submit-btn:hover {
+    transform: scale(1.02);
+}
+
+button:active,
+.btn:active,
+.ds-btn:active,
+[class*="btn-"]:active,
+a.btn:active,
+.action-btn:active,
+.submit-btn:active {
+    transform: scale(0.98);
+}
+
+/* 主按钮 */
+.ds-btn-primary {
+    background: var(--color-primary);
+    color: #000;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-base);
+    font-weight: 500;
+    height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-sm);
-    font-size: var(--text-base);
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all var(--transition-fast);
-    white-space: nowrap;
-    height: 36px;
-    line-height: 1;
-}
-
-.ds-btn-primary {
-    background: var(--color-primary);
-    color: #000;
 }
 
 .ds-btn-primary:hover {
     background: var(--color-primary-hover);
 }
 
+/* 描边按钮 */
 .ds-btn-outline {
     background: transparent;
     color: var(--text-primary);
     border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-base);
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ds-btn-outline:hover {
     border-color: var(--border-hover);
-    background: var(--bg-card);
+    background: rgba(255, 255, 255, 0.04);
 }
 
+/* 危险按钮 */
 .ds-btn-danger {
     background: transparent;
     color: var(--color-danger);
     border: 1px solid rgba(255, 71, 87, 0.3);
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-base);
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ds-btn-danger:hover {
@@ -184,6 +255,13 @@ body {
 }
 
 /* === 输入框 === */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="date"],
+textarea,
 .ds-input {
     background: var(--bg-input);
     border: 1px solid var(--border-default);
@@ -191,28 +269,58 @@ body {
     color: var(--text-primary);
     padding: var(--space-sm) var(--space-md);
     font-size: var(--text-base);
-    height: 36px;
     transition: all var(--transition-fast);
     outline: none;
 }
 
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="date"]:focus,
+textarea:focus,
 .ds-input:focus {
     border-color: var(--color-primary);
     background: var(--bg-input-focus);
     box-shadow: 0 0 0 2px var(--color-primary-dim);
 }
 
-.ds-input::placeholder {
+input::placeholder,
+textarea::placeholder {
     color: var(--text-tertiary);
 }
 
+/* === 下拉框 === */
+select,
+.ds-select {
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-md);
+    font-size: var(--text-base);
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    transition: all var(--transition-fast);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+select:focus,
+.ds-select:focus {
+    border-color: var(--color-primary);
+}
+
 /* === 表格 === */
-.ds-table {
+table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.ds-table th {
+th {
     background: var(--bg-table-header);
     color: var(--text-secondary);
     font-weight: 500;
@@ -220,16 +328,17 @@ body {
     text-align: left;
     padding: var(--space-sm) var(--space-md);
     border-bottom: 1px solid var(--border-default);
+    white-space: nowrap;
 }
 
-.ds-table td {
+td {
     padding: var(--space-md);
     border-bottom: 1px solid var(--border-default);
     color: var(--text-primary);
     font-size: var(--text-base);
 }
 
-.ds-table tr:hover td {
+tr:hover td {
     background: var(--bg-table-row-hover);
 }
 
@@ -265,35 +374,34 @@ body {
     gap: var(--space-md);
     padding: var(--space-md) var(--space-lg);
     background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-lg);
     flex-wrap: wrap;
 }
 
-/* === Select 下拉 === */
-.ds-select {
-    background: var(--bg-input);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-    padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-md);
-    font-size: var(--text-base);
-    height: 36px;
-    appearance: none;
-    cursor: pointer;
-    outline: none;
-    transition: all var(--transition-fast);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
+/* === 滚动条美化 === */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
 
-.ds-select:focus {
-    border-color: var(--color-primary);
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-/* === 页面过渡 loading 条 === */
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* === 页面 loading 条 === */
 .page-loading-bar {
     position: fixed;
     top: 0;
@@ -302,4 +410,17 @@ body {
     background: var(--color-primary);
     z-index: 99999;
     transition: width 0.3s ease;
+}
+
+/* === 响应式 === */
+@media (max-width: 768px) {
+    :root {
+        --page-padding: 16px;
+    }
+    
+    .container,
+    .page-wrapper,
+    .content-wrapper {
+        max-width: 100% !important;
+    }
 }
