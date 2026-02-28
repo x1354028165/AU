@@ -83,12 +83,12 @@ class HeaderNav {
     createHeaderHTML() {
         const role = localStorage.getItem('userRole') || 'operator';
         const allNavItems = [
-            { href: 'dashboard.html', i18nKey: role === 'operator' ? 'nav.dispatchCenter' : 'nav.home', key: 'home', roles: ['owner', 'operator'] },
+            { href: 'dashboard.html', i18nKey: 'nav.dispatchCenter', key: 'home', roles: ['operator'] },
             { href: 'station.html', i18nKey: 'nav.station', key: 'station', roles: ['owner', 'operator'] },
-            { href: '002.html', i18nKey: 'nav.report', key: 'report', roles: ['owner', 'operator'] },
+            { href: '002.html', i18nKey: 'nav.report', key: 'report', roles: ['operator'] },
             { href: 'fault-alarm.html', i18nKey: 'nav.faultAlarm', key: 'faultAlarm', roles: ['owner', 'operator'] },
             { href: 'organization-new.html', i18nKey: 'nav.operatorMgmt', key: 'organization', roles: ['owner'] },
-            { href: 'operation-log-page.html', i18nKey: role === 'operator' ? 'nav.logs' : 'nav.operationLog', key: 'operationLog', roles: ['owner', 'operator'] }
+            { href: 'operation-log-page.html', i18nKey: 'nav.logs', key: 'operationLog', roles: ['operator'] }
         ];
         const navItems = allNavItems.filter(item => item.roles.includes(role));
         
