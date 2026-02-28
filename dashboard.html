@@ -5,7 +5,7 @@
     <script src="page-transition.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>能源管理中心</title>
+    <title data-i18n="dashboard.pageTitle">能源管理中心</title>
     <script src="vendor/echarts.min.js"></script>
     <link rel="stylesheet" href="components/common-styles.css">
     <link rel="stylesheet" href="components/time-selector.css">
@@ -4530,7 +4530,7 @@
                         d.setDate(d.getDate() - 1);
                         const pad = n => String(n).padStart(2, '0');
                         const ts = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' 23:59:59';
-                        const isEn = window.i18n?.currentLang?.startsWith('en');
+                        const isEn = window.i18n?.currentLanguage?.startsWith('en');
                         document.getElementById('dataCutoffLabel').textContent = (isEn ? '* Data as of ' : '* 统计截止 ') + ts;
                     })();
                 </script>
@@ -4581,7 +4581,7 @@
                 <!-- Header -->
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                     <h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;">
-                        <span data-i18n="station">电站管理</span>
+                        <span data-i18n="dashboard.stationManagement">电站管理</span>
                         <span id="regionStatusText" style="font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px; display: none;"></span>
                     </h3>
                     <div style="display: flex; align-items: center; gap: 6px;">
@@ -4607,7 +4607,7 @@
                                     <div class="flip-bottom"><div class="flip-digit">0</div></div>
                                 </div>
                             </div>
-                            <div class="flip-label">时</div>
+                            <div class="flip-label" data-i18n="dashboard.hour">时</div>
                         </div>
                         <span class="flip-separator">:</span>
                         <div style="display: flex; flex-direction: column; align-items: center;">
@@ -4621,7 +4621,7 @@
                                     <div class="flip-bottom"><div class="flip-digit">0</div></div>
                                 </div>
                             </div>
-                            <div class="flip-label">分</div>
+                            <div class="flip-label" data-i18n="dashboard.minute">分</div>
                         </div>
                         <span class="flip-separator">:</span>
                         <div style="display: flex; flex-direction: column; align-items: center;">
@@ -4635,7 +4635,7 @@
                                     <div class="flip-bottom"><div class="flip-digit">0</div></div>
                                 </div>
                             </div>
-                            <div class="flip-label">秒</div>
+                            <div class="flip-label" data-i18n="dashboard.second">秒</div>
                         </div>
                     </div>
                 </div>
@@ -4910,7 +4910,7 @@
                     <div class="overview-value" id="totalDischargeOverview">445.2 MWh</div>
                 </div>
                 <div class="overview-item">
-                    <div class="overview-label">累计收益</div>
+                    <div class="overview-label" data-i18n="dashboard.totalRevenue">累计收益</div>
                     <div class="overview-value" id="totalRevenueOverview">$186,430</div>
                 </div>
             </div>
@@ -4920,7 +4920,7 @@
             <div class="metrics-grid">
                 <div class="stat-overview-card">
                     <div class="stat-overview-icon">🏠</div>
-                    <div class="stat-overview-label" data-i18n="family">家庭</div>
+                    <div class="stat-overview-label" data-i18n="dashboard.family">家庭</div>
                     <div class="stat-overview-value" id="totalHomes">235</div>
                 </div>
                 
@@ -4938,7 +4938,7 @@
 
                 <div class="stat-overview-card">
                     <div class="stat-overview-icon">💰</div>
-                    <div class="stat-overview-label">累计获利</div>
+                    <div class="stat-overview-label" data-i18n="dashboard.totalProfitLabel">累计获利</div>
                     <div class="stat-overview-value" id="totalProfit">$12,435</div>
                 </div>
             </div>
@@ -5061,11 +5061,11 @@
                 <div class="modal-icon" style="width: 56px; height: 56px; background: linear-gradient(145deg, rgba(0, 255, 136, 0.15), rgba(0, 255, 136, 0.05)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 4px 12px rgba(0, 255, 136, 0.15);">
                     <span id="confirmIcon" style="font-size: 28px;">⚡</span>
                 </div>
-                <h3 class="modal-title" id="confirmTitle" style="margin: 0; font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 0.5px;">确认充电操作</h3>
+                <h3 class="modal-title" id="confirmTitle" data-i18n="dashboard.confirmChargeTitle" style="margin: 0; font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 0.5px;">确认充电操作</h3>
             </div>
             
             <div class="modal-body" style="padding: 36px;">
-                <p id="confirmMessage" style="font-size: 16px; color: rgba(255, 255, 255, 0.7); margin: 0 0 32px 0; font-weight: 400; line-height: 1.6;">您确定要执行充电操作吗？</p>
+                <p id="confirmMessage" data-i18n="dashboard.confirmChargeMsg" style="font-size: 16px; color: rgba(255, 255, 255, 0.7); margin: 0 0 32px 0; font-weight: 400; line-height: 1.6;">您确定要执行充电操作吗？</p>
                 
                 <div class="modal-info-grid" id="confirmInfoGrid" style="display: flex; flex-direction: column; gap: 0; margin-bottom: 32px;">
                     <div style="display: flex; gap: 20px;">
@@ -5101,7 +5101,7 @@
                         <div style="width: 32px; height: 32px; background: rgba(255, 152, 0, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             <span style="font-size: 18px;">⚠️</span>
                         </div>
-                        <span id="warningText" style="color: rgba(255, 255, 255, 0.8); font-size: 14px; line-height: 1.8; flex: 1;">将开始对所有连接设备进行充电操作，此过程将消耗电网电力。</span>
+                        <span id="warningText" data-i18n="dashboard.chargeWarning" style="color: rgba(255, 255, 255, 0.8); font-size: 14px; line-height: 1.8; flex: 1;">将开始对所有连接设备进行充电操作，此过程将消耗电网电力。</span>
                     </div>
                 </div>
             </div>
@@ -6023,7 +6023,7 @@
 
         function startAICountdown() {
             // 显示当前分析基于的时间点
-            const isEn = window.i18n?.currentLang?.startsWith('en');
+            const isEn = window.i18n?.currentLanguage?.startsWith('en');
             const now = new Date();
             const hh = String(now.getHours()).padStart(2, '0');
             const mm = String(now.getMinutes()).padStart(2, '0');
@@ -6062,7 +6062,7 @@
                 return;
             }
 
-            const isEn = window.i18n && window.i18n.currentLang && window.i18n.currentLang.startsWith('en');
+            const isEn = window.i18n && window.i18n.currentLanguage && window.i18n.currentLanguage.startsWith('en');
             const now = new Date();
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
@@ -7803,7 +7803,7 @@
                             return;
                         }
                         
-                        const currentLang = window.i18n.getCurrentLanguage();
+                        const currentLanguage = window.i18n.getCurrentLanguage();
                         
                         // 强制翻译每个按钮
                         const forcedButtonUpdates = [
@@ -7819,7 +7819,7 @@
                             elements.forEach(element => {
                                 if (element) {
                                     const oldText = element.textContent;
-                                    const newText = currentLang === 'en' ? update.english : update.chinese;
+                                    const newText = currentLanguage === 'en' ? update.english : update.chinese;
                                     element.textContent = newText;
                                 }
                             });
@@ -9574,13 +9574,13 @@
                     revenue.push(Math.random() * 200 + 100);
                 }
             } else if (period === 'week') {
-                const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+                const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
                 let days;
-                if (currentLang === 'en') {
+                if (currentLanguage === 'en') {
                     days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                } else if (currentLang === 'ja') {
+                } else if (currentLanguage === 'ja') {
                     days = ['月', '火', '水', '木', '金', '土', '日'];
-                } else if (currentLang === 'ko') {
+                } else if (currentLanguage === 'ko') {
                     days = ['월', '화', '수', '목', '금', '토', '일'];
                 } else {
                     days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
@@ -9591,9 +9591,9 @@
                     revenue.push(Math.random() * 2500 + 1200);
                 });
             } else if (period === 'month') {
-                const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+                const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
                 for (let i = 1; i <= 30; i++) {
-                    if (currentLang === 'en' || currentLang === 'ja' || currentLang === 'ko') {
+                    if (currentLanguage === 'en' || currentLanguage === 'ja' || currentLanguage === 'ko') {
                         labels.push(`${i}`);
                     } else {
                         labels.push(`${i}日`);
@@ -9779,10 +9779,10 @@
             const powerVariation = Math.floor((Math.random() - 0.5) * 500); // ±250 kWh
             const profitVariation = Math.floor((Math.random() - 0.5) * 200); // ±100 dollars
             
-            const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
-            const unit = currentLang === 'en' ? '' : 
-                        currentLang === 'ja' ? '個' :
-                        currentLang === 'ko' ? '개' : '个';
+            const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+            const unit = currentLanguage === 'en' ? '' : 
+                        currentLanguage === 'ja' ? '個' :
+                        currentLanguage === 'ko' ? '개' : '个';
             const availableHomesEl = document.getElementById('availableHomes');
             const availablePowerEl = document.getElementById('availablePower');
             const estimatedProfitEl = document.getElementById('estimatedProfit');
@@ -10906,9 +10906,9 @@
                     }
                 };
                 
-                const currentLang = window.i18n.getCurrentLanguage();
-                return messages[currentLang] && messages[currentLang][type] ? 
-                    messages[currentLang][type] : messages['zh'][type];
+                const currentLanguage = window.i18n.getCurrentLanguage();
+                return messages[currentLanguage] && messages[currentLanguage][type] ? 
+                    messages[currentLanguage][type] : messages['zh'][type];
             };
             
             const operationName = getOperationName(operationType);
@@ -10924,10 +10924,10 @@
                 'ja': `${operationName}操作を実行してもよろしいですか？`,
                 'ko': `${operationName} 작업을 실행하시겠습니까?`
             };
-            const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+            const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
             
-            document.getElementById('confirmTitle').textContent = confirmTitleTexts[currentLang] || confirmTitleTexts['zh'];
-            document.getElementById('confirmMessage').textContent = confirmMessageTexts[currentLang] || confirmMessageTexts['zh'];
+            document.getElementById('confirmTitle').textContent = confirmTitleTexts[currentLanguage] || confirmTitleTexts['zh'];
+            document.getElementById('confirmMessage').textContent = confirmMessageTexts[currentLanguage] || confirmMessageTexts['zh'];
             document.getElementById('confirmOperationType').textContent = operationName;
             
             const deviceTexts = {
@@ -10936,7 +10936,7 @@
                 'ja': deviceCount + '台',
                 'ko': deviceCount + '대'
             };
-            document.getElementById('confirmTargetDevices').textContent = deviceTexts[currentLang] || deviceTexts['zh'];
+            document.getElementById('confirmTargetDevices').textContent = deviceTexts[currentLanguage] || deviceTexts['zh'];
             
             // 首先重置所有信息项为可见状态
             const allInfoItems = confirmModal.querySelectorAll('.modal-info-item');
@@ -11001,7 +11001,7 @@
                 'ja': `${operationName}確認`,
                 'ko': `${operationName} 확인`
             };
-            executeBtn.textContent = executeBtnTexts[currentLang] || executeBtnTexts['zh'];
+            executeBtn.textContent = executeBtnTexts[currentLanguage] || executeBtnTexts['zh'];
             
             if (operationType === 'discharge') {
                 executeBtn.style.background = 'linear-gradient(135deg, #ffd700, #ffcc00)';
@@ -14628,18 +14628,18 @@
             }
 
             // Get current language
-            const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+            const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
 
             // Create CSV headers based on tab type and language
             let headers = [];
             if (currentActiveTab === 'failed') {
                 // 下发失败：NMI、失败次数、失败原因
-                headers = currentLang === 'en' ?
+                headers = currentLanguage === 'en' ?
                     ['NMI', 'Failure Count', 'Failure Reason'] :
                     ['NMI', '失败次数', '失败原因'];
             } else {
                 // 下发成功和执行中：NMI、状态
-                headers = currentLang === 'en' ?
+                headers = currentLanguage === 'en' ?
                     ['NMI', 'Status'] :
                     ['NMI', '状态'];
             }
@@ -14700,7 +14700,7 @@
             document.body.removeChild(link);
 
             // Show success message
-            const message = currentLang === 'en' ?
+            const message = currentLanguage === 'en' ?
                 `Export successful! (${data.length} records)` :
                 `导出成功！共 ${data.length} 条数据`;
             alert(message);
@@ -15140,7 +15140,7 @@
         }
 
         function changeLanguage(langCode, langName) {
-            document.getElementById('currentLang').textContent = langName;
+            document.getElementById('currentLanguage').textContent = langName;
             document.getElementById('languageDropdown').style.display = 'none';
             // 这里可以添加实际的语言切换逻辑
         }
@@ -15498,7 +15498,7 @@
                     </div>
                 </div>
 
-                <p style="color: rgba(255, 255, 255, 0.5); margin: 0 0 20px 0; font-size: 13px; font-weight: 400; line-height: 1.4; text-align: left;">💡 点击下方数字查看设备详情</p>
+                <p style="color: rgba(255, 255, 255, 0.5); margin: 0 0 20px 0; font-size: 13px; font-weight: 400; line-height: 1.4; text-align: left;"><span data-i18n="dashboard.clickToViewDetails">💡 点击下方数字查看设备详情</span></p>
 
                 <!-- 设备状态统计 - 可点击 -->
                 <div class="status-summary" style="background: linear-gradient(145deg, rgba(0, 255, 136, 0.08), rgba(0, 255, 136, 0.04)); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 10px; padding: 20px; backdrop-filter: blur(20px) saturate(1.5);">
@@ -16037,8 +16037,8 @@
             }
             
             // Set target devices - 英文模式只显示数字
-            const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
-            if (currentLang === 'en') {
+            const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+            if (currentLanguage === 'en') {
                 targetDevices.textContent = '500';
             } else {
                 targetDevices.textContent = (window.i18n && window.i18n.getCurrentLanguage() === 'en') ? '500' : '500个';
@@ -16084,10 +16084,10 @@
             const failedCount = document.getElementById('modalFailedCount').textContent;
 
             // Get current language
-            const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+            const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
 
             // Create CSV headers based on language
-            const headers = currentLang === 'en' ?
+            const headers = currentLanguage === 'en' ?
                 ['Export Time', 'Operation Type', 'Target Devices', 'Success', 'Executing', 'Failed', 'Success Rate'] :
                 ['导出时间', '操作类型', '影响设备', '下发成功', '执行中', '下发失败', '成功率'];
 
@@ -16134,7 +16134,7 @@
             document.body.removeChild(link);
 
             // Show success message
-            const message = currentLang === 'en' ? 'Export successful!' : '导出成功！';
+            const message = currentLanguage === 'en' ? 'Export successful!' : '导出成功！';
             alert(message);
         }
 
@@ -16969,7 +16969,7 @@
         // 更新地区显示
         function updateRegionDisplay() {
             const regions = ['NSW', 'QLD', 'VIC', 'SA', 'TAS'];
-            const currentLang = getCurrentLanguage() || 'zh';
+            const currentLanguage = getCurrentLanguage() || 'zh';
             
             
             regions.forEach(region => {
@@ -17110,7 +17110,7 @@
         // 更新地区状态显示
         function updateRegionStatusDisplay() {
             const regions = ['NSW', 'QLD', 'VIC', 'SA', 'TAS'];
-            const currentLang = getCurrentLanguage() || 'zh';
+            const currentLanguage = getCurrentLanguage() || 'zh';
             
             regions.forEach(region => {
                 const regionButton = document.querySelector(`[data-region="${region}"]`);
@@ -18220,7 +18220,7 @@
                 return;
             }
             
-            const currentLang = window.i18n.getCurrentLanguage();
+            const currentLanguage = window.i18n.getCurrentLanguage();
             
             // 直接强制更新每个有问题的元素
             const forcedUpdates = [
@@ -18367,7 +18367,7 @@
                 elements.forEach(element => {
                     if (element) {
                         const oldText = element.textContent;
-                        const newText = currentLang === 'en' ? update.english : update.chinese;
+                        const newText = currentLanguage === 'en' ? update.english : update.chinese;
                         element.textContent = newText;
                     }
                 });
@@ -18381,18 +18381,18 @@
         function updateTimeSegmentListTranslations() {
             if (!window.i18n || !window.i18n.isReady) return;
             
-            const currentLang = window.i18n.getCurrentLanguage();
+            const currentLanguage = window.i18n.getCurrentLanguage();
             
             // 更新空状态提示文本
             const chargeContainer = document.getElementById('chargeTimeSegmentsList');
             if (chargeContainer && chargeContainer.innerHTML.includes('暂无充电时间段')) {
-                const emptyText = currentLang === 'en' ? 'No charge time slots' : '暂无充电时间段';
+                const emptyText = currentLanguage === 'en' ? 'No charge time slots' : '暂无充电时间段';
                 chargeContainer.innerHTML = `<div style="color: rgba(255,255,255,0.5); font-size: 12px; padding: 8px;">${emptyText}</div>`;
             }
             
             const dischargeContainer = document.getElementById('dischargeTimeSegmentsList');
             if (dischargeContainer && dischargeContainer.innerHTML.includes('暂无放电时间段')) {
-                const emptyText = currentLang === 'en' ? 'No discharge time slots' : '暂无放电时间段';
+                const emptyText = currentLanguage === 'en' ? 'No discharge time slots' : '暂无放电时间段';
                 dischargeContainer.innerHTML = `<div style="color: rgba(255,255,255,0.5); font-size: 12px; padding: 8px;">${emptyText}</div>`;
             }
         }
@@ -20079,8 +20079,8 @@
             container.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px; min-height: 30px;';
             
             if (segments.length === 0) {
-                const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
-                const emptyText = currentLang === 'en' ? 'No charge time slots' : '暂无充电时间段';
+                const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+                const emptyText = currentLanguage === 'en' ? 'No charge time slots' : '暂无充电时间段';
                 container.innerHTML = `<div style="color: rgba(255,255,255,0.5); font-size: 12px; padding: 8px;">${emptyText}</div>`;
                 return;
             }
@@ -20116,8 +20116,8 @@
             container.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px; min-height: 30px;';
             
             if (segments.length === 0) {
-                const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
-                const emptyText = currentLang === 'en' ? 'No discharge time slots' : '暂无放电时间段';
+                const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+                const emptyText = currentLanguage === 'en' ? 'No discharge time slots' : '暂无放电时间段';
                 container.innerHTML = `<div style="color: rgba(255,255,255,0.5); font-size: 12px; padding: 8px;">${emptyText}</div>`;
                 return;
             }
@@ -21234,7 +21234,7 @@
             const titleElement = notification.querySelector('.push-notification-title span:last-child');
             if (!contentElement) return;
             
-            const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
+            const currentLanguage = window.i18n ? window.i18n.getCurrentLanguage() : 'zh';
             
             if (notificationId === 'normalPushNotification') {
                 const action = data.action || '充电';
@@ -21244,7 +21244,7 @@
                 
                 // 普通：放电/充电提醒——地区
                 if (titleElement) {
-                    if (currentLang === 'en') {
+                    if (currentLanguage === 'en') {
                         const actionEn = action === '充电' ? 'Charge' : 'Discharge';
                         titleElement.textContent = data.customTitleEn || `${actionEn} Reminder - ${region}`;
                     } else {
@@ -21256,7 +21256,7 @@
                 const highlightPrice = `<span class="highlight-number">$${price}</span>`;
                 const highlightThreshold = `<span class="highlight-number">$${threshold}</span>`;
                 
-                if (currentLang === 'en') {
+                if (currentLanguage === 'en') {
                     const comparison = action === '充电' ? 'below threshold' : 'above threshold';
                     const actionEn = action === '充电' ? 'charge' : 'discharge';
                     const highlightAction = `<span class="highlight-action">${actionEn}</span>`;
@@ -21275,7 +21275,7 @@
                 
                 // 高级：最佳放电时机——地区
                 if (titleElement) {
-                    if (currentLang === 'en') {
+                    if (currentLanguage === 'en') {
                         const actionEn = action === '充电' ? 'Charge' : 'Discharge';
                         titleElement.textContent = data.customTitleEn || `Optimal ${actionEn} Reminder - ${region}`;
                     } else {
@@ -21287,7 +21287,7 @@
                 const highlightPrice = `<span class="highlight-number">$${price}</span>`;
                 const highlightTime = `<span class="highlight-time">${timeRemaining}</span>`;
                 
-                if (currentLang === 'en') {
+                if (currentLanguage === 'en') {
                     const actionEn = action === '充电' ? 'charge' : 'discharge';
                     const timeEn = timeRemaining.replace('分钟', ' minutes');
                     contentElement.innerHTML = `${region} region ${actionEn} price ${highlightPrice}, ${timeEn} until optimal ${actionEn} time, please prepare`;
@@ -22126,4 +22126,215 @@
         }, 100);
     </script>
 </body>
+<script>
+// Dashboard i18n overlay - translate remaining hardcoded Chinese
+(function() {
+    function t(key, fallback) {
+        return window.i18n ? window.i18n.getText(key) : fallback;
+    }
+    
+    function applyDashboardTranslations() {
+        if (!window.i18n) return;
+        const T = (k, f) => window.i18n.getText('dashboard.' + k) || f;
+        
+        // 统计栏 5 大指标标签
+        const statLabels = document.querySelectorAll('.stat-card-top div:first-child, [class*="stat"] div');
+        
+        // 用 id 精确替换
+        const idMap = {
+            'dataCutoffLabel': '* ' + T('dataCutoff', 'Data as of') + ' ',
+            'stationStatusLabel': T('expectedExecution', 'Waiting for Execution'),
+        };
+        
+        for (const [id, text] of Object.entries(idMap)) {
+            const el = document.getElementById(id);
+            if (el && el.textContent.match(/[\u4e00-\u9fff]/)) {
+                // 保留动态部分
+                if (id === 'dataCutoffLabel') {
+                    const dateMatch = el.textContent.match(/\d{4}[-/]\d{2}[-/]\d{2}.*/);
+                    el.textContent = text + (dateMatch ? dateMatch[0] : '');
+                } else {
+                    el.textContent = text;
+                }
+            }
+        }
+        
+        // 统计指标标签（通过遍历特定容器）
+        const statsTranslations = {
+            '累计充电': T('totalChargeLabel', 'Total Charges'),
+            '累计放电': T('totalDischargeLabel', 'Total Discharges'),
+            '充电成本': T('chargeCost', 'Charge Cost'),
+            '放电收益': T('dischargeRevenue', 'Discharge Revenue'),
+            '净获利': T('netProfit', 'Net Profit'),
+            '电站管理': T('stationManagement', 'Station Management'),
+            '自动': T('autoOperation', 'Auto'),
+            '等待执行中': T('expectedExecution', 'Waiting for Execution'),
+            '当前SOC': T('currentSOC', 'Current SOC'),
+            '电池成本': T('batteryCost', 'Battery Cost'),
+            '今日获利': T('todayProfit', "Today's Profit"),
+            '今日充电': T('todayCharge', 'Today Charge'),
+            '今日放电': T('todayDischarge', 'Today Discharge'),
+            '行情': T('market', 'Market'),
+            '分析': T('analysis', 'Analysis'),
+            '现货电价': t('dashboard.spotPrice', 'Spot Price'),
+            '当前需求': t('dashboard.currentDemand', 'Current Demand'),
+            '预测价格': t('dashboard.forecastPrice', 'Forecast Price'),
+            '预测需求': t('dashboard.forecastDemand', 'Forecast Demand'),
+            '需求': t('dashboard.demand', 'Demand'),
+            '发电': t('dashboard.generation', 'Generation'),
+            'AI 分析中': T('aiAnalyzing', 'AI Analyzing'),
+            '预估利润': T('aiEstProfit', 'Est. Profit'),
+            '充电': T('chargeLabel', 'Charge'),
+            '放电': T('dischargeLabel', 'Discharge'),
+            '时间': T('time', 'Time'),
+            '均价': T('avgPrice', 'Avg Price'),
+            '电量与获利': t('dashboard.powerAndProfit', 'Power & Profit'),
+            '（获利=馈网量*价格）': t('dashboard.profitFormula', '(Profit = Feed-in × Price)'),
+            '日': T('day', 'Day'),
+            '本月': T('monthShort', 'This Month'),
+            '年': T('year', 'Year'),
+            '累计': T('cumulative', 'Cumulative'),
+            '系统概览': t('dashboard.systemOverview', 'System Overview'),
+            '总容量': t('dashboard.totalCapacity', 'Total Capacity'),
+            '在线设备': t('dashboard.onlineDevices', 'Online Devices'),
+            '网络状态': t('dashboard.networkStatus', 'Network Status'),
+            '正常': t('dashboard.normal', 'Normal'),
+            '累计放电上网量': t('dashboard.totalFeedIn', 'Total Feed-in'),
+            '累计收益': t('dashboard.totalRevenue', 'Total Revenue'),
+            '家庭': t('dashboard.family', 'Family'),
+            '装机量': t('dashboard.installedCapacity', 'Installed Capacity'),
+            '放电统计': t('dashboard.dischargeStats', 'Discharge Stats'),
+            '馈网量': t('dashboard.feedInAmount', 'Feed-in Amount'),
+            '用电量': t('dashboard.consumption', 'Consumption'),
+            '超过目标用户': t('dashboard.aboveTarget', 'Above Target'),
+            '未达目标用户': t('dashboard.belowTarget', 'Below Target'),
+            '价格统计': t('dashboard.priceStats', 'Price Stats'),
+            '今日价格': t('dashboard.todayPrice', 'Today Price'),
+            '平均放电价格': t('dashboard.avgDischargePrice', 'Avg Discharge Price'),
+            '卖电价': t('dashboard.sellPrice', 'Sell Price'),
+            '今日最低': t('dashboard.todayLow', 'Today Low'),
+            '今日最高': t('dashboard.todayHigh', 'Today High'),
+            '确认充电操作': t('dashboard.confirmChargeTitle', 'Confirm Charge'),
+            '您确定要执行充电操作吗？': t('dashboard.confirmChargeMsg', 'Are you sure you want to charge?'),
+            '操作类型': t('dashboard.operationType', 'Operation Type'),
+            '可调度设备': T('dispatchableDevices', 'Dispatchable Devices'),
+            '预计功率': t('dashboard.estimatedPower', 'Est. Power'),
+            '当前电价': T('currentPriceLabel', 'Current Price'),
+            '预计获利': t('dashboard.estimatedProfit', 'Est. Profit'),
+            '取消': t('common.cancel', 'Cancel'),
+            '确认充电': t('dashboard.confirmChargeBtn', 'Confirm Charge'),
+            '充电进度': t('dashboard.chargeProgress', 'Charge Progress'),
+            '正在执行操作...': t('dashboard.executingOperation', 'Executing...'),
+            '下发设备': t('dashboard.targetDevice', 'Target Device'),
+            '预警': t('dashboard.warning', 'Warning'),
+            '读取中': t('dashboard.reading', 'Reading...'),
+            '等待中': t('dashboard.waiting', 'Waiting...'),
+            '指令下发成功': t('dashboard.commandSuccess', 'Command Sent'),
+            '系统正在执行您的操作指令...': t('dashboard.executingCommand', 'Executing your command...'),
+            '设备响应统计': t('dashboard.deviceResponseStats', 'Device Response Stats'),
+            '指令下发': T('commandIssued', 'Commands Issued'),
+            '成功率': t('dashboard.successRate', 'Success Rate'),
+            '查看详情': t('dashboard.viewDetails', 'View Details'),
+            '关闭': t('common.close', 'Close'),
+            '操作详情': t('dashboard.operationDetails', 'Operation Details'),
+            '基本信息': t('dashboard.basicInfo', 'Basic Info'),
+            '影响设备': t('dashboard.affectedDevices', 'Affected Devices'),
+            '设备': T('device', 'Devices'),
+            '操作时间': t('dashboard.operationTime', 'Operation Time'),
+            '执行状态': t('dashboard.executionStatus', 'Execution Status'),
+            '导出': t('dashboard.export', 'Export'),
+            '下发成功': t('dashboard.commandSent', 'Sent'),
+            '执行中': t('dashboard.executing', 'Executing'),
+            '下发失败': t('dashboard.commandFailed', 'Failed'),
+            '失败次数': t('dashboard.failCount', 'Fail Count'),
+            '状态': t('dashboard.status', 'Status'),
+            '自动化设置': T('aiCustodySettings', 'Auto Settings'),
+            '自动模式类型': T('autoModeType', 'Auto Mode Type'),
+            '自动充电中': T('aiCharge', 'AI Charging'),
+            '自动放电中': T('aiDischarge', 'AI Discharging'),
+            '为不同时间段设置不同的价格门槛': T('chargeStrategyTip', 'Set price thresholds for different time periods'),
+            '添加时间段': T('addTimeSlot', 'Add Time Slot'),
+            '电量条件': T('batteryCondition', 'Battery Condition'),
+            '低于': t('dashboard.below', 'Below'),
+            '高于': t('dashboard.above', 'Above'),
+            '介于': t('dashboard.between', 'Between'),
+            '保存设置': t('dashboard.saveSettings', 'Save Settings'),
+            '设备指令': t('dashboard.deviceCommand', 'Device Command'),
+            '立即': t('dashboard.immediately', 'Now'),
+            '预计执行时间': T('estimatedTime', 'Est. Time'),
+            '确认执行': t('dashboard.confirmExecute', 'Confirm Execute'),
+            '操作完成，以下是设备响应统计报告：': t('dashboard.operationCompleteReport', 'Operation complete. Device response report:'),
+            '点击下方数字查看设备详情': t('dashboard.clickToViewDetails', 'Click numbers to view device details'),
+            '设置': t('common.settings', 'Settings'),
+            'SOC 设置': t('dashboard.socSettings', 'SOC Settings'),
+            '充电停止SOC': t('dashboard.chargeStopSOC', 'Charge Stop SOC'),
+            '放电停止SOC': t('dashboard.dischargeStopSOC', 'Discharge Stop SOC'),
+            '自动条件': t('dashboard.autoConditions', 'Auto Conditions'),
+            '时间条件设置': t('dashboard.timeConditionSettings', 'Time Condition Settings'),
+            '充电时间': T('chargeTime', 'Charge Time'),
+            '放电时间': T('dischargeTime', 'Discharge Time'),
+            '添加': t('common.add', 'Add'),
+            '保存': t('common.save', 'Save'),
+            '自动化条件': t('dashboard.automationConditions', 'Automation Conditions'),
+            '区域': t('dashboard.region', 'Region'),
+            '充电条件': t('dashboard.chargeCondition', 'Charge Condition'),
+            '放电条件': t('dashboard.dischargeCondition', 'Discharge Condition'),
+            '时间条件': t('dashboard.timeCondition', 'Time Condition'),
+            '价格条件': t('dashboard.priceCondition', 'Price Condition'),
+            '停止SOC': t('dashboard.stopSOC', 'Stop SOC'),
+        };
+
+        // 遍历 body 所有文本节点
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        while (walker.nextNode()) {
+            const node = walker.currentNode;
+            const parent = node.parentElement;
+            if (!parent || parent.closest('script, style, [data-i18n]')) continue;
+            
+            let text = node.textContent.trim();
+            if (!text || !/[\u4e00-\u9fff]/.test(text)) continue;
+            
+            // 精确匹配
+            if (statsTranslations[text]) {
+                node.textContent = node.textContent.replace(text, statsTranslations[text]);
+                continue;
+            }
+            
+            // 包含匹配（处理 "1,286次" → "1,286 times"）
+            if (/\d+次/.test(text)) {
+                node.textContent = text.replace(/次/g, ' ' + T('timesUnit', 'times'));
+            }
+            if (/\d+个/.test(text)) {
+                node.textContent = text.replace(/个/g, ' ' + T('device', 'devices'));
+            }
+            if (/分钟/.test(text)) {
+                node.textContent = text.replace(/分钟/g, ' min');
+            }
+        }
+        
+        // 处理 select option
+        document.querySelectorAll('option').forEach(opt => {
+            const text = opt.textContent.trim();
+            if (statsTranslations[text]) {
+                opt.textContent = statsTranslations[text];
+            }
+        });
+    }
+    
+    // 页面加载后执行
+    if (document.readyState === 'complete') {
+        setTimeout(applyDashboardTranslations, 500);
+    } else {
+        window.addEventListener('load', () => setTimeout(applyDashboardTranslations, 500));
+    }
+    
+    // 语言切换时也执行
+    if (window.i18n) {
+        window.i18n.addObserver(() => setTimeout(applyDashboardTranslations, 200));
+    }
+    
+    // 暴露给全局（方便其他地方调用）
+    window.applyDashboardTranslations = applyDashboardTranslations;
+})();
+</script>
 </html>
