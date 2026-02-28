@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - U Energy</title>
+    <link rel="stylesheet" href="components/common-styles.css">
+    <link rel="stylesheet" href="components/header-nav.css">
+    <link rel="stylesheet" href="components/i18n.css">
+    <script src="components/i18n.js"></script>
+    <script src="components/simple-message-icon.js"></script>
+    <script src="components/header-nav.js"></script>
+    <script src="components/user-menu-link.js"></script>
+    <script src="components/user-dropdown-simple-new.js"></script>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        /* 设置容器 */
+        .settings-wrapper {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            margin-top: 80px;
+        }
+
+        /* 侧边栏 */
+        .settings-sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.02);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 32px 0;
+            position: fixed;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 28px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        /* 侧边栏菜单 */
+        .sidebar-menu {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .sidebar-item {
+            padding: 14px 28px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+            position: relative;
+            font-weight: 400;
+            letter-spacing: -0.2px;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .sidebar-item.active {
+            background: rgba(0, 255, 136, 0.08);
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #00ff88;
+        }
+
+        .sidebar-icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* 主内容区 */
+        .settings-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 48px 56px;
+            max-width: 840px;
+        }
+
+        /* 内容面板 */
+        .content-panel {
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 设置组 */
+        .settings-group {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .settings-group-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            letter-spacing: -0.3px;
+        }
+
+        /* 设置项 */
+        .settings-item {
+            margin-bottom: 28px;
+        }
+
+        .settings-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-label {
+            display: block;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 10px;
+            font-weight: 500;
+            letter-spacing: -0.2px;
+        }
+
+        .settings-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 12px;
+            line-height: 1.6;
+            letter-spacing: 0.2px;
+        }
+
+        /* 表单元素 */
+        .form-control {
+            width: 100%;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            height: 48px;
+        }
+        
+        .form-control + .settings-description {
+            margin-top: 10px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00ff88;
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .form-control:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* 头像上传区域 */
+        .avatar-setting {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            padding: 20px 0;
+        }
+
+        .avatar-display {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 600;
+            color: #fff;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .avatar-display.default-avatar {
+            background-image: url('data:image/jpeg;base64,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');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .avatar-display.has-image::before {
+            display: none;
+        }
+
+        .avatar-display img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-actions {
+            flex: 1;
+        }
+
+        .avatar-actions .settings-description {
+            margin-top: 16px;
+        }
+
+        .btn-upload {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 12px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .btn-upload:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* 验证码输入组 */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .input-group .form-control {
+            flex: 1;
+        }
+
+        .btn-verify {
+            padding: 12px 24px;
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 10px;
+            color: #00ff88;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-weight: 500;
+            height: 48px;
+        }
+
+        .btn-verify:hover:not(:disabled) {
+            background: rgba(0, 255, 136, 0.12);
+            border-color: rgba(0, 255, 136, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-verify:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 密码输入组 */
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: #fff;
+        }
+
+        /* 操作按钮 */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 36px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-primary {
+            padding: 12px 32px;
+            background: #00ff88;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 48px;
+            letter-spacing: -0.2px;
+        }
+
+        .btn-primary:hover {
+            background: #00dd77;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 12px 32px;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 48px;
+            font-weight: 500;
+            letter-spacing: -0.2px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 24px;
+            padding: 16px 24px;
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-color: #00ff88;
+        }
+
+        .toast.error {
+            border-color: #ff3b30;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .settings-sidebar {
+                width: 240px;
+            }
+            
+            .settings-content {
+                margin-left: 240px;
+                padding: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .settings-wrapper {
+                flex-direction: column;
+            }
+            
+            .settings-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                padding: 24px 0;
+            }
+            
+            .sidebar-header {
+                padding: 0 20px 20px;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 16px;
+                gap: 8px;
+            }
+            
+            .sidebar-item {
+                white-space: nowrap;
+                flex-shrink: 0;
+                padding: 12px 20px;
+            }
+            
+            .sidebar-item.active::before {
+                display: none;
+            }
+            
+            .settings-content {
+                margin-left: 0;
+                padding: 32px 20px;
+            }
+            
+            .panel-title {
+                font-size: 28px;
+            }
+            
+            .panel-subtitle {
+                font-size: 15px;
+            }
+            
+            .settings-group {
+                padding: 24px 20px;
+            }
+            
+            .avatar-setting {
+                flex-direction: column;
+                text-align: center;
+                gap: 24px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+        }
+
+        /* 滚动条样式 */
+        .settings-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .settings-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .settings-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .settings-sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 密码修改方式选择 */
+        .method-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .method-tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 500;
+            letter-spacing: -0.2px;
+        }
+
+        .method-tab:hover {
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .method-tab.active {
+            background: rgba(0, 255, 136, 0.08);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.15);
+        }
+
+        .method-tab span:first-child {
+            font-size: 18px;
+        }
+
+        .password-method {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .password-method.active {
+            display: block;
+        }
+
+        .password-common-fields {
+            margin-top: 28px;
+        }
+
+        /* Email Steps */
+        .email-step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .email-step.active {
+            display: block;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding: 16px 20px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.15);
+            border-radius: 10px;
+        }
+
+        .step-back {
+            color: #00ff88;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .step-back:hover {
+            transform: translateX(-2px);
+        }
+
+        .step-status {
+            color: #00ff88;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Container -->
+    <div id="headerContainer"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Settings Wrapper -->
+    <div class="settings-wrapper">
+        <!-- Sidebar -->
+        <div class="settings-sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title" data-i18n-key="settings.title">设置</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active" onclick="switchTab('profile')">
+                    <span class="sidebar-icon">👤</span>
+                    <span data-i18n-key="settings.profile.title">个人信息</span>
+                </li>
+                <li class="sidebar-item" onclick="switchTab('email')">
+                    <span class="sidebar-icon">📧</span>
+                    <span data-i18n-key="settings.email.title">邮箱设置</span>
+                </li>
+                <li class="sidebar-item" onclick="switchTab('password')">
+                    <span class="sidebar-icon">🔐</span>
+                    <span data-i18n-key="settings.password.title">密码设置</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="settings-content">
+            <!-- Profile Panel -->
+            <div class="content-panel active" id="profilePanel">
+                <div class="settings-group">
+                    <div class="settings-group-title" data-i18n-key="settings.profile.basic">基本信息</div>
+                    
+                    <div class="settings-item">
+                        <label class="settings-label" data-i18n-key="settings.profile.avatar">头像</label>
+                        <div class="avatar-setting">
+                            <div class="avatar-display default-avatar" id="avatarPreview">
+                            </div>
+                            <div class="avatar-actions">
+                                <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleAvatarChange(event)">
+                                <button class="btn-upload" onclick="document.getElementById('avatarInput').click()">
+                                    <span data-i18n-key="settings.profile.changeAvatar">更换头像</span>
+                                </button>
+                                <button class="btn-upload" onclick="removeAvatar()">
+                                    <span data-i18n-key="settings.profile.removeAvatar">移除</span>
+                                </button>
+                                <div class="settings-description" data-i18n-key="settings.profile.avatarHint">
+                                    支持 JPG、PNG 格式，文件大小不超过 5MB
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-item">
+                        <label class="settings-label" for="usernameInput" data-i18n-key="settings.profile.username">昵称</label>
+                        <input type="text" class="form-control" id="usernameInput" placeholder="请输入昵称">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="saveProfile()">
+                            <span data-i18n-key="settings.save">保存更改</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Panel -->
+            <div class="content-panel" id="emailPanel">
+                <div class="settings-group">
+                    <div class="settings-group-title" id="emailPanelTitle">邮箱设置</div>
+                    
+                    <!-- No Email Bound - Bind Email -->
+                    <div id="bindEmailSection" class="email-step">
+                        <div class="settings-item">
+                            <label class="settings-label" data-i18n-key="settings.email.emailAddress">邮箱地址</label>
+                            <input type="email" class="form-control" id="bindEmail" data-i18n-placeholder="settings.email.emailPlaceholder" placeholder="请输入邮箱地址">
+                        </div>
+
+                        <div class="settings-item">
+                            <label class="settings-label" data-i18n-key="settings.email.emailCode">邮箱验证码</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="bindEmailCode" data-i18n-placeholder="settings.email.emailCodePlaceholder" placeholder="请输入验证码">
+                                <button class="btn-verify" id="sendBindEmailCode" onclick="sendBindEmailCode()">
+                                    <span data-i18n-key="settings.email.sendCode">发送验证码</span>
+                                </button>
+                            </div>
+                            <div class="settings-description" data-i18n-key="settings.email.codeWillBeSent">
+                                验证码将发送到您的邮箱地址
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn-primary" onclick="bindEmail()">
+                                <span data-i18n-key="settings.email.bindEmail">绑定邮箱</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Email Bound - Change Email -->
+                    <div id="changeEmailSection" class="email-step">
+                        <!-- Step 1: Verify Current Email -->
+                        <div id="emailStep1" class="email-step active">
+                            <div class="settings-item">
+                                <label class="settings-label" data-i18n-key="settings.email.currentEmail">当前邮箱</label>
+                                <input type="email" class="form-control" id="currentEmail" disabled>
+                            </div>
+
+                            <div class="settings-item">
+                                <label class="settings-label" data-i18n-key="settings.email.verifyCurrentEmail">验证当前邮箱</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="currentEmailCode" data-i18n-placeholder="settings.email.emailCodePlaceholder" placeholder="请输入验证码">
+                                    <button class="btn-verify" id="sendCurrentEmailCode" onclick="sendCurrentEmailCode()">
+                                        <span data-i18n-key="settings.email.sendCode">发送验证码</span>
+                                    </button>
+                                </div>
+                                <div class="settings-description" data-i18n-key="settings.email.verifyCurrentEmailHint">
+                                    请先验证当前邮箱，验证通过后才能设置新邮箱
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn-primary" onclick="verifyCurrentEmail()">
+                                    <span>下一步</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Set New Email -->
+                        <div id="emailStep2" class="email-step">
+                            <div class="step-indicator">
+                                <span class="step-back" onclick="backToEmailStep1()">← 返回</span>
+                                <span class="step-status">当前邮箱已验证</span>
+                            </div>
+
+                            <div class="settings-item">
+                                <label class="settings-label" for="newEmail" data-i18n-key="settings.email.newEmail">新邮箱地址</label>
+                                <input type="email" class="form-control" id="newEmail" placeholder="请输入新的邮箱地址">
+                            </div>
+
+                            <div class="settings-item">
+                                <label class="settings-label" data-i18n-key="settings.email.verifyNewEmail">验证新邮箱</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="newEmailCode" data-i18n-placeholder="settings.email.emailCodePlaceholder" placeholder="请输入验证码">
+                                    <button class="btn-verify" id="sendNewEmailCode" onclick="sendNewEmailCode()">
+                                        <span data-i18n-key="settings.email.sendCode">发送验证码</span>
+                                    </button>
+                                </div>
+                                <div class="settings-description" data-i18n-key="settings.email.newEmailCodeHint">
+                                    验证码将发送到您的新邮箱地址
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn-primary" onclick="updateEmail()">
+                                    <span data-i18n-key="settings.save">保存更改</span>
+                                </button>
+                                <button class="btn-secondary" onclick="resetEmailForm()">
+                                    <span data-i18n-key="settings.cancel">取消</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Password Panel -->
+            <div class="content-panel" id="passwordPanel">
+                <div class="settings-group">
+                    <div class="settings-group-title" data-i18n-key="settings.password.changePassword">更改密码</div>
+                    
+                    <!-- Method Selection -->
+                    <div class="settings-item">
+                        <label class="settings-label" data-i18n-key="settings.email.selectVerificationMethod">选择验证方式</label>
+                        <div class="method-tabs">
+                            <button class="method-tab active" onclick="switchPasswordMethod('password')">
+                                <span>🔑</span>
+                                <span data-i18n-key="settings.email.useCurrentPassword">使用原密码</span>
+                            </button>
+                            <button class="method-tab" onclick="switchPasswordMethod('email')">
+                                <span>📧</span>
+                                <span data-i18n-key="settings.email.emailVerification">邮箱验证</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Password Method -->
+                    <div id="passwordMethod" class="password-method active">
+                        <div class="settings-item">
+                            <label class="settings-label" for="oldPassword" data-i18n-key="settings.password.oldPassword">当前密码</label>
+                            <div class="password-group">
+                                <input type="password" class="form-control" id="oldPassword" data-i18n-placeholder="settings.password.currentPasswordPlaceholder" placeholder="请输入当前密码">
+                                <button class="password-toggle" onclick="togglePassword('oldPassword')">
+                                    <span id="oldPasswordIcon">👁</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Method -->
+                    <div id="emailMethod" class="password-method">
+                        <div class="settings-item">
+                            <label class="settings-label" data-i18n-key="settings.email.currentEmail">当前邮箱</label>
+                            <input type="email" class="form-control" id="passwordResetEmail" disabled>
+                        </div>
+                        
+                        <div class="settings-item">
+                            <label class="settings-label" data-i18n-key="settings.email.verificationCode">验证码</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="passwordResetCode" data-i18n-placeholder="settings.email.emailCodePlaceholder" placeholder="请输入验证码">
+                                <button class="btn-verify" id="sendPasswordResetCode" onclick="sendPasswordResetCode()">
+                                    <span data-i18n-key="settings.email.sendCode">发送验证码</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Fields -->
+                    <div class="password-common-fields">
+                        <div class="settings-item">
+                            <label class="settings-label" for="newPassword" data-i18n-key="settings.password.newPassword">新密码</label>
+                            <div class="password-group">
+                                <input type="password" class="form-control" id="newPassword" data-i18n-placeholder="settings.password.newPasswordPlaceholder" placeholder="请输入新密码">
+                                <button class="password-toggle" onclick="togglePassword('newPassword')">
+                                    <span id="newPasswordIcon">👁</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-item">
+                            <label class="settings-label" for="confirmPassword" data-i18n-key="settings.password.confirmPassword">确认新密码</label>
+                            <div class="password-group">
+                                <input type="password" class="form-control" id="confirmPassword" data-i18n-placeholder="settings.password.confirmPasswordPlaceholder" placeholder="请再次输入新密码">
+                                <button class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                    <span id="confirmPasswordIcon">👁</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="updatePassword()">
+                            <span data-i18n-key="settings.password.updatePassword">更新密码</span>
+                        </button>
+                        <button class="btn-secondary" onclick="resetPasswordForm()">
+                            <span data-i18n-key="settings.cancel">取消</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize HeaderNav
+            new HeaderNav({
+                currentPage: 'settings',
+                containerId: 'headerContainer'
+            });
+
+            // Load user data
+            loadUserData();
+            
+            // Listen for language changes
+            document.addEventListener('languageChanged', function() {
+                updateTranslations();
+            });
+            
+            // Initial translation update
+            setTimeout(() => {
+                updateTranslations();
+            }, 500);
+            
+            // For testing: Uncomment the line below to simulate no email bound
+            // localStorage.removeItem('userEmail');
+        });
+
+        // Update translations when language changes
+        function updateTranslations() {
+            if (!window.i18n) return;
+            
+            // Update dynamic content that's set via JavaScript
+            checkEmailStatus();
+            
+            // Update countdown buttons if they're active
+            const buttons = [
+                'sendBindEmailCode',
+                'sendCurrentEmailCode', 
+                'sendNewEmailCode',
+                'sendPasswordResetCode'
+            ];
+            
+            buttons.forEach(buttonId => {
+                const btn = document.getElementById(buttonId);
+                if (btn && !btn.disabled) {
+                    const span = btn.querySelector('span');
+                    if (span) {
+                        span.textContent = window.i18n.getText('settings.email.sendCode');
+                    }
+                }
+            });
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Update sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Update panels
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(tab + 'Panel').classList.add('active');
+        }
+
+        // Load user data
+        function loadUserData() {
+            const userName = localStorage.getItem('userName') || '用户';
+            const userEmail = localStorage.getItem('userEmail');
+            const userAvatar = localStorage.getItem('userAvatar');
+
+            // Set username
+            document.getElementById('usernameInput').value = userName;
+            
+            // Handle email display logic
+            checkEmailStatus();
+            
+            // Set avatar
+            if (userAvatar) {
+                document.getElementById('avatarPreview').classList.remove('default-avatar');
+                document.getElementById('avatarPreview').classList.add('has-image');
+                document.getElementById('avatarPreview').innerHTML = `<img src="${userAvatar}" alt="头像">`;
+            } else {
+                document.getElementById('avatarPreview').classList.add('default-avatar');
+                document.getElementById('avatarPreview').classList.remove('has-image');
+                document.getElementById('avatarPreview').innerHTML = '';
+            }
+        }
+
+        // Check email status and show appropriate section
+        function checkEmailStatus() {
+            const userEmail = localStorage.getItem('userEmail');
+            const emailPanelTitle = document.getElementById('emailPanelTitle');
+            const bindEmailSection = document.getElementById('bindEmailSection');
+            const changeEmailSection = document.getElementById('changeEmailSection');
+            
+            if (!userEmail || userEmail === '' || true) { // 强制显示绑定邮箱界面用于测试
+                // No email bound - show bind email section
+                emailPanelTitle.textContent = window.i18n ? window.i18n.getText('settings.email.bindEmail') : '绑定邮箱';
+                bindEmailSection.classList.add('active');
+                bindEmailSection.style.display = 'block';
+                changeEmailSection.classList.remove('active');
+                changeEmailSection.style.display = 'none';
+            } else {
+                // Email bound - show change email section
+                emailPanelTitle.textContent = window.i18n ? window.i18n.getText('settings.email.title') : '修改邮箱';
+                bindEmailSection.classList.remove('active');
+                bindEmailSection.style.display = 'none';
+                changeEmailSection.classList.add('active');
+                changeEmailSection.style.display = 'block';
+                
+                // Set current email
+                document.getElementById('currentEmail').value = userEmail;
+                document.getElementById('passwordResetEmail').value = userEmail;
+            }
+        }
+
+        // Handle avatar change
+        function handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('头像文件大小不能超过 5MB', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarData = e.target.result;
+                    document.getElementById('avatarPreview').classList.remove('default-avatar');
+                    document.getElementById('avatarPreview').classList.add('has-image');
+                    document.getElementById('avatarPreview').innerHTML = `<img src="${avatarData}" alt="头像">`;
+                    localStorage.setItem('userAvatar', avatarData);
+                    showToast('头像已更新', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Remove avatar
+        function removeAvatar() {
+            document.getElementById('avatarPreview').classList.add('default-avatar');
+            document.getElementById('avatarPreview').classList.remove('has-image');
+            document.getElementById('avatarPreview').innerHTML = '';
+            localStorage.removeItem('userAvatar');
+            showToast('头像已移除', 'success');
+        }
+
+        // Save profile
+        function saveProfile() {
+            const username = document.getElementById('usernameInput').value.trim();
+            
+            if (!username) {
+                showToast('账号不能为空', 'error');
+                return;
+            }
+
+            localStorage.setItem('userName', username);
+
+            showToast(window.i18n ? window.i18n.getText('settings.email.profileSaved') : '个人信息已保存', 'success');
+        }
+
+        // Email verification timers
+        let currentEmailTimer = null;
+        let newEmailTimer = null;
+        let bindEmailTimer = null;
+
+        // Send bind email verification code
+        function sendBindEmailCode() {
+            const btn = document.getElementById('sendBindEmailCode');
+            const bindEmail = document.getElementById('bindEmail').value.trim();
+            
+            if (!bindEmail) {
+                showToast('请先输入邮箱地址', 'error');
+                return;
+            }
+            
+            if (!validateEmail(bindEmail)) {
+                showToast('请输入有效的邮箱地址', 'error');
+                return;
+            }
+            
+            // Simulate sending code
+            btn.disabled = true;
+            let countdown = 60;
+            
+            const updateCountdown = () => {
+                btn.textContent = `${countdown}秒后重试`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(bindEmailTimer);
+                    btn.disabled = false;
+                    btn.textContent = window.i18n ? window.i18n.getText('settings.email.sendCode') : '发送验证码';
+                }
+            };
+            
+            updateCountdown();
+            bindEmailTimer = setInterval(updateCountdown, 1000);
+            
+            showToast(window.i18n ? window.i18n.getText('settings.email.codeSent') : '验证码已发送到您的邮箱', 'success');
+        }
+
+        // Bind email
+        function bindEmail() {
+            const email = document.getElementById('bindEmail').value.trim();
+            const code = document.getElementById('bindEmailCode').value.trim();
+            
+            if (!email || !code) {
+                showToast('请填写所有字段', 'error');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                showToast('请输入有效的邮箱地址', 'error');
+                return;
+            }
+            
+            // Simulate verification
+            if (code === '123456') {
+                localStorage.setItem('userEmail', email);
+                // Clear bind form
+                document.getElementById('bindEmail').value = '';
+                document.getElementById('bindEmailCode').value = '';
+                // Clear timer
+                if (bindEmailTimer) {
+                    clearInterval(bindEmailTimer);
+                    document.getElementById('sendBindEmailCode').disabled = false;
+                    document.getElementById('sendBindEmailCode').textContent = window.i18n ? window.i18n.getText('settings.email.sendCode') : '发送验证码';
+                }
+                // Refresh email status
+                checkEmailStatus();
+                showToast('邮箱绑定成功', 'success');
+            } else {
+                showToast(window.i18n ? window.i18n.getText('settings.email.codeError') : '验证码错误', 'error');
+            }
+        }
+
+        // Send current email verification code
+        function sendCurrentEmailCode() {
+            const btn = document.getElementById('sendCurrentEmailCode');
+            
+            // Simulate sending code
+            btn.disabled = true;
+            let countdown = 60;
+            
+            const updateCountdown = () => {
+                btn.textContent = `${countdown}秒后重试`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(currentEmailTimer);
+                    btn.disabled = false;
+                    btn.textContent = window.i18n ? window.i18n.getText('settings.email.sendCode') : '发送验证码';
+                }
+            };
+            
+            updateCountdown();
+            currentEmailTimer = setInterval(updateCountdown, 1000);
+            
+            showToast(window.i18n ? window.i18n.getText('settings.email.currentEmailCodeSent') : '验证码已发送到您的当前邮箱', 'success');
+        }
+
+        // Verify current email
+        function verifyCurrentEmail() {
+            const code = document.getElementById('currentEmailCode').value.trim();
+            
+            if (!code) {
+                showToast(window.i18n ? window.i18n.getText('settings.email.enterCode') : '请输入验证码', 'error');
+                return;
+            }
+            
+            // Simulate verification
+            if (code === '123456') {
+                // Switch to step 2
+                document.getElementById('emailStep1').classList.remove('active');
+                document.getElementById('emailStep2').classList.add('active');
+                showToast(window.i18n ? window.i18n.getText('settings.email.currentEmailVerified') : '当前邮箱验证成功', 'success');
+            } else {
+                showToast(window.i18n ? window.i18n.getText('settings.email.codeError') : '验证码错误', 'error');
+            }
+        }
+
+        // Send new email verification code
+        function sendNewEmailCode() {
+            const btn = document.getElementById('sendNewEmailCode');
+            const newEmail = document.getElementById('newEmail').value.trim();
+            
+            if (!newEmail) {
+                showToast('请先输入新邮箱', 'error');
+                return;
+            }
+            
+            if (!validateEmail(newEmail)) {
+                showToast('请输入有效的邮箱地址', 'error');
+                return;
+            }
+            
+            // Simulate sending code
+            btn.disabled = true;
+            let countdown = 60;
+            
+            const updateCountdown = () => {
+                btn.textContent = `${countdown}秒后重试`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(newEmailTimer);
+                    btn.disabled = false;
+                    btn.textContent = window.i18n ? window.i18n.getText('settings.email.sendCode') : '发送验证码';
+                }
+            };
+            
+            updateCountdown();
+            newEmailTimer = setInterval(updateCountdown, 1000);
+            
+            showToast(window.i18n ? window.i18n.getText('settings.email.newEmailCodeSent') : '验证码已发送到您的新邮箱', 'success');
+        }
+
+        // Back to email step 1
+        function backToEmailStep1() {
+            document.getElementById('emailStep2').classList.remove('active');
+            document.getElementById('emailStep1').classList.add('active');
+        }
+
+        // Update email
+        function updateEmail() {
+            const newEmail = document.getElementById('newEmail').value.trim();
+            const code = document.getElementById('newEmailCode').value.trim();
+            
+            if (!newEmail || !code) {
+                showToast('请填写所有字段', 'error');
+                return;
+            }
+            
+            if (!validateEmail(newEmail)) {
+                showToast('请输入有效的邮箱地址', 'error');
+                return;
+            }
+            
+            // Simulate verification
+            if (code === '123456') {
+                localStorage.setItem('userEmail', newEmail);
+                document.getElementById('currentEmail').value = newEmail;
+                resetEmailForm();
+                showToast('邮箱已更新', 'success');
+            } else {
+                showToast(window.i18n ? window.i18n.getText('settings.email.codeError') : '验证码错误', 'error');
+            }
+        }
+
+        // Reset email form
+        function resetEmailForm() {
+            // Reset all fields
+            document.getElementById('currentEmailCode').value = '';
+            document.getElementById('newEmail').value = '';
+            document.getElementById('newEmailCode').value = '';
+            
+            // Go back to step 1
+            document.getElementById('emailStep2').classList.remove('active');
+            document.getElementById('emailStep1').classList.add('active');
+            
+            // Clear any running timers
+            if (currentEmailTimer) {
+                clearInterval(currentEmailTimer);
+                document.getElementById('sendCurrentEmailCode').disabled = false;
+                document.getElementById('sendCurrentEmailCode').textContent = window.i18n ? window.i18n.getText('settings.email.sendCode') : '发送验证码';
+            }
+            if (newEmailTimer) {
+                clearInterval(newEmailTimer);
+                document.getElementById('sendNewEmailCode').disabled = false;
+                document.getElementById('sendNewEmailCode').textContent = window.i18n ? window.i18n.getText('settings.email.sendCode') : '发送验证码';
+            }
+        }
+
+        // Switch password method
+        let currentPasswordMethod = 'password';
+        function switchPasswordMethod(method) {
+            currentPasswordMethod = method;
+            
+            // Update tab styles
+            document.querySelectorAll('.method-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.method-tab').classList.add('active');
+            
+            // Show/hide method content
+            document.querySelectorAll('.password-method').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(method + 'Method').classList.add('active');
+        }
+
+        // Send password reset code
+        let passwordResetTimer = null;
+        function sendPasswordResetCode() {
+            const btn = document.getElementById('sendPasswordResetCode');
+            
+            // Simulate sending code
+            btn.disabled = true;
+            let countdown = 60;
+            
+            const updateCountdown = () => {
+                btn.textContent = `${countdown}秒后重试`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(passwordResetTimer);
+                    btn.disabled = false;
+                    btn.textContent = window.i18n ? window.i18n.getText('settings.email.sendCode') : '发送验证码';
+                }
+            };
+            
+            updateCountdown();
+            passwordResetTimer = setInterval(updateCountdown, 1000);
+            
+            showToast('验证码已发送到您的邮箱', 'success');
+        }
+
+        // Update password
+        function updatePassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate based on current method
+            if (currentPasswordMethod === 'password') {
+                const oldPassword = document.getElementById('oldPassword').value;
+                if (!oldPassword) {
+                    showToast('请输入当前密码', 'error');
+                    return;
+                }
+            } else {
+                const code = document.getElementById('passwordResetCode').value;
+                if (!code) {
+                    showToast(window.i18n ? window.i18n.getText('settings.email.enterCode') : '请输入验证码', 'error');
+                    return;
+                }
+                // Simulate verification
+                if (code !== '123456') {
+                    showToast(window.i18n ? window.i18n.getText('settings.email.codeError') : '验证码错误', 'error');
+                    return;
+                }
+            }
+            
+            if (!newPassword || !confirmPassword) {
+                showToast('请填写新密码', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showToast('新密码长度至少为6位', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showToast('两次输入的密码不一致', 'error');
+                return;
+            }
+            
+            // Simulate password update
+            resetPasswordForm();
+            showToast('密码已更新', 'success');
+        }
+
+        // Reset password form
+        function resetPasswordForm() {
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('passwordResetCode').value = '';
+        }
+
+        // Toggle password visibility
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(inputId + 'Icon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                icon.textContent = '👁';
+            }
+        }
+
+        // Validate email
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        // Show toast message
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = type === 'success' ? '✅' : '❌';
+            
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+    <script src="components/global-notifications.js"></script>
+</body>
+</html>

@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>故障告警 - AlwaysControl</title>
+    <link rel="stylesheet" href="components/common-styles.css">
+    <link rel="stylesheet" href="components/drawer-component.css">
+    <link rel="stylesheet" href="components/i18n.css">
+    <link rel="stylesheet" href="components/notification-center.css">
+    <script src="components/drawer-component.js"></script>
+    <script src="components/i18n.js"></script>
+    <script src="components/simple-message-icon.js"></script>
+    <link rel="stylesheet" href="components/header-nav.css">
+    <link rel="stylesheet" href="components/standard-layout.css">
+    <link rel="stylesheet" href="components/pagination.css">
+    <script src="components/header-nav.js"></script>
+    <script src="components/user-menu-link.js"></script>
+    <script src="components/user-dropdown-simple-new.js"></script>
+    <script src="components/pagination.js"></script>
+    <style>
+        html, body {
+            background: var(--color-bg) !important;
+            width: 100vw;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            color: var(--color-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .container {
+            background: var(--color-bg);
+            max-width: 95%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            padding: 100px 10px 40px;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .page-title {
+            font-size: 48px;
+            font-weight: 500;
+            color: var(--color-text);
+            margin: 0;
+            letter-spacing: -2px;
+            background: none;
+            -webkit-text-fill-color: unset;
+        }
+
+        .page-header-link {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .page-header-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Filter Section — 与电站页统一风格 */
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            width: 160px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' fill-opacity='0.5' d='M6 8.5L1.5 4h9z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 136, 0.5);
+        }
+
+        .filter-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .date-range-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-input {
+            width: 150px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .date-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 136, 0.5);
+        }
+
+        .date-input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .date-separator {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .action-btn.primary {
+            background: #00ff88;
+            border-color: #00ff88;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .action-btn.primary:hover {
+            background: #00cc6a;
+            border-color: #00cc6a;
+        }
+
+        /* Status Tabs */
+        .status-tabs {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .status-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .status-tab:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .status-tab.active {
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        .status-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #00ff88;
+        }
+
+        .status-tab-spacer {
+            flex: 1;
+        }
+
+        .btn-export {
+            padding: 8px 20px;
+            background: rgba(30, 127, 255, 0.1);
+            border: 1px solid rgba(30, 127, 255, 0.3);
+            border-radius: 8px;
+            color: var(--color-accent);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            height: 38px;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .btn-export:hover {
+            background: rgba(30, 127, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 127, 255, 0.3);
+        }
+
+        /* Action Buttons Row */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .select-all-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            height: 38px;
+            box-sizing: border-box;
+            line-height: 1;
+        }
+
+        .select-all-wrapper:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .select-all-wrapper input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #00ff88;
+            cursor: pointer;
+        }
+
+        .select-all-wrapper label {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            margin: 0;
+            user-select: none;
+        }
+
+        .btn-action {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            height: 38px;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .btn-action.primary {
+            background: #00ff88;
+            border: 1px solid #00ff88;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .btn-action.primary:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), rgba(0, 170, 255, 0.3));
+            border-color: rgba(0, 255, 136, 0.5);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-action.secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--color-text-secondary);
+        }
+
+        .btn-action.secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-text);
+        }
+
+        /* Data Table */
+        .table-section {
+            background: transparent;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .alarm-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        .alarm-table th {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            border-bottom: 1px solid var(--color-border);
+            white-space: nowrap;
+        }
+
+        .alarm-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            vertical-align: middle;
+        }
+
+        .alarm-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .alarm-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .alarm-table th.checkbox-col,
+        .alarm-table td.checkbox-col {
+            width: 50px;
+            text-align: center;
+        }
+
+        .alarm-table input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #00ff88;
+            cursor: pointer;
+        }
+
+        /* Sortable Header */
+        .sortable-header {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sort-icon {
+            display: inline-block;
+            margin-left: 4px;
+            font-size: 10px;
+            color: var(--color-text-secondary);
+            vertical-align: middle;
+        }
+
+        .sort-icon.active {
+            color: #00ff88;
+        }
+
+        /* Alarm Level Badge */
+        .alarm-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .alarm-level-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .alarm-level-dot.warning {
+            background: #ff9500;
+            box-shadow: 0 0 6px rgba(255, 149, 0, 0.5);
+        }
+
+        .alarm-level-dot.danger {
+            background: #ff3b30;
+            box-shadow: 0 0 6px rgba(255, 59, 48, 0.5);
+        }
+
+        /* Alarm Status Badge */
+        .alarm-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .alarm-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .alarm-status-dot.unprocessed {
+            background: #ffd93d;
+            box-shadow: 0 0 6px rgba(255, 217, 61, 0.5);
+        }
+
+        .alarm-status-dot.processed {
+            background: #00ff88;
+            box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+        }
+
+        .alarm-status-dot.recovered {
+            background: #007aff;
+            box-shadow: 0 0 6px rgba(0, 122, 255, 0.5);
+        }
+
+        /* Action Button */
+        .btn-detail {
+            padding: 4px 12px;
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            border-radius: 4px;
+            color: var(--color-primary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-detail:hover {
+            background: var(--color-primary);
+            color: #000;
+            transform: translateY(-1px);
+        }
+
+        /* Action Buttons Container */
+        .action-btns-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .btn-resolve-inline {
+            padding: 4px 12px;
+            background: transparent;
+            border: 1px solid #ffd93d;
+            border-radius: 4px;
+            color: #ffd93d;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-resolve-inline:hover {
+            background: #ffd93d;
+            color: #000;
+            transform: translateY(-1px);
+        }
+
+        /* Pagination Area */
+        .pagination-area {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px 0;
+            gap: 12px;
+        }
+
+        .pagination-total {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pagination-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #00ff88;
+            color: #00ff88;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background: transparent;
+            border-color: #00ff88;
+            color: #00ff88;
+        }
+
+        .pagination-input {
+            width: 40px;
+            height: 32px;
+            text-align: center;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            color: var(--color-text);
+            font-size: 14px;
+        }
+
+        .pagination-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .page-size-select {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: var(--color-text);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .page-size-select option {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        /* Custom scrollbar */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .date-input {
+                width: 100%;
+            }
+
+            .date-range-group {
+                width: 100%;
+            }
+
+            .filter-actions {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .filter-select,
+            .date-input {
+                width: 100%;
+            }
+        }
+
+        /* ==================== Detail Drawer ==================== */
+        .detail-drawer-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(4px);
+            z-index: 999998 !important;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .detail-drawer-overlay.active {
+            opacity: 1 !important;
+            pointer-events: all !important;
+        }
+
+        .detail-drawer {
+            position: fixed !important;
+            top: 0 !important;
+            right: 0 !important;
+            width: 600px !important;
+            height: 100% !important;
+            background: var(--color-bg-card) !important;
+            backdrop-filter: blur(30px);
+            border-left: 1px solid var(--color-border);
+            box-shadow: -8px 0 32px rgba(0, 0, 0, 0.3);
+            z-index: 999999 !important;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-drawer.active {
+            transform: translateX(0) !important;
+        }
+
+        .detail-drawer-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .detail-drawer-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+        }
+
+        .detail-drawer-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detail-drawer-close:hover {
+            background: rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+        }
+
+        .detail-drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .detail-drawer-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .detail-drawer-body::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-drawer-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .detail-drawer-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .detail-item {
+            margin-bottom: 24px;
+        }
+
+        .detail-item-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 500;
+        }
+
+        .detail-item-value {
+            font-size: 15px;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .detail-drawer-footer {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .btn-resolve {
+            padding: 10px 24px;
+            background: var(--color-primary);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-resolve:hover {
+            background: #00cc6f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .detail-drawer {
+                width: 100% !important;
+            }
+        }
+
+        /* ==================== Confirm Dialog ==================== */
+        .confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .confirm-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .confirm-dialog {
+            background: linear-gradient(145deg, rgba(40, 44, 52, 0.98), rgba(30, 33, 40, 0.98));
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            width: 90%;
+            max-width: 480px;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .confirm-dialog::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .confirm-overlay.active .confirm-dialog {
+            transform: scale(1);
+        }
+
+        .confirm-header {
+            padding: 28px 28px 20px 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+        }
+
+        .confirm-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.3), rgba(255, 149, 0, 0.15));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffaa00;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(255, 149, 0, 0.2);
+        }
+
+        .confirm-body {
+            padding: 32px 28px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .confirm-message {
+            font-size: 17px;
+            color: rgba(255, 255, 255, 0.98);
+            line-height: 1.8;
+            margin: 0;
+            font-weight: 400;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirm-footer {
+            padding: 20px 28px 28px 28px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 14px;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+        }
+
+        .confirm-btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            min-width: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confirm-btn-cancel {
+            background: linear-gradient(145deg, rgba(60, 65, 75, 0.8), rgba(45, 50, 60, 0.9));
+            color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-btn-cancel:hover {
+            background: linear-gradient(145deg, rgba(70, 75, 85, 0.9), rgba(55, 60, 70, 1));
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .confirm-btn-confirm {
+            background: linear-gradient(135deg, #00ff88, #00d97a);
+            color: #000;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .confirm-btn-confirm:hover {
+            background: linear-gradient(135deg, #00ff99, #00e68a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .confirm-btn-confirm::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .confirm-btn-confirm:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Container for HeaderNav Component -->
+    <div id="headerContainer"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title" data-i18n="faultAlarm.title">故障告警</h1>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <select id="stationFilter" class="filter-select">
+                <option value="" data-i18n="faultAlarm.filter.allStations">全部站点</option>
+                <option value="Logistics Distribution">Logistics Distribution</option>
+                <option value="Solar Farm Alpha">Solar Farm Alpha</option>
+                <option value="Battery Station Beta">Battery Station Beta</option>
+                <option value="Grid Hub Gamma">Grid Hub Gamma</option>
+            </select>
+            <select id="levelFilter" class="filter-select">
+                <option value="" data-i18n="faultAlarm.filter.allLevels">全部告警等级</option>
+                <option value="fault" data-i18n="faultAlarm.levels.fault">故障</option>
+                <option value="alarm" data-i18n="faultAlarm.levels.alarm">告警</option>
+            </select>
+            <div class="date-range-group">
+                <input type="date" id="startDate" class="date-input" value="">
+                <span class="date-separator">&rarr;</span>
+                <input type="date" id="endDate" class="date-input" value="">
+            </div>
+            <div class="filter-actions">
+                <button class="action-btn" onclick="clearFilters()" data-i18n="faultAlarm.buttons.clear">重置</button>
+                <button class="action-btn primary" onclick="searchAlarms()" data-i18n="faultAlarm.buttons.search">搜索</button>
+            </div>
+        </div>
+
+        <!-- Status Tabs -->
+        <div class="status-tabs">
+            <button class="status-tab active" data-status="unprocessed" onclick="switchStatusTab(this, 'unprocessed')">
+                <span data-i18n="faultAlarm.tabs.unprocessed">未处理</span>（<span id="countUnprocessed">4</span>）
+            </button>
+            <button class="status-tab" data-status="processed" onclick="switchStatusTab(this, 'processed')">
+                <span data-i18n="faultAlarm.tabs.processed">已处理</span>
+            </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons" id="actionButtons">
+            <div class="select-all-wrapper" id="selectAllWrapper">
+                <input type="checkbox" id="selectAllBtn" onchange="selectAllCurrentPage(this.checked)">
+                <label for="selectAllBtn" data-i18n="faultAlarm.buttons.selectAll">全选</label>
+            </div>
+            <button class="btn-action primary" id="btnBatchProcess" onclick="batchProcess()" data-i18n="faultAlarm.buttons.batchProcess">一键处理</button>
+            <button class="btn-export" id="btnExport" onclick="exportAlarms()" data-i18n="faultAlarm.buttons.export">导 出</button>
+            <button class="btn-action secondary" id="btnMarkProcessed" onclick="markAsProcessed()" data-i18n="faultAlarm.buttons.markProcessed">标为已处理</button>
+            <button class="btn-action secondary" id="btnMarkUnprocessed" onclick="markAsUnprocessed()" data-i18n="faultAlarm.buttons.markUnprocessed">标为未处理</button>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-section">
+            <div class="table-container">
+                <table class="alarm-table">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-col">
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                            </th>
+                            <th class="sortable-header" onclick="sortTable('time')">
+                                <span data-i18n="faultAlarm.table.alarmTime">告警时间</span>
+                                <span class="sort-icon" id="sort-time">⇅</span>
+                            </th>
+                            <th data-i18n="faultAlarm.table.alarmStation">告警站点</th>
+                            <th data-i18n="faultAlarm.table.alarmDevice">告警设备</th>
+                            <th data-i18n="faultAlarm.table.description">告警描述</th>
+                            <th data-i18n="faultAlarm.table.alarmLevel">告警等级</th>
+                            <th data-i18n="faultAlarm.table.alarmStatus">告警状态</th>
+                            <th class="sortable-header" onclick="sortTable('recoveryTime')">
+                                <span data-i18n="faultAlarm.table.recoveryTime">解决时间</span>
+                                <span class="sort-icon" id="sort-recoveryTime">⇅</span>
+                            </th>
+                            <th data-i18n="faultAlarm.table.actions">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alarmTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-area">
+            <span class="pagination-total">共 <span id="totalCount">0</span> 条</span>
+            <div class="pagination-nav">
+                <button class="pagination-btn" id="prevPage" onclick="changePage(-1)" disabled>&lt;</button>
+                <input type="text" class="pagination-input" id="currentPageInput" value="1" onchange="goToPage(this.value)">
+                <button class="pagination-btn" id="nextPage" onclick="changePage(1)">&gt;</button>
+            </div>
+            <select class="page-size-select" id="pageSizeSelect" onchange="changePageSize(this.value)">
+                <option value="50">50 条/页</option>
+                <option value="100" selected>100 条/页</option>
+                <option value="200">200 条/页</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        // ==================== Data ====================
+        let allAlarms = [];
+        let filteredAlarms = [];
+        let currentTab = 'unprocessed';
+        let currentPage = 1;
+        let pageSize = 100;
+        let sortField = 'time';
+        let sortOrder = 'desc';
+
+        // Mock alarm data
+        function generateMockAlarms() {
+            const descriptions = ['总压高', '绝缘低', '单体压差大', '单体电压高', '温度过高', 'SOC过低', '通信中断', '过流告警'];
+            const levels = ['alarm', 'fault'];
+            const levelNames = { alarm: '告警', fault: '故障' };
+            const devices = ['BMS', 'PCS', 'EMS', 'METER'];
+            const stations = ['Logistics Distribution', 'Solar Farm Alpha', 'Battery Station Beta', 'Grid Hub Gamma'];
+            const statuses = ['unprocessed', 'processed'];
+            const statusNames = { unprocessed: '未处理', processed: '已处理' };
+
+            const alarms = [];
+            const now = new Date();
+            let idCounter = 1;
+
+            // Generate 4 unprocessed alarms (matching the screenshot)
+            for (let i = 0; i < 4; i++) {
+                alarms.push({
+                    id: idCounter++,
+                    time: new Date(2026, 1, 5, 11, 50, 0), // 2026-02-05 11:50:00
+                    timezone: 'UTC+10:00',
+                    description: descriptions[i],
+                    level: 'alarm',
+                    levelName: '告警',
+                    device: 'BMS',
+                    station: 'Logistics Distribution',
+                    status: 'unprocessed',
+                    statusName: '未处理',
+                    recoveryTime: null,
+                    selected: false
+                });
+            }
+
+            // Generate 20 processed alarms with varied data
+            for (let i = 0; i < 20; i++) {
+                const alarmTime = new Date(2026, 1, 5 - Math.floor(i / 5), 10 - (i % 5), 30 + (i % 4) * 10, 0);
+                const recoveryTime = new Date(alarmTime.getTime() + (30 + Math.random() * 90) * 60000); // 30-120 minutes later
+                const descIndex = i % descriptions.length;
+                const levelIndex = i % 2;
+                const deviceIndex = i % devices.length;
+                const stationIndex = i % stations.length;
+
+                alarms.push({
+                    id: idCounter++,
+                    time: alarmTime,
+                    timezone: 'UTC+10:00',
+                    description: descriptions[descIndex],
+                    level: levels[levelIndex],
+                    levelName: levelNames[levels[levelIndex]],
+                    device: devices[deviceIndex],
+                    station: stations[stationIndex],
+                    status: 'processed',
+                    statusName: '已处理',
+                    recoveryTime: recoveryTime,
+                    selected: false
+                });
+            }
+
+            return alarms;
+        }
+
+        // ==================== Filter Functions ====================
+        function clearFilters() {
+            document.getElementById('stationFilter').selectedIndex = 0;
+            document.getElementById('levelFilter').selectedIndex = 0;
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+        }
+
+        function searchAlarms() {
+            applyFilters();
+            renderTable();
+            updateCounts();
+        }
+
+        function applyFilters() {
+            const station = document.getElementById('stationFilter').value;
+            const level = document.getElementById('levelFilter').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            filteredAlarms = allAlarms.filter(alarm => {
+                // Status filter by current tab
+                if (currentTab !== 'all' && alarm.status !== currentTab) return false;
+
+                // Level filter
+                if (level && alarm.level !== level) return false;
+
+                // Station filter
+                if (station && alarm.station !== station) return false;
+
+                // Date range filter
+                if (startDate) {
+                    const start = new Date(startDate);
+                    if (alarm.time < start) return false;
+                }
+                if (endDate) {
+                    const end = new Date(endDate);
+                    end.setHours(23, 59, 59, 999);
+                    if (alarm.time > end) return false;
+                }
+
+                return true;
+            });
+
+            // Sort
+            sortAlarms();
+        }
+
+        function sortAlarms() {
+            filteredAlarms.sort((a, b) => {
+                let valA, valB;
+                if (sortField === 'time') {
+                    valA = a.time.getTime();
+                    valB = b.time.getTime();
+                } else if (sortField === 'recoveryTime') {
+                    valA = a.recoveryTime ? a.recoveryTime.getTime() : 0;
+                    valB = b.recoveryTime ? b.recoveryTime.getTime() : 0;
+                }
+                return sortOrder === 'asc' ? valA - valB : valB - valA;
+            });
+        }
+
+        function sortTable(field) {
+            if (sortField === field) {
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortField = field;
+                sortOrder = 'desc';
+            }
+
+            // Update sort icons
+            document.querySelectorAll('.sort-icon').forEach(icon => {
+                icon.textContent = '⇅';
+                icon.classList.remove('active');
+            });
+            const activeIcon = document.getElementById(`sort-${field}`);
+            if (activeIcon) {
+                activeIcon.textContent = sortOrder === 'asc' ? '▲' : '▼';
+                activeIcon.classList.add('active');
+            }
+
+            sortAlarms();
+            renderTable();
+        }
+
+        // ==================== Tab Functions ====================
+        function updateActionButtons() {
+            const selectAllWrapper = document.getElementById('selectAllWrapper');
+            const btnBatchProcess = document.getElementById('btnBatchProcess');
+            const btnExport = document.getElementById('btnExport');
+            const btnMarkProcessed = document.getElementById('btnMarkProcessed');
+            const btnMarkUnprocessed = document.getElementById('btnMarkUnprocessed');
+
+            if (currentTab === 'unprocessed') {
+                // 未处理：显示"全选"、"一键处理"和"导出"
+                selectAllWrapper.style.display = 'flex';
+                btnBatchProcess.style.display = 'block';
+                btnExport.style.display = 'block';
+                btnMarkProcessed.style.display = 'none';
+                btnMarkUnprocessed.style.display = 'none';
+            } else if (currentTab === 'processed') {
+                // 已处理：显示"全选"和"导出"
+                selectAllWrapper.style.display = 'flex';
+                btnBatchProcess.style.display = 'none';
+                btnExport.style.display = 'block';
+                btnMarkProcessed.style.display = 'none';
+                btnMarkUnprocessed.style.display = 'none';
+            }
+        }
+
+        function switchStatusTab(btn, status) {
+            document.querySelectorAll('.status-tab').forEach(tab => tab.classList.remove('active'));
+            btn.classList.add('active');
+            currentTab = status;
+            currentPage = 1;
+
+            // 重置全选复选框
+            const selectAllBtn = document.getElementById('selectAllBtn');
+            if (selectAllBtn) selectAllBtn.checked = false;
+
+            updateActionButtons();
+            applyFilters();
+            renderTable();
+        }
+
+        // ==================== Table Rendering ====================
+        function formatAlarmTime(date, timezone) {
+            if (!date) return '--';
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            const tz = timezone || 'UTC+10:00';
+            return `${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}(${tz})`;
+        }
+
+        function getLevelHTML(level) {
+            const dotClass = level === 'alarm' ? 'warning' : 'danger';
+            const i18nKey = `faultAlarm.levels.${level}`;
+            const defaultNames = { alarm: '告警', fault: '故障' };
+            const name = (window.i18n && window.i18n.getText(i18nKey) !== i18nKey) ? window.i18n.getText(i18nKey) : defaultNames[level];
+            return `<span class="alarm-level"><span class="alarm-level-dot ${dotClass}"></span>${name}</span>`;
+        }
+
+        function getStatusHTML(status) {
+            const dotClass = status === 'unprocessed' ? 'unprocessed' : 'processed';
+            const i18nKey = `faultAlarm.status.${status}`;
+            const defaultNames = { unprocessed: '未处理', processed: '已处理' };
+            const name = (window.i18n && window.i18n.getText(i18nKey) !== i18nKey) ? window.i18n.getText(i18nKey) : defaultNames[status];
+            return `<span class="alarm-status"><span class="alarm-status-dot ${dotClass}"></span>${name}</span>`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('alarmTableBody');
+            if (!tbody) return;
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredAlarms.length);
+            const pageData = filteredAlarms.slice(startIndex, endIndex);
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 60px 20px; color: var(--color-text-secondary);">
+                            <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.4;">📭</div>
+                            <div data-i18n="faultAlarm.noData">暂无数据</div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = pageData.map(alarm => `
+                    <tr>
+                        <td class="checkbox-col">
+                            <input type="checkbox" ${alarm.selected ? 'checked' : ''} onchange="toggleSelect(${alarm.id}, this.checked)">
+                        </td>
+                        <td>${formatAlarmTime(alarm.time, alarm.timezone)}</td>
+                        <td>${alarm.station}</td>
+                        <td>${alarm.device}</td>
+                        <td>${alarm.description}</td>
+                        <td>${getLevelHTML(alarm.level)}</td>
+                        <td>${getStatusHTML(alarm.status)}</td>
+                        <td>${alarm.recoveryTime ? formatAlarmTime(alarm.recoveryTime) : '--'}</td>
+                        <td>
+                            <div class="action-btns-container">
+                                ${alarm.status === 'unprocessed' ? '<button class="btn-resolve-inline" onclick="resolveAlarmFromDetail(' + alarm.id + ')" data-i18n="faultAlarm.buttons.resolve">处理</button>' : ''}
+                                <button class="btn-detail" onclick="showAlarmDetail(${alarm.id})" data-i18n="faultAlarm.buttons.detail">详情</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            updatePagination();
+            updateSelectAllCheckbox();
+        }
+
+        // ==================== Selection ====================
+        function selectAllCurrentPage(checked) {
+            // 全选复选框：选中/取消所有页面的数据
+            filteredAlarms.forEach(alarm => {
+                alarm.selected = checked;
+            });
+            renderTable();
+            updateSelectAllCheckbox();
+        }
+
+        function toggleSelectAll(checkbox) {
+            // 表头复选框：仅选中当前页
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredAlarms.length);
+            for (let i = startIndex; i < endIndex; i++) {
+                filteredAlarms[i].selected = checkbox.checked;
+            }
+            renderTable();
+        }
+
+        function toggleSelect(id, checked) {
+            const alarm = allAlarms.find(a => a.id === id);
+            if (alarm) alarm.selected = checked;
+
+            // Update select-all checkbox (只反映当前页状态)
+            updateSelectAllCheckbox();
+        }
+
+        function updateSelectAllCheckbox() {
+            // 更新表头的当前页全选复选框
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredAlarms.length);
+            const pageData = filteredAlarms.slice(startIndex, endIndex);
+            const allPageSelected = pageData.length > 0 && pageData.every(a => a.selected);
+            const selectAllCheckbox = document.getElementById('selectAll');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = allPageSelected;
+            }
+
+            // 更新操作栏的全选复选框（所有页）
+            const allAlarmsSelected = filteredAlarms.length > 0 && filteredAlarms.every(a => a.selected);
+            const selectAllBtn = document.getElementById('selectAllBtn');
+            if (selectAllBtn) {
+                selectAllBtn.checked = allAlarmsSelected;
+            }
+        }
+
+        // ==================== Alarm Detail ====================
+        function showAlarmDetail(alarmId) {
+            const alarm = allAlarms.find(a => a.id === alarmId);
+            if (!alarm) return;
+
+            // Get i18n texts
+            const getText = (key, defaultText) => {
+                return (window.i18n && window.i18n.getText(key) !== key) ? window.i18n.getText(key) : defaultText;
+            };
+
+            // Build detail HTML
+            const detailHTML = `
+                <div class="detail-item">
+                    <div class="detail-item-label">${getText('faultAlarm.detail.alarmTime', '告警时间')}</div>
+                    <div class="detail-item-value">${formatAlarmTime(alarm.time, alarm.timezone)}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">${getText('faultAlarm.detail.alarmStation', '告警站点')}</div>
+                    <div class="detail-item-value">${alarm.station}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">${getText('faultAlarm.detail.alarmDevice', '告警设备')}</div>
+                    <div class="detail-item-value">${alarm.device}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">${getText('faultAlarm.detail.description', '告警描述')}</div>
+                    <div class="detail-item-value description">${alarm.description}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">${getText('faultAlarm.detail.alarmLevel', '告警等级')}</div>
+                    <div class="detail-item-value">${getLevelHTML(alarm.level)}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">${getText('faultAlarm.detail.alarmStatus', '告警状态')}</div>
+                    <div class="detail-item-value">${getStatusHTML(alarm.status)}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">${getText('faultAlarm.detail.recoveryTime', '解决时间')}</div>
+                    <div class="detail-item-value">${alarm.recoveryTime ? formatAlarmTime(alarm.recoveryTime) : '--'}</div>
+                </div>
+            `;
+
+            // Fill drawer body
+            document.getElementById('detailDrawerBody').innerHTML = detailHTML;
+
+            // Update footer based on alarm status
+            const footer = document.getElementById('detailDrawerFooter');
+            if (alarm.status === 'unprocessed') {
+                footer.innerHTML = `<button class="btn-resolve" onclick="resolveAlarmFromDetail(${alarm.id})" data-i18n="faultAlarm.buttons.resolve">处理</button>`;
+                footer.style.display = 'flex';
+            } else {
+                footer.style.display = 'none';
+            }
+
+            // Show drawer
+            document.getElementById('detailDrawerOverlay').classList.add('active');
+            document.getElementById('detailDrawer').classList.add('active');
+        }
+
+        async function resolveAlarmFromDetail(alarmId) {
+            // Get i18n text
+            const getText = (key, defaultText) => {
+                return (window.i18n && window.i18n.getText(key) !== key) ? window.i18n.getText(key) : defaultText;
+            };
+
+            // Confirmation dialog
+            const confirmMessage = getText('faultAlarm.confirm.resolve', '确认将此告警标记为已处理？');
+            const confirmTitle = getText('faultAlarm.confirm.title', '确认操作');
+            const confirmed = await showConfirmDialog(confirmMessage, confirmTitle);
+
+            if (!confirmed) {
+                return;
+            }
+
+            const alarm = allAlarms.find(a => a.id === alarmId);
+            if (alarm) {
+                alarm.status = 'processed';
+                alarm.statusName = '已处理';
+                alarm.recoveryTime = new Date();
+
+                // Close drawer
+                closeAlarmDetail();
+
+                // Refresh table and counts
+                applyFilters();
+                renderTable();
+                updateCounts();
+            }
+        }
+
+        function closeAlarmDetail() {
+            document.getElementById('detailDrawerOverlay').classList.remove('active');
+            document.getElementById('detailDrawer').classList.remove('active');
+        }
+
+        // ==================== Confirm Dialog ====================
+        function showConfirmDialog(message, title = '确认操作') {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('confirmOverlay');
+                const titleEl = document.getElementById('confirmTitle');
+                const messageEl = document.getElementById('confirmMessage');
+                const cancelBtn = document.getElementById('confirmCancelBtn');
+                const confirmBtn = document.getElementById('confirmConfirmBtn');
+
+                // Get i18n text
+                const getText = (key, defaultText) => {
+                    return (window.i18n && window.i18n.getText(key) !== key) ? window.i18n.getText(key) : defaultText;
+                };
+
+                // Set content
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+
+                // Update button texts with i18n
+                cancelBtn.textContent = getText('faultAlarm.confirm.cancel', '取消');
+                confirmBtn.textContent = getText('faultAlarm.confirm.confirm', '确认');
+
+                // Show overlay
+                overlay.classList.add('active');
+
+                // Handle cancel
+                const handleCancel = () => {
+                    overlay.classList.remove('active');
+                    resolve(false);
+                    cleanup();
+                };
+
+                // Handle confirm
+                const handleConfirm = () => {
+                    overlay.classList.remove('active');
+                    resolve(true);
+                    cleanup();
+                };
+
+                // Handle overlay click
+                const handleOverlayClick = (e) => {
+                    if (e.target === overlay) {
+                        handleCancel();
+                    }
+                };
+
+                // Cleanup function
+                const cleanup = () => {
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    overlay.removeEventListener('click', handleOverlayClick);
+                };
+
+                // Add event listeners
+                cancelBtn.addEventListener('click', handleCancel);
+                confirmBtn.addEventListener('click', handleConfirm);
+                overlay.addEventListener('click', handleOverlayClick);
+            });
+        }
+
+        // ==================== Batch Actions ====================
+        function getSelectedAlarms() {
+            return allAlarms.filter(a => a.selected);
+        }
+
+        async function batchProcess() {
+            // Get i18n text
+            const getText = (key, defaultText) => {
+                return (window.i18n && window.i18n.getText(key) !== key) ? window.i18n.getText(key) : defaultText;
+            };
+
+            const selected = getSelectedAlarms();
+
+            // Confirmation dialog with different messages based on selection
+            let confirmMessage;
+            if (selected.length === 0) {
+                const unprocessedCount = filteredAlarms.filter(a => a.status === 'unprocessed').length;
+                confirmMessage = getText('faultAlarm.confirm.batchProcessAll', `确认一键处理所有 ${unprocessedCount} 条未处理告警？`).replace('${count}', unprocessedCount);
+            } else {
+                confirmMessage = getText('faultAlarm.confirm.batchProcessSelected', `确认一键处理选中的 ${selected.length} 条告警？`).replace('${count}', selected.length);
+            }
+
+            const confirmTitle = getText('faultAlarm.confirm.title', '确认操作');
+            const confirmed = await showConfirmDialog(confirmMessage, confirmTitle);
+
+            if (!confirmed) {
+                return;
+            }
+
+            if (selected.length === 0) {
+                // Process all visible unprocessed alarms
+                filteredAlarms.forEach(a => {
+                    if (a.status === 'unprocessed') {
+                        a.status = 'processed';
+                        a.statusName = '已处理';
+                        a.recoveryTime = new Date();
+                    }
+                });
+            } else {
+                selected.forEach(a => {
+                    a.status = 'processed';
+                    a.statusName = '已处理';
+                    a.recoveryTime = new Date();
+                    a.selected = false;
+                });
+            }
+            applyFilters();
+            renderTable();
+            updateCounts();
+        }
+
+        function markAsProcessed() {
+            const selected = getSelectedAlarms();
+            selected.forEach(a => {
+                a.status = 'processed';
+                a.statusName = '已处理';
+                a.selected = false;
+            });
+            applyFilters();
+            renderTable();
+            updateCounts();
+        }
+
+        function markAsUnprocessed() {
+            const selected = getSelectedAlarms();
+            selected.forEach(a => {
+                a.status = 'unprocessed';
+                a.statusName = '未处理';
+                a.selected = false;
+            });
+            applyFilters();
+            renderTable();
+            updateCounts();
+        }
+
+        function exportAlarms() {
+            // Generate CSV from filtered data
+            const headers = ['告警时间', '描述', '告警等级', '告警设备', '告警站点', '告警状态', '恢复时间'];
+            const rows = filteredAlarms.map(a => [
+                formatAlarmTime(a.time, a.timezone),
+                a.description,
+                a.levelName,
+                a.device,
+                a.station,
+                a.statusName,
+                a.recoveryTime ? formatAlarmTime(a.recoveryTime) : '--'
+            ]);
+
+            let csv = '\uFEFF' + headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `fault_alarms_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+        }
+
+        // ==================== Count Updates ====================
+        function updateCounts() {
+            const counts = {
+                unprocessed: allAlarms.filter(a => a.status === 'unprocessed').length
+            };
+
+            document.getElementById('countUnprocessed').textContent = counts.unprocessed;
+        }
+
+        // ==================== Pagination ====================
+        function updatePagination() {
+            const totalPages = Math.max(1, Math.ceil(filteredAlarms.length / pageSize));
+            document.getElementById('totalCount').textContent = filteredAlarms.length;
+            document.getElementById('currentPageInput').value = currentPage;
+            document.getElementById('prevPage').disabled = currentPage <= 1;
+            document.getElementById('nextPage').disabled = currentPage >= totalPages;
+        }
+
+        function changePage(delta) {
+            const totalPages = Math.max(1, Math.ceil(filteredAlarms.length / pageSize));
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderTable();
+            }
+        }
+
+        function goToPage(value) {
+            const totalPages = Math.max(1, Math.ceil(filteredAlarms.length / pageSize));
+            const page = parseInt(value);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTable();
+            }
+        }
+
+        function changePageSize(value) {
+            pageSize = parseInt(value);
+            currentPage = 1;
+            renderTable();
+        }
+
+        // ==================== Init ====================
+        function initPage() {
+            // Set default date range (last 7 days)
+            const now = new Date();
+            const weekAgo = new Date(now);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+
+            document.getElementById('startDate').value = weekAgo.toISOString().slice(0, 10);
+            document.getElementById('endDate').value = now.toISOString().slice(0, 10);
+
+            // Load data
+            allAlarms = generateMockAlarms();
+            updateActionButtons();
+            applyFilters();
+            renderTable();
+            updateCounts();
+        }
+
+        // ==================== DOMContentLoaded ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize HeaderNav component
+            const headerNav = new HeaderNav({
+                currentPage: 'faultAlarm',
+                containerId: 'headerContainer'
+            });
+
+            // Initialize page
+            initPage();
+
+            // Update i18n texts
+            setTimeout(() => {
+                if (window.i18n && window.i18n.updatePageTexts) {
+                    window.i18n.updatePageTexts();
+                }
+            }, 500);
+        });
+    </script>
+
+    <!-- Detail Drawer -->
+    <div class="detail-drawer-overlay" id="detailDrawerOverlay" onclick="closeAlarmDetail()"></div>
+    <div class="detail-drawer" id="detailDrawer">
+        <div class="detail-drawer-header">
+            <h2 class="detail-drawer-title" data-i18n="faultAlarm.detail.title">告警详情</h2>
+            <button class="detail-drawer-close" onclick="closeAlarmDetail()">&times;</button>
+        </div>
+        <div class="detail-drawer-body" id="detailDrawerBody">
+            <!-- Content will be dynamically filled -->
+        </div>
+        <div class="detail-drawer-footer" id="detailDrawerFooter" style="display: none;">
+            <!-- Footer buttons will be dynamically filled -->
+        </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-dialog">
+            <div class="confirm-header">
+                <h3 class="confirm-title">
+                    <span class="confirm-icon">⚠</span>
+                    <span id="confirmTitle">确认操作</span>
+                </h3>
+            </div>
+            <div class="confirm-body">
+                <p class="confirm-message" id="confirmMessage">确认要执行此操作吗？</p>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn confirm-btn-cancel" id="confirmCancelBtn">取消</button>
+                <button class="confirm-btn confirm-btn-confirm" id="confirmConfirmBtn">确认</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

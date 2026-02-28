@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n-key="runningData.title">运行数据 - U Energy</title>
+    <link rel="stylesheet" href="components/common-styles.css">
+    <link rel="stylesheet" href="components/i18n.css">
+    <link rel="stylesheet" href="components/notification-center.css">
+    <link rel="stylesheet" href="components/header-nav.css">
+    <link rel="stylesheet" href="components/pagination.css">
+    <link rel="stylesheet" href="components/standard-layout.css">
+    <link rel="stylesheet" href="components/user-dropdown.css">
+    <script src="components/i18n.js"></script>
+    <script src="components/user-menu-link.js"></script>
+    <script src="components/simple-message-icon.js"></script>
+    <script src="components/user-dropdown-simple-new.js"></script>
+    <script src="components/header-nav.js"></script>
+    <script src="components/pagination.js"></script>
+    <style>
+        /* Page-specific styles */
+        body {
+            background: #000 !important;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 100px 20px 24px;
+            min-height: calc(100vh - 200px);
+        }
+        
+        /* Query section styles */
+        .query-section {
+            background: var(--color-bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .query-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .query-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .query-item label {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .query-item input,
+        .query-item select {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .query-item select {
+            cursor: pointer;
+        }
+
+        .query-item select option {
+            background: var(--color-bg);
+            color: var(--color-text);
+        }
+        
+        .date-range-note {
+            color: var(--color-warning);
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .query-buttons {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+        
+        .btn {
+            padding: 10px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background: #00ff88;
+            border-color: #00ff88;
+            color: #000;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background: #00e67a;
+            border-color: #00e67a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        
+        
+        /* Table section */
+        .table-section {
+            background: var(--color-bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .table-header-left,
+        .table-header-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .export-btn {
+            background: rgba(30, 127, 255, 0.1);
+            border: 1px solid rgba(30, 127, 255, 0.3);
+            color: var(--color-accent);
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .export-btn:hover {
+            background: rgba(30, 127, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .export-btn span:first-child {
+            font-size: 16px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: var(--color-bg);
+            color: var(--color-text-secondary);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid var(--color-border);
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--color-border-light);
+            color: var(--color-text);
+            font-size: 14px;
+        }
+        
+        .data-table tbody tr:hover {
+            background: var(--color-bg-hover);
+        }
+        
+        .data-table td.price-positive {
+            color: #00ff88 !important;
+            font-weight: 600;
+        }
+
+        .data-table td.price-negative {
+            color: #ff4757 !important;
+            font-weight: 600;
+        }
+        
+        /* Back button container and styles */
+        .back-button-container {
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background: transparent;
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+            color: #00ff88;
+            transform: translateX(-3px);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+        
+        .back-btn span:first-child {
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+        
+        .back-btn:hover span:first-child {
+            transform: translateX(-3px);
+        }
+        
+        /* Ensure header is visible */
+        #headerNav {
+            position: relative;
+            z-index: 100;
+        }
+        
+        /* Pagination Styles */
+        .pagination-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            border-top: 1px solid var(--color-border);
+        }
+        
+        .pagination-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .pagination-btn {
+            padding: 6px 12px;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--color-bg-hover);
+            border-color: var(--color-primary);
+        }
+        
+        .pagination-btn.active {
+            background: var(--color-primary);
+            color: #000;
+            border-color: var(--color-primary);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="headerNav"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Back Button -->
+        <div class="back-button-container">
+            <button class="back-btn" onclick="window.location.href='family-new.html'">
+                <span>←</span>
+                <span data-i18n-key="common.back">返回</span>
+            </button>
+            <span style="margin-left: 20px; color: #00ff88; font-size: 18px; font-weight: 600;" id="familyNameDisplay"></span>
+        </div>
+        
+        <!-- Query Section -->
+        <div class="query-section">
+            <div class="query-row">
+                <div class="query-item">
+                    <label data-i18n-key="runningData.startDate">开始日期:</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="query-item">
+                    <label data-i18n-key="runningData.endDate">结束日期:</label>
+                    <input type="date" id="endDate">
+                </div>
+                <div class="query-item">
+                    <label data-i18n-key="runningData.granularity">数据颗粒度:</label>
+                    <select id="dataGranularity">
+                        <option value="5" data-i18n-key="runningData.granularity5min">5分钟</option>
+                        <option value="15" data-i18n-key="runningData.granularity15min">15分钟</option>
+                        <option value="30" selected data-i18n-key="runningData.granularity30min">30分钟</option>
+                        <option value="60" data-i18n-key="runningData.granularity1hour">1小时</option>
+                    </select>
+                </div>
+                <div class="query-buttons">
+                    <button class="btn btn-primary" onclick="queryData()">
+                        <span>🔍</span>
+                        <span data-i18n-key="runningData.query">查询</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetQuery()">
+                        <span>🔄</span>
+                        <span data-i18n-key="runningData.reset">重置</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-header-left">
+                    <button class="export-btn" onclick="exportToExcel()">
+                        <span>📥</span>
+                        <span data-i18n-key="runningData.export">导出</span>
+                    </button>
+                </div>
+                <div class="table-header-right">
+                    <!-- Empty for now, can add other buttons if needed -->
+                </div>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th data-i18n-key="runningData.table.meterNumber">电表</th>
+                        <th data-i18n-key="runningData.table.time">时间</th>
+                        <th data-i18n-key="runningData.table.interval">Interval</th>
+                        <th data-i18n-key="runningData.table.gridUsage">电网用电量 (kWh)</th>
+                        <th data-i18n-key="runningData.table.feedIn">馈网量 (kWh)</th>
+                        <th data-i18n-key="runningData.table.price">价格 ($/kWh)</th>
+                        <th data-i18n-key="runningData.table.soc">SOC (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="dataTableBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+            <!-- Pagination -->
+            <div id="pagination" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+
+    <script>
+        // Global variables
+        let currentPage = 1;
+        let pageSize = 20;
+        let totalRecords = 0;
+        let tableData = [];
+        let pagination = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize i18n first
+            window.i18n = new I18n({
+                containerId: 'languageSelector',
+                defaultLanguage: localStorage.getItem('app_language') || 'zh'
+            });
+            
+            // Add observer for language changes
+            window.i18n.addObserver(() => {
+                // Update family name display when language changes
+                const familyDisplay = document.getElementById('familyNameDisplay');
+                if (familyDisplay && window.familyName) {
+                    const runningDataText = window.i18n ? window.i18n.getText('runningData.title') : '运行数据';
+                    familyDisplay.textContent = `${window.familyName} - ${runningDataText}`;
+                }
+            });
+
+            // Initialize header without back button
+            setTimeout(() => {
+                if (typeof HeaderNav !== 'undefined') {
+                    try {
+                        window.headerNav = new HeaderNav({
+                            containerId: 'headerNav',
+                            currentPage: 'family',
+                            showBackButton: false  // Don't show back button in header
+                        });
+                    } catch (error) {
+                        console.error('Error initializing HeaderNav:', error);
+                    }
+                }
+            }, 100);
+
+            // Get meter number and family name from URL and store them globally
+            const urlParams = new URLSearchParams(window.location.search);
+            window.meterNumber = urlParams.get('meter') || 'METER-001';
+            window.familyName = decodeURIComponent(urlParams.get('family') || '张明');
+            
+            // Display family name in header
+            const familyDisplay = document.getElementById('familyNameDisplay');
+            if (familyDisplay) {
+                const runningDataText = window.i18n ? window.i18n.getText('runningData.title') : '运行数据';
+                familyDisplay.textContent = `${window.familyName} - ${runningDataText}`;
+            }
+
+            // Set default dates (last 7 days)
+            const today = new Date();
+            const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            document.getElementById('endDate').value = formatDate(today);
+            document.getElementById('startDate').value = formatDate(lastWeek);
+
+            // Load initial data (pagination will be initialized after data is loaded)
+            queryData();
+        });
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatDateTime(date) {
+            return `${formatDate(date)} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function queryData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const granularity = parseInt(document.getElementById('dataGranularity').value);
+            const meterNumber = window.meterNumber;
+
+            if (!startDate || !endDate) {
+                alert(window.i18n ? window.i18n.getText('runningData.selectDateRange') : '请选择日期范围');
+                return;
+            }
+
+            // Check date range (max 3 months)
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 90) {
+                alert(window.i18n ? window.i18n.getText('runningData.dateRangeError') : '日期范围不能超过3个月');
+                return;
+            }
+
+            // Generate mock data with selected granularity
+            generateTableData(start, end, meterNumber, granularity);
+            loadTableData();
+        }
+
+        function generateTableData(startDate, endDate, meterNumber, granularity = 30) {
+            tableData = [];
+            const currentTime = new Date(startDate);
+            currentTime.setHours(0, 0, 0, 0); // Start from 00:00:00
+            const endTime = new Date(endDate);
+            endTime.setHours(23, 59, 59);
+
+            let currentDate = formatDate(currentTime);
+            let intervalCounter = 1;
+
+            while (currentTime <= endTime) {
+                // Check if we've moved to a new day
+                const currentDateStr = formatDate(currentTime);
+                if (currentDateStr !== currentDate) {
+                    currentDate = currentDateStr;
+                    intervalCounter = 1; // Reset to 1 for new day
+                }
+
+                // Generate data based on selected granularity
+                // Scale the random values based on granularity to keep data realistic
+                const scaleFactor = granularity / 30; // Scale relative to 30-minute baseline
+                const gridUsage = (Math.random() * 10 * scaleFactor + 5 * scaleFactor).toFixed(2);
+                const feedIn = (Math.random() * 8 * scaleFactor).toFixed(2);
+                const price = (Math.random() * 0.3 + 0.1).toFixed(3);
+                const soc = Math.floor(Math.random() * 40 + 60); // 60-100%
+
+                tableData.push({
+                    meterNumber: meterNumber || 'METER-001',
+                    time: formatDateTime(new Date(currentTime)),
+                    interval: intervalCounter,
+                    gridUsage: parseFloat(gridUsage),
+                    feedIn: parseFloat(feedIn),
+                    price: parseFloat(price),
+                    soc: soc
+                });
+
+                // Increment interval counter
+                intervalCounter++;
+
+                // Add time based on selected granularity
+                currentTime.setMinutes(currentTime.getMinutes() + granularity);
+            }
+
+            totalRecords = tableData.length;
+        }
+
+        function loadTableData() {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+
+            // Get page data
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, tableData.length);
+            const pageData = tableData.slice(startIndex, endIndex);
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--color-text-secondary);">
+                            ${window.i18n ? window.i18n.getText('noData') : '暂无数据'}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            pageData.forEach(row => {
+                const tr = document.createElement('tr');
+
+                tr.innerHTML = `
+                    <td>${row.meterNumber}</td>
+                    <td>${row.time}</td>
+                    <td>${row.interval}</td>
+                    <td>${row.gridUsage}</td>
+                    <td>${row.feedIn}</td>
+                    <td>$${row.price}</td>
+                    <td>${row.soc}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update or create pagination
+            if (totalRecords > 0) {
+                if (window.Pagination) {
+                    if (pagination) {
+                        pagination.totalItems = totalRecords;
+                        pagination.currentPage = currentPage;
+                        pagination.pageSize = pageSize;
+                        pagination.createPaginationHTML();
+                    } else {
+                        initializePagination();
+                    }
+                } else {
+                    // Use simple pagination fallback
+                    createSimplePagination();
+                }
+            }
+        }
+
+        function resetQuery() {
+            const today = new Date();
+            const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            document.getElementById('endDate').value = formatDate(today);
+            document.getElementById('startDate').value = formatDate(lastWeek);
+            queryData();
+        }
+
+        function exportToExcel() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert(window.i18n ? window.i18n.getText('runningData.selectDateRange') : '请选择日期范围');
+                return;
+            }
+
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            exportToCSV(start, end);
+        }
+
+        function exportToCSV(startDate, endDate) {
+            const meterNumber = window.meterNumber;
+            const granularity = parseInt(document.getElementById('dataGranularity').value);
+
+            // Generate export data
+            const exportData = [];
+            const currentTime = new Date(startDate);
+            currentTime.setHours(0, 0, 0, 0); // Start from 00:00:00
+            const endTime = new Date(endDate);
+            endTime.setHours(23, 59, 59);
+
+            // CSV headers - 电表，时间，Interval，电网用电量，馈网量，价格，SOC
+            const headers = window.i18n && window.i18n.getCurrentLanguage() === 'en'
+                ? 'NMI,Time,Interval,Grid Usage (kWh),To Grid (kWh),Price ($/kWh),SOC (%)\n'
+                : '电表,时间,Interval,电网用电量 (kWh),馈网量 (kWh),价格 ($/kWh),SOC (%)\n';
+
+            let csv = '\ufeff' + headers; // Add BOM for Excel UTF-8 support
+
+            // Scale the random values based on granularity
+            const scaleFactor = granularity / 30;
+
+            let currentDate = formatDate(currentTime);
+            let intervalCounter = 1;
+
+            while (currentTime <= endTime) {
+                // Check if we've moved to a new day
+                const currentDateStr = formatDate(currentTime);
+                if (currentDateStr !== currentDate) {
+                    currentDate = currentDateStr;
+                    intervalCounter = 1; // Reset to 1 for new day
+                }
+
+                const gridUsage = (Math.random() * 10 * scaleFactor + 5 * scaleFactor).toFixed(2);
+                const feedIn = (Math.random() * 8 * scaleFactor).toFixed(2);
+                const price = (Math.random() * 0.3 + 0.1).toFixed(3);
+                const soc = Math.floor(Math.random() * 40 + 60); // 60-100%
+
+                csv += `${meterNumber},${formatDateTime(currentTime)},${intervalCounter},${gridUsage},${feedIn},${price},${soc}\n`;
+
+                intervalCounter++;
+                currentTime.setMinutes(currentTime.getMinutes() + granularity);
+            }
+
+            // Get granularity label for filename
+            let granularityLabel;
+            switch(granularity) {
+                case 5: granularityLabel = '5min'; break;
+                case 15: granularityLabel = '15min'; break;
+                case 30: granularityLabel = '30min'; break;
+                case 60: granularityLabel = '1hour'; break;
+                default: granularityLabel = granularity + 'min';
+            }
+
+            // Download as Excel-compatible CSV
+            const blob = new Blob([csv], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `running_data_${formatDate(startDate)}_to_${formatDate(endDate)}_${granularityLabel}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function initializePagination() {
+            if (totalRecords === 0) {
+                return;
+            }
+
+            // Check if Pagination component exists
+            if (window.Pagination) {
+                pagination = new Pagination({
+                    containerId: 'pagination',
+                    totalItems: totalRecords,
+                    pageSize: pageSize,
+                    currentPage: currentPage,
+                    showPageSizeSelector: true,
+                    showPageJump: false,
+                    pageSizeOptions: [10, 20, 50, 100],
+                    onPageChange: (page) => {
+                        currentPage = page;
+                        loadTableData();
+                    },
+                    onPageSizeChange: (size) => {
+                        pageSize = size;
+                        currentPage = 1;
+                        loadTableData();
+                    }
+                });
+            } else {
+                // Fallback: Create simple pagination manually
+                createSimplePagination();
+            }
+        }
+        
+        function createSimplePagination() {
+            const container = document.getElementById('pagination');
+            if (!container) return;
+            
+            const totalPages = Math.ceil(totalRecords / pageSize);
+            const startRecord = (currentPage - 1) * pageSize + 1;
+            const endRecord = Math.min(currentPage * pageSize, totalRecords);
+            
+            let html = `
+                <div class="pagination-section">
+                    <div class="pagination-info">
+                        <span>${window.i18n ? window.i18n.getText('pagination.showing') : '显示'} ${startRecord}-${endRecord} / ${totalRecords}</span>
+                        <select class="page-size-select" onchange="changePageSize(this.value)" style="margin-left: 20px;">
+                            <option value="10" ${pageSize === 10 ? 'selected' : ''}>10 ${window.i18n ? window.i18n.getText('pagination.itemsPerPage') : '条/页'}</option>
+                            <option value="20" ${pageSize === 20 ? 'selected' : ''}>20 ${window.i18n ? window.i18n.getText('pagination.itemsPerPage') : '条/页'}</option>
+                            <option value="50" ${pageSize === 50 ? 'selected' : ''}>50 ${window.i18n ? window.i18n.getText('pagination.itemsPerPage') : '条/页'}</option>
+                            <option value="100" ${pageSize === 100 ? 'selected' : ''}>100 ${window.i18n ? window.i18n.getText('pagination.itemsPerPage') : '条/页'}</option>
+                        </select>
+                    </div>
+                    <div class="pagination-buttons">
+                        <button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                                onclick="goToPage(${currentPage - 1})" 
+                                ${currentPage === 1 ? 'disabled' : ''}>
+                            ${window.i18n ? window.i18n.getText('pagination.prev') : '上一页'}
+                        </button>
+            `;
+            
+            // Add page number buttons
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            startPage = Math.max(1, endPage - maxButtons + 1);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `
+                    <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                            onclick="goToPage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            html += `
+                        <button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                                onclick="goToPage(${currentPage + 1})" 
+                                ${currentPage === totalPages ? 'disabled' : ''}>
+                            ${window.i18n ? window.i18n.getText('pagination.next') : '下一页'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function goToPage(page) {
+            const totalPages = Math.ceil(totalRecords / pageSize);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            loadTableData();
+        }
+        
+        function changePageSize(size) {
+            pageSize = parseInt(size);
+            currentPage = 1;
+            loadTableData();
+        }
+    </script>
+</body>
+</html>

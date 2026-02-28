@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务详情 - U Energy</title>
+    <link rel="stylesheet" href="components/common-styles.css">
+    <link rel="stylesheet" href="components/i18n.css">
+    <link rel="stylesheet" href="components/notification-center.css">
+    <link rel="stylesheet" href="components/header-nav.css">
+    <link rel="stylesheet" href="components/pagination.css">
+    <link rel="stylesheet" href="components/standard-layout.css">
+    <link rel="stylesheet" href="components/user-dropdown.css">
+    <script src="components/i18n.js"></script>
+    <script src="components/user-menu-link.js"></script>
+    <script src="components/simple-message-icon.js"></script>
+    <script src="components/user-dropdown-simple-new.js"></script>
+    <script src="components/header-nav.js"></script>
+    <script src="vendor/echarts.min.js"></script>
+    <style>
+        /* Page-specific styles */
+        body {
+            background: #000 !important;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 24px;
+            min-height: calc(100vh - 200px);
+        }
+        
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            background: var(--color-bg-card);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .tab-btn:hover {
+            color: var(--color-text);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .tab-btn.active {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: #00ff88;
+            border-radius: 2px;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Back button */
+        .back-button-container {
+            margin-bottom: 30px;
+        }
+        
+        .back-btn {
+            background: transparent;
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 255, 136, 0.1);
+            transform: translateX(-3px);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+        
+        /* Task Summary Card */
+        .task-summary-card {
+            background: var(--color-bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .summary-item {
+            background: var(--color-bg);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-value {
+            font-size: 18px;
+            color: var(--color-text);
+            font-weight: 600;
+        }
+        
+        .summary-value.profit {
+            color: #00ff88;
+        }
+        
+        /* Trend Charts Section */
+        .trend-charts-section {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart-card {
+            background: var(--color-bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        @media (max-width: 768px) {
+            .trend-charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* User Details Table */
+        .user-details-card {
+            background: var(--color-bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title .btn {
+            font-size: 14px;
+            padding: 6px 14px;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+        }
+        
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .user-table th {
+            background: var(--color-bg);
+            color: var(--color-text-secondary);
+            font-weight: 600;
+            text-align: left;
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--color-border);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+        
+        /* Sort buttons */
+        .sort-buttons {
+            display: inline-flex;
+            flex-direction: column;
+            margin-left: 8px;
+            vertical-align: middle;
+            gap: 2px;
+        }
+        
+        .sort-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            width: 16px;
+            height: 14px;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+            line-height: 1;
+        }
+        
+        .sort-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        .sort-btn.active {
+            color: #00ff88;
+            opacity: 1;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+        }
+        
+        .user-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--color-border-light);
+            color: var(--color-text);
+            font-size: 14px;
+        }
+        
+        .user-table tbody tr:hover {
+            background: var(--color-bg-hover);
+        }
+        
+        .user-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
+            border: 1px solid rgba(52, 199, 89, 0.2);
+        }
+        
+        .status-charging {
+            background: rgba(255, 184, 0, 0.1);
+            color: #ffb800;
+            border: 1px solid rgba(255, 184, 0, 0.2);
+        }
+        
+        .status-inactive {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .earnings-value {
+            color: #00ff88;
+            font-weight: 600;
+        }
+        
+        /* Discharge Type Badge */
+        .discharge-type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .discharge-type-badge.auto {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        
+        .discharge-type-badge.manual {
+            background: rgba(255, 184, 0, 0.1);
+            color: #ffb800;
+            border: 1px solid rgba(255, 184, 0, 0.2);
+        }
+        
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            color: var(--color-text-secondary);
+            font-size: 16px;
+        }
+        
+        /* Stats cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        /* Query Section */
+        .query-section {
+            background: var(--color-bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .query-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .query-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .query-item label {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        
+        .query-item input,
+        .query-item select {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 120px;
+            transition: all 0.3s;
+        }
+        
+        .query-item input:focus,
+        .query-item select:focus {
+            outline: none;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+        
+        .query-buttons {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+        }
+        
+        .btn-primary {
+            background: #00ff88;
+            border-color: #00ff88;
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background: #00e67a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        
+        .btn-export {
+            background: rgba(30, 127, 255, 0.1);
+            border-color: rgba(30, 127, 255, 0.3);
+            color: #1e7fff;
+        }
+        
+        .btn-export:hover {
+            background: rgba(30, 127, 255, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 127, 255, 0.2);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.05), rgba(30, 127, 255, 0.05));
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00ff88;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="headerNav"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Back Button -->
+        <div class="back-button-container">
+            <button class="back-btn" onclick="goBack()">
+                <span>←</span>
+                <span data-i18n-key="common.back">返回</span>
+            </button>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            加载中...
+        </div>
+        
+        <!-- Content (hidden initially) -->
+        <div id="contentContainer" style="display: none;">
+            <!-- Tab Navigation -->
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('overview')" data-i18n="taskDetail.tabs.overview">概览</button>
+                <button class="tab-btn" onclick="switchTab('details')" data-i18n="taskDetail.tabs.details">明细</button>
+            </div>
+            
+            <!-- Overview Tab Content -->
+            <div id="overviewTab" class="tab-content active">
+                <!-- Task Summary Card -->
+                <div class="task-summary-card">
+                    <div class="summary-grid">
+                        <div class="summary-item" style="grid-column: span 2;">
+                            <div class="summary-label" data-i18n="taskDetail.summary.timeRange">开始时间 —— 结束时间</div>
+                            <div class="summary-value" id="taskTime"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" data-i18n="taskDetail.summary.region">地区</div>
+                            <div class="summary-value" id="taskRegion"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" data-i18n="taskDetail.summary.dischargeType">放电类型</div>
+                            <div class="summary-value" id="taskType"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" data-i18n="taskDetail.summary.taskCount">下发任务数</div>
+                            <div class="summary-value" id="taskCount"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" data-i18n="taskDetail.summary.participants">参与人数</div>
+                            <div class="summary-value" id="participants"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" data-i18n="taskDetail.summary.participationRate">参与率</div>
+                            <div class="summary-value" id="participationRate"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" data-i18n="taskDetail.summary.totalDischarge">总放电量</div>
+                            <div class="summary-value" id="dischargeAmount"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" data-i18n="taskDetail.summary.netProfit">总净利润</div>
+                            <div class="summary-value profit" id="netProfit"></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" data-i18n="taskDetail.summary.profitPerKwh">每度电净利润</div>
+                            <div class="summary-value profit" id="profitPerKwh"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistics Cards - Removed per user request -->
+                
+                <!-- Trend Charts Section -->
+                <div class="trend-charts-section">
+                    <!-- Combined Trend Chart -->
+                    <div class="chart-card" style="grid-column: span 2;">
+                        <div class="chart-title">
+                            <span>📊</span>
+                            <span data-i18n="taskDetail.chart.trendTitle">价格与放电量趋势变化</span>
+                        </div>
+                        <div id="combinedTrendChart" class="chart-container" style="height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Details Tab Content -->
+            <div id="detailsTab" class="tab-content">
+                <!-- Query Section -->
+                <div class="query-section">
+                    <div class="query-row">
+                        <div class="query-item">
+                            <label data-i18n="taskDetail.filter.username">用户名:</label>
+                            <input type="text" id="userNameFilter" placeholder="搜索用户名" data-i18n-placeholder="taskDetail.filter.usernamePlaceholder" onkeyup="filterUsers()">
+                        </div>
+                        <div class="query-item">
+                            <label data-i18n="taskDetail.filter.status">状态:</label>
+                            <select id="statusFilter" onchange="filterUsers()">
+                                <option value="" data-i18n="taskDetail.filter.all">全部</option>
+                                <option value="已完成" data-i18n="taskDetail.filter.completed">已完成</option>
+                                <option value="放电中" data-i18n="taskDetail.filter.discharging">放电中</option>
+                                <option value="未参与" data-i18n="taskDetail.filter.notParticipated">未参与</option>
+                            </select>
+                        </div>
+                        <div class="query-buttons">
+                            <button class="btn btn-primary" onclick="filterUsers()">
+                                <span>🔍</span>
+                                查询
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetFilters()">
+                                <span>🔄</span>
+                                重置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Details Table -->
+                <div class="user-details-card">
+                    <h2 class="section-title">
+                        <button class="btn btn-export" onclick="exportUserDetails()" style="margin-right: 20px;">
+                            <span>📥</span>
+                            <span data-i18n="taskDetail.button.export">导出</span>
+                        </button>
+                    </h2>
+                    
+                    <div class="table-wrapper">
+                        <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="taskDetail.table.no">序号</th>
+                                    <th data-i18n="taskDetail.table.username">用户名</th>
+                                    <th>
+                                        <span data-i18n="taskDetail.table.discharge">放电量 (kWh)</span>
+                                        <span class="sort-buttons">
+                                            <button class="sort-btn sort-asc" onclick="sortUserTable('discharged', 'asc', this)" title="升序">▲</button>
+                                            <button class="sort-btn sort-desc" onclick="sortUserTable('discharged', 'desc', this)" title="降序">▼</button>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span data-i18n="taskDetail.table.profit">获利 ($)</span>
+                                        <span class="sort-buttons">
+                                            <button class="sort-btn sort-asc" onclick="sortUserTable('earnings', 'asc', this)" title="升序">▲</button>
+                                            <button class="sort-btn sort-desc" onclick="sortUserTable('earnings', 'desc', this)" title="降序">▼</button>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span data-i18n="taskDetail.table.profitPerKwh">每度电获利 ($/kWh)</span>
+                                        <span class="sort-buttons">
+                                            <button class="sort-btn sort-asc" onclick="sortUserTable('earningsPerKwh', 'asc', this)" title="升序">▲</button>
+                                            <button class="sort-btn sort-desc" onclick="sortUserTable('earningsPerKwh', 'desc', this)" title="降序">▼</button>
+                                        </span>
+                                    </th>
+                                    <th data-i18n="taskDetail.table.status">状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <!-- User data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="moreUsersHint" style="text-align: center; padding: 20px; color: var(--color-text-secondary); font-size: 14px; display: none;">
+                        <!-- More users hint will be shown here if needed -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Task data storage
+        let taskData = null;
+        let currentTab = 'overview';
+        let currentSort = { field: null, order: null };
+        let originalUserOrder = [];
+        
+        // Tab switching function
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            if (tab === 'overview') {
+                document.getElementById('overviewTab').classList.add('active');
+            } else if (tab === 'details') {
+                document.getElementById('detailsTab').classList.add('active');
+            }
+        }
+        
+        // Initialize trend charts
+        function initializeTrendCharts() {
+            // Generate time points between start and end time
+            const startTime = taskData.time || taskData.startTime || '2024-03-15 19:45:00';
+            const endTime = taskData.endTime || generateEndTime(startTime);
+            
+            const timePoints = generateTimePoints(startTime, endTime);
+            const priceData = generatePriceData(timePoints.length);
+            const dischargeData = generateDischargeData(timePoints.length);
+            
+            // Initialize combined trend chart
+            const combinedChart = echarts.init(document.getElementById('combinedTrendChart'));
+            const combinedOption = {
+                backgroundColor: 'transparent',
+                legend: {
+                    data: ['价格', '放电量'],
+                    textStyle: {
+                        color: 'rgba(255, 255, 255, 0.8)'
+                    },
+                    top: 10
+                },
+                grid: {
+                    top: 50,
+                    right: 60,
+                    bottom: 60,
+                    left: 60
+                },
+                xAxis: {
+                    type: 'category',
+                    data: timePoints,
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        }
+                    },
+                    axisLabel: {
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        fontSize: 10,
+                        rotate: 45,
+                        interval: function(index) {
+                            // 每隔5个点显示一个标签（约25分钟）
+                            return index % 5 === 0;
+                        }
+                    }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '价格 ($/MWh)',
+                        position: 'left',
+                        nameTextStyle: {
+                            color: '#00ff88',
+                            fontSize: 12
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#00ff88'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#00ff88',
+                            fontSize: 11
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '放电量 (MW)',
+                        position: 'right',
+                        nameTextStyle: {
+                            color: '#ffd700',
+                            fontSize: 12
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#ffd700'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#ffd700',
+                            fontSize: 11
+                        },
+                        splitLine: {
+                            show: false
+                        }
+                    }
+                ],
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    textStyle: {
+                        color: '#fff'
+                    },
+                    formatter: function(params) {
+                        let result = params[0].name + '<br/>';
+                        params.forEach(param => {
+                            if (param.seriesName === '价格') {
+                                result += param.marker + ' 价格: $' + param.value.toFixed(2) + '/MWh<br/>';
+                            } else {
+                                result += param.marker + ' 放电量: ' + param.value.toFixed(1) + ' MW<br/>';
+                            }
+                        });
+                        return result;
+                    }
+                },
+                series: [
+                    {
+                        name: '价格',
+                        type: 'line',
+                        data: priceData,
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 4,
+                        yAxisIndex: 0,
+                        lineStyle: {
+                            color: '#00ff88',
+                            width: 2
+                        },
+                        itemStyle: {
+                            color: '#00ff88'
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(0, 255, 136, 0.2)' },
+                                { offset: 1, color: 'rgba(0, 255, 136, 0.02)' }
+                            ])
+                        }
+                    },
+                    {
+                        name: '放电量',
+                        type: 'line',
+                        data: dischargeData,
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 4,
+                        yAxisIndex: 1,
+                        lineStyle: {
+                            color: '#ffd700',
+                            width: 2
+                        },
+                        itemStyle: {
+                            color: '#ffd700'
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(255, 215, 0, 0.2)' },
+                                { offset: 1, color: 'rgba(255, 215, 0, 0.02)' }
+                            ])
+                        }
+                    }
+                ]
+            };
+            combinedChart.setOption(combinedOption);
+            
+            // Resize chart on window resize
+            window.addEventListener('resize', () => {
+                combinedChart.resize();
+            });
+        }
+        
+        // Generate time points between start and end (5-minute intervals)
+        function generateTimePoints(startTime, endTime) {
+            const start = new Date(startTime);
+            const end = new Date(endTime);
+            const points = [];
+            const intervalMinutes = 5; // 5分钟间隔
+            const totalMinutes = (end - start) / (1000 * 60);
+            const numPoints = Math.floor(totalMinutes / intervalMinutes) + 1;
+            
+            for (let i = 0; i < numPoints; i++) {
+                const time = new Date(start.getTime() + i * intervalMinutes * 60 * 1000);
+                const hours = String(time.getHours()).padStart(2, '0');
+                const minutes = String(time.getMinutes()).padStart(2, '0');
+                points.push(`${hours}:${minutes}`);
+            }
+            
+            return points;
+        }
+        
+        // Generate mock price data with realistic fluctuations
+        function generatePriceData(count) {
+            const data = [];
+            const basePrice = 150 + Math.random() * 100;
+            
+            for (let i = 0; i < count; i++) {
+                const variation = Math.sin(i / 2) * 30 + Math.random() * 20 - 10;
+                data.push(basePrice + variation);
+            }
+            
+            return data;
+        }
+        
+        // Generate mock discharge data with realistic pattern
+        function generateDischargeData(count) {
+            const data = [];
+            const peakIndex = Math.floor(count * 0.6);
+            
+            for (let i = 0; i < count; i++) {
+                const distanceFromPeak = Math.abs(i - peakIndex);
+                const baseValue = 100 - distanceFromPeak * 8;
+                const variation = Math.random() * 10 - 5;
+                data.push(Math.max(20, baseValue + variation));
+            }
+            
+            return data;
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize i18n
+            window.i18n = new I18n({
+                containerId: 'languageSelector',
+                defaultLanguage: localStorage.getItem('app_language') || 'zh'
+            });
+
+            // Initialize header
+            setTimeout(() => {
+                if (typeof HeaderNav !== 'undefined') {
+                    window.headerNav = new HeaderNav({
+                        containerId: 'headerNav',
+                        currentPage: 'operationLog',
+                        showBackButton: false
+                    });
+                }
+            }, 100);
+
+            // Load task data
+            loadTaskData();
+        });
+        
+        function loadTaskData() {
+            // Get task ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const taskId = urlParams.get('id');
+            
+            if (!taskId) {
+                showError('任务ID不存在');
+                return;
+            }
+            
+            // Get task data from localStorage (passed from the list page)
+            const storedData = localStorage.getItem('taskDetailData');
+            if (storedData) {
+                taskData = JSON.parse(storedData);
+                displayTaskData();
+                // Don't remove data immediately to allow page refresh
+                // localStorage.removeItem('taskDetailData');
+            } else {
+                // If no data in localStorage, show error
+                showError('任务数据未找到');
+            }
+        }
+        
+        // Helper function to generate end time (adds 2-4 hours to start time)
+        function generateEndTime(startTime) {
+            const start = new Date(startTime);
+            const hoursToAdd = 2 + Math.random() * 2; // Random between 2-4 hours
+            start.setHours(start.getHours() + Math.floor(hoursToAdd));
+            start.setMinutes(start.getMinutes() + Math.floor((hoursToAdd % 1) * 60));
+            
+            const year = start.getFullYear();
+            const month = String(start.getMonth() + 1).padStart(2, '0');
+            const day = String(start.getDate()).padStart(2, '0');
+            const hours = String(start.getHours()).padStart(2, '0');
+            const minutes = String(start.getMinutes()).padStart(2, '0');
+            const seconds = String(start.getSeconds()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+        
+        function displayTaskData() {
+            if (!taskData) return;
+            
+            // Hide loading, show content
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('contentContainer').style.display = 'block';
+            
+            // Initialize trend charts after displaying content
+            setTimeout(() => {
+                initializeTrendCharts();
+            }, 100);
+            
+            // Populate summary data
+            // Parse the time and create start/end time display
+            const startTime = taskData.time || taskData.startTime || '2024-03-15 19:45:00';
+            const endTime = taskData.endTime || generateEndTime(startTime);
+            document.getElementById('taskTime').textContent = `${startTime} —— ${endTime}`;
+            document.getElementById('taskRegion').textContent = taskData.region;
+            
+            // Discharge type with badge
+            const typeContainer = document.getElementById('taskType');
+            typeContainer.innerHTML = `
+                <span class="discharge-type-badge ${taskData.dischargeType === '自动' ? 'auto' : 'manual'}">
+                    ${taskData.dischargeType}
+                </span>
+            `;
+            
+            document.getElementById('taskCount').textContent = taskData.taskCount + ' 个';
+            document.getElementById('participants').textContent = taskData.participants + ' 人';
+            document.getElementById('participationRate').textContent = taskData.participationRate.toFixed(1) + '%';
+            document.getElementById('dischargeAmount').textContent = taskData.dischargeAmount.toFixed(1) + ' kWh';
+            document.getElementById('netProfit').textContent = '$' + taskData.netProfit.toFixed(2);
+            document.getElementById('profitPerKwh').textContent = '$' + taskData.profitPerKwh.toFixed(3) + '/kWh';
+            
+            // Calculate and display statistics
+            if (taskData.userDetails && taskData.userDetails.length > 0) {
+                // Statistics calculation removed - elements deleted per user request
+                // const totalDischarge = taskData.userDetails.reduce((sum, user) => sum + user.discharged, 0);
+                // const totalEarnings = taskData.userDetails.reduce((sum, user) => sum + user.earnings, 0);
+                // const avgDischarge = totalDischarge / taskData.userDetails.length;
+                // const avgEarnings = totalEarnings / taskData.userDetails.length;
+                
+                // document.getElementById('avgDischarge').textContent = avgDischarge.toFixed(1);
+                // document.getElementById('avgEarnings').textContent = '$' + avgEarnings.toFixed(2);
+                // document.getElementById('completionRate').textContent = '100%';
+                // document.getElementById('efficiency').textContent = (taskData.participationRate * 0.95).toFixed(1) + '%';
+            }
+            
+            // Populate user table
+            const tbody = document.getElementById('userTableBody');
+            if (taskData.userDetails && taskData.userDetails.length > 0) {
+                // Store original order
+                originalUserOrder = [...taskData.userDetails];
+                tbody.innerHTML = taskData.userDetails.map((user, index) => {
+                    const earningsPerKwh = user.discharged > 0 ? (user.earnings / user.discharged).toFixed(3) : '0.000';
+                    const statusClass = user.status === '已完成' ? 'status-success' : 
+                                       user.status === '放电中' ? 'status-charging' : 
+                                       'status-inactive';
+                    return `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${user.userName}</td>
+                            <td>${user.discharged.toFixed(1)}</td>
+                            <td class="earnings-value">$${user.earnings.toFixed(2)}</td>
+                            <td class="earnings-value">$${earningsPerKwh}</td>
+                            <td>
+                                <span class="status-badge ${statusClass}">
+                                    ${user.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                // Show more users hint if needed
+                if (taskData.participants > taskData.userDetails.length) {
+                    const moreHint = document.getElementById('moreUsersHint');
+                    moreHint.style.display = 'block';
+                    moreHint.innerHTML = `还有 ${taskData.participants - taskData.userDetails.length} 位用户参与...`;
+                }
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('loadingState').innerHTML = `
+                <div style="color: #ff3b30;">
+                    ${message}
+                </div>
+                <button class="back-btn" onclick="goBack()" style="margin-top: 20px;">
+                    返回列表
+                </button>
+            `;
+        }
+        
+        function goBack() {
+            window.location.href = 'operation-log-page.html';
+        }
+        
+        // Sort user table
+        function sortUserTable(field, order, button) {
+            if (!taskData || !taskData.userDetails) return;
+            
+            // Check if this is the current sort
+            const isCurrentSort = currentSort.field === field && currentSort.order === order;
+            
+            // Remove active class from all sort buttons
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            let sortedUsers;
+            
+            if (isCurrentSort) {
+                // Cancel sort - restore original order
+                sortedUsers = [...originalUserOrder];
+                currentSort = { field: null, order: null };
+            } else {
+                // Apply new sort
+                button.classList.add('active');
+                currentSort = { field, order };
+                
+                // Get current filtered users
+                const userNameFilter = document.getElementById('userNameFilter').value.toLowerCase();
+                const statusFilter = document.getElementById('statusFilter').value;
+                
+                sortedUsers = taskData.userDetails.filter(user => {
+                    const nameMatch = user.userName.toLowerCase().includes(userNameFilter);
+                    const statusMatch = !statusFilter || user.status === statusFilter;
+                    return nameMatch && statusMatch;
+                });
+                
+                // Sort the filtered users
+                sortedUsers.sort((a, b) => {
+                    let aValue, bValue;
+                    
+                    switch(field) {
+                        case 'discharged':
+                            aValue = a.discharged;
+                            bValue = b.discharged;
+                            break;
+                        case 'earnings':
+                            aValue = a.earnings;
+                            bValue = b.earnings;
+                            break;
+                        case 'earningsPerKwh':
+                            aValue = a.discharged > 0 ? a.earnings / a.discharged : 0;
+                            bValue = b.discharged > 0 ? b.earnings / b.discharged : 0;
+                            break;
+                        default:
+                            return 0;
+                    }
+                    
+                    if (order === 'asc') {
+                        return aValue - bValue;
+                    } else {
+                        return bValue - aValue;
+                    }
+                });
+            }
+            
+            // Update table with sorted data
+            updateUserTable(sortedUsers);
+        }
+        
+        // Filter users based on search criteria
+        function filterUsers() {
+            if (!taskData || !taskData.userDetails) return;
+            
+            const userNameFilter = document.getElementById('userNameFilter').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            const filteredUsers = taskData.userDetails.filter(user => {
+                const nameMatch = user.userName.toLowerCase().includes(userNameFilter);
+                const statusMatch = !statusFilter || user.status === statusFilter;
+                
+                return nameMatch && statusMatch;
+            });
+            
+            // Update table with filtered results
+            updateUserTable(filteredUsers);
+        }
+        
+        // Reset all filters
+        function resetFilters() {
+            document.getElementById('userNameFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            
+            // Reset sort state
+            currentSort = { field: null, order: null };
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Reload original data
+            if (taskData && taskData.userDetails) {
+                updateUserTable(taskData.userDetails);
+            }
+        }
+        
+        // Update user table with filtered data
+        function updateUserTable(users) {
+            const tbody = document.getElementById('userTableBody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--color-text-secondary);">
+                            未找到匹配的用户数据
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = users.map((user, index) => {
+                const earningsPerKwh = user.discharged > 0 ? (user.earnings / user.discharged).toFixed(3) : '0.000';
+                const statusClass = user.status === '已完成' ? 'status-success' : 
+                                   user.status === '放电中' ? 'status-charging' : 
+                                   'status-inactive';
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${user.userName}</td>
+                        <td>${user.discharged.toFixed(1)}</td>
+                        <td class="earnings-value">$${user.earnings.toFixed(2)}</td>
+                        <td class="earnings-value">$${earningsPerKwh}</td>
+                        <td>
+                            <span class="status-badge ${statusClass}">
+                                ${user.status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Export user details to CSV
+        function exportUserDetails() {
+            if (!taskData || !taskData.userDetails) return;
+            
+            // Get current filtered data
+            const userNameFilter = document.getElementById('userNameFilter').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            const filteredUsers = taskData.userDetails.filter(user => {
+                const nameMatch = user.userName.toLowerCase().includes(userNameFilter);
+                const statusMatch = !statusFilter || user.status === statusFilter;
+                
+                return nameMatch && statusMatch;
+            });
+            
+            // Create CSV content
+            const headers = '序号,用户名,放电量(kWh),获利($),每度电获利($/kWh),状态\n';
+            const rows = filteredUsers.map((user, index) => {
+                const earningsPerKwh = user.discharged > 0 ? (user.earnings / user.discharged).toFixed(3) : '0.000';
+                return `${index + 1},${user.userName},${user.discharged.toFixed(1)},${user.earnings.toFixed(2)},${earningsPerKwh},${user.status}`;
+            }).join('\n');
+            
+            const csv = '\uFEFF' + headers + rows;
+            
+            // Download CSV
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `task_${taskData.id}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

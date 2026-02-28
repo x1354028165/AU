@@ -1,0 +1,3182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时数据分析 - U Energy</title>
+    <script src="vendor/echarts.min.js"></script>
+    <!-- Header Navigation Dependencies -->
+    <link rel="stylesheet" href="components/common-styles.css">
+    <link rel="stylesheet" href="components/i18n.css">
+    <link rel="stylesheet" href="components/notification-center.css">
+    <link rel="stylesheet" href="components/header-nav.css">
+    <link rel="stylesheet" href="components/drawer-component.css">
+    <link rel="stylesheet" href="components/user-dropdown.css">
+    <script src="components/i18n.js"></script>
+    <script src="components/simple-message-icon.js"></script>
+    <script src="components/user-dropdown-simple-new.js"></script>
+    <script src="components/header-nav.js"></script>
+    <script src="components/drawer-component.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000 !important;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+
+        /* Analysis Toggle */
+        .analysis-toggle {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 24px;
+            padding-left: 0;
+            padding-top: 20px;
+        }
+
+        .toggle-btn {
+            position: relative;
+            background: none;
+            color: rgba(255, 255, 255, 0.6);
+            border: none;
+            padding: 12px 0;
+            font-size: 28px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -1px;
+        }
+
+        .toggle-btn:hover:not(.active) {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .toggle-btn.active {
+            color: #00ff88;
+            font-size: 36px;
+        }
+
+        .toggle-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #00ff88;
+            border-radius: 1px;
+        }
+
+        /* Region Selector */
+        .region-selector-container {
+            padding-left: 0;
+            margin-bottom: 40px;
+        }
+
+        .region-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .region-tab {
+            padding: 8px 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .region-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .region-tab.active {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+            font-weight: 600;
+        }
+
+        /* Main Container */
+        .main-container {
+            background: #000;
+            padding: 80px 40px 40px; /* Updated top padding for header */
+            min-height: 100vh;
+        }
+
+        /* Main Status Card */
+        .main-status-card {
+            width: 100%;
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 25px 40px;
+            margin-bottom: 40px;
+            position: relative;
+            min-height: 400px;
+        }
+
+        /* Analytics Cards */
+        .analytics-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .analytics-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .card-icon {
+            font-size: 24px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .card-status {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .card-status.success {
+            color: #00ff88;
+        }
+
+        .card-status.warning {
+            color: #00ff88;
+        }
+        
+        .card-status.yellow {
+            color: #ff9500;
+        }
+
+        .card-metrics {
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-name {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            flex: 1;
+        }
+
+        .metric-row .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-right: 8px;
+        }
+
+        .metric-change {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .metric-change.up {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .metric-change.down {
+            background: rgba(255, 149, 0, 0.2);
+            color: #ff9500;
+        }
+
+        .metric-time {
+            font-size: 12px;
+            color: #ff9500;
+            font-weight: 500;
+        }
+
+        .card-analysis {
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 3px solid #00ff88;
+            margin-top: auto;
+        }
+
+        .card-analysis p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+        }
+
+        /* Historical Analysis Styles */
+        #historicalContent {
+            display: none;
+        }
+        
+        /* Historical Region Selector Styles */
+        .historical-region-selector {
+            display: flex;
+            margin: 0;
+        }
+        
+        .historical-region-tabs {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .historical-region-tab {
+            padding: 8px 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .historical-region-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .historical-region-tab.active {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+            font-weight: 600;
+        }
+
+        /* Chart Detail Button */
+        .chart-detail-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chart-detail-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: #00ff88;
+            color: #00ff88;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 26, 0.98);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.9),
+                        0 0 0 1px rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            padding: 28px 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.95);
+            letter-spacing: -0.5px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 32px;
+            background: rgba(0,0,0,0.2);
+            overflow-y: auto;
+            max-height: calc(90vh - 120px);
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        .modal-body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        .modal-charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        /* Combined Tabs and Time Container */
+        .tabs-time-container {
+            margin-top: 24px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 16px;
+        }
+        
+        .dimension-tabs-row {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .region-time-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            margin-bottom: 10px;
+        }
+        
+        /* Analysis Dimension Tabs */
+        .dimension-tabs {
+            display: flex;
+            gap: 16px;
+        }
+
+        .dimension-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dimension-tab:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+
+        .dimension-tab.active {
+            background: linear-gradient(135deg, rgba(0,185,107,0.1), rgba(30,127,255,0.1));
+            border-color: #00ff88;
+        }
+
+        .dimension-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -17px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: #00ff88;
+            border-radius: 8px;
+        }
+
+        .dimension-icon {
+            font-size: 20px;
+        }
+
+        .dimension-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        /* Time Dimension Selector */
+        .time-dimension-selector {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .time-tab {
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .time-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .time-tab.active {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 170, 255, 0.2));
+            color: #fff;
+            border-color: rgba(0, 255, 136, 0.5);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Content Section */
+        .dimension-content {
+            display: none;
+        }
+
+        .dimension-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Analysis Cards */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+        
+        /* Large Summary Card */
+        .summary-card {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 16px;
+            border: 1.5px solid rgba(255,255,255,0.1);
+            padding: 32px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff88, #1e7fff);
+        }
+        
+        .summary-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        
+        .summary-card-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #00ff88;
+            letter-spacing: -1px;
+        }
+        
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .summary-metric {
+            padding: 10px 8px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 130px;
+        }
+        
+        .summary-metric:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.15);
+        }
+        
+        .summary-metric-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .summary-metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+        
+        .summary-metric-subtitle {
+            font-size: 11px;
+            color: rgba(255,255,255,0.7);
+            font-weight: 400;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .summary-metric-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: auto;
+            font-size: 10px;
+            line-height: 1.3;
+        }
+        
+        .summary-metric-trend.positive {
+            color: #00ff88;
+        }
+        
+        .summary-metric-trend.negative {
+            color: #ff3b30;
+        }
+        
+        .summary-metric-trend.warning {
+            color: #ff9500;
+        }
+        
+        .summary-metric.positive .summary-metric-value {
+            color: #00ff88;
+        }
+        
+        .summary-metric.negative .summary-metric-value {
+            color: #ff3b30;
+        }
+        
+        .summary-metric.warning .summary-metric-value {
+            color: #ff9500;
+        }
+
+        .analysis-card {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 16px;
+            border: 1.5px solid rgba(255,255,255,0.1);
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .analysis-card:hover {
+            border-color: #00ff88;
+            box-shadow: 0 4px 16px rgba(0, 185, 107, 0.1);
+        }
+
+        .card-subtitle {
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .card-value {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 4px;
+        }
+
+        .card-trend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .trend-positive {
+            color: #00ff88;
+        }
+
+        .trend-negative {
+            color: #ff3b30;
+        }
+
+        .trend-warning {
+            color: #ff9500;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 16px;
+            border: 1.5px solid rgba(255,255,255,0.1);
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .chart-box {
+            width: 100%;
+            height: 400px;
+        }
+
+        /* Insight Box */
+        .insight-box {
+            background: linear-gradient(135deg, rgba(0,185,107,0.05), rgba(30,127,255,0.05));
+            border: 2px solid rgba(0,185,107,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .insight-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00ff88;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .insight-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #fff;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .analytics-cards {
+                grid-template-columns: 1fr;
+            }
+            .tabs-time-container {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            .summary-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .modal-time-dropdown {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 120px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .modal-time-dropdown:hover {
+            border-color: #00ff88;
+        }
+
+        .modal-time-dropdown:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+        }
+
+        .modal-time-dropdown option {
+            background: #1a1a1a;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Container for HeaderNav Component -->
+    <div id="headerContainer"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Analysis Toggle -->
+        <div class="analysis-toggle">
+            <button class="toggle-btn active" onclick="switchAnalysisMode('realtime', this)">
+                <span data-key="realtime">实时分析</span>
+            </button>
+            <button class="toggle-btn" onclick="switchAnalysisMode('historical', this)">
+                <span data-key="historical">历史分析</span>
+            </button>
+        </div>
+
+        <!-- Region Selector (for realtime) -->
+        <div class="region-selector-container" id="regionSelector">
+            <div class="region-tabs">
+                <div class="region-tab active" data-region="nsw" onclick="switchRegion('nsw', this)">
+                    <span data-key="nswRegion">NSW</span>
+                </div>
+                <div class="region-tab" data-region="qld" onclick="switchRegion('qld', this)">
+                    <span data-key="qldRegion">QLD</span>
+                </div>
+                <div class="region-tab" data-region="vic" onclick="switchRegion('vic', this)">
+                    <span data-key="vicRegion">VIC</span>
+                </div>
+                <div class="region-tab" data-region="sa" onclick="switchRegion('sa', this)">
+                    <span data-key="saRegion">SA</span>
+                </div>
+                <div class="region-tab" data-region="tas" onclick="switchRegion('tas', this)">
+                    <span data-key="tasRegion">TAS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Realtime Content -->
+        <div id="realtimeContent">
+            <!-- Main Status Card -->
+            <div class="main-status-card">
+                <!-- Header with title -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <span style="font-size: 48px;">⏰</span>
+                        <h1 style="color: #00ff88; font-size: 48px; font-weight: 600; margin: 0;" data-key="waitToSell">等待卖出</h1>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 16px; margin: 0;" data-key="waitingMessage">预计3小时后电价上涨至峰值，建议继续持有</p>
+                </div>
+
+                <!-- Confidence Score Section -->
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 10px;" data-key="decisionConfidence">决策信心度</div>
+                    <div style="color: #00ff88; font-size: 60px; font-weight: 700; line-height: 1; margin-bottom: 25px;">85%</div>
+                    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); width: 80%; margin: 0 auto;"></div>
+                </div>
+
+                <!-- Three Main Metrics -->
+                <div style="display: flex; justify-content: center; gap: 120px; margin-bottom: 25px; margin-top: 25px;">
+                    <div style="text-align: center;">
+                        <div style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 8px;" data-key="expectedWaitTime">预计等待时间</div>
+                        <div style="color: #ff9500; font-size: 28px; font-weight: 600;">3<span data-key="hours">小时</span></div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 8px;" data-key="estimatedPrice">预计价格</div>
+                        <div style="color: #00ff88; font-size: 28px; font-weight: 600;">$450</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 8px;" data-key="estimatedProfit">预计多获利</div>
+                        <div style="color: #00ff88; font-size: 28px; font-weight: 600;">64%</div>
+                    </div>
+                </div>
+
+                <!-- Risk and Opportunity Tips Inside Card -->
+                <div style="position: absolute; top: 40%; left: 40px; right: 40px; transform: translateY(-50%); display: flex; justify-content: space-between;">
+                    <!-- Left Risk Tips -->
+                    <div style="background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.15); border-radius: 12px; padding: 16px 20px; width: 280px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <span style="color: #ff3b30; font-size: 16px;">🚨</span>
+                            <span style="color: #fff; font-size: 14px; font-weight: 500;" data-key="riskAlert">风险提示</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                <span style="font-size: 14px; line-height: 1.4; flex-shrink: 0;">🔋</span>
+                                <span style="font-size: 12px; color: #ff9500; line-height: 1.4;" data-key="dischargingCapacityDecline">可放电量下降，峰值时刻仅剩52MWh</span>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                <span style="font-size: 14px; line-height: 1.4; flex-shrink: 0;">⚡</span>
+                                <span style="font-size: 12px; color: #ff9500; line-height: 1.4;" data-key="priceVolatility">价格波动大，容易错失放电时机</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Opportunity Tips -->
+                    <div style="background: rgba(0, 255, 136, 0.08); border: 1px solid rgba(0, 255, 136, 0.15); border-radius: 12px; padding: 16px 20px; width: 280px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <span style="color: #00ff88; font-size: 16px;">💡</span>
+                            <span style="color: #fff; font-size: 14px; font-weight: 500;" data-key="opportunityHint">机会提示</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                <span style="font-size: 14px; line-height: 1.4; flex-shrink: 0;">📈</span>
+                                <span style="font-size: 12px; color: #00ff88; line-height: 1.4;" data-key="eveningPeak">晚高峰将至，需求将会增加</span>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                <span style="font-size: 14px; line-height: 1.4; flex-shrink: 0;">📱</span>
+                                <span style="font-size: 12px; color: #00ff88; line-height: 1.4;" data-key="demandGrowth">需求快速增长，发电量持续下降，缺口将继续扩大</span>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                <span style="font-size: 14px; line-height: 1.4; flex-shrink: 0;">💰</span>
+                                <span style="font-size: 12px; color: #00ff88; line-height: 1.4;" data-key="todayPriceOpp">今日价格预测偏差小，峰值$450</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Cards -->
+            <div class="analytics-cards">
+                <!-- Price Analytics -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <span class="card-icon">💰</span>
+                            <span data-key="priceAnalytics">价格维度</span>
+                        </h3>
+                        <div class="card-status success" data-key="priceStatus">价格偏低</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="currentPrice">当前价格</span>
+                            <span class="metric-value">$285/MWh</span>
+                            <span class="metric-change up">+15%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="predictedTodayPeak">预测今日峰值</span>
+                            <span class="metric-value">$450/MWh</span>
+                            <span class="metric-time">17:30</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="nearWeekAvg">近7日平均电价</span>
+                            <span class="metric-value">$385/MWh</span>
+                            <span class="metric-change up" data-key="avgPrice">平均价</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="todayPriceDrop">今日价格预测偏差</span>
+                            <span class="metric-value">$8.4/MWh</span>
+                            <span class="metric-change up" data-key="highAccuracy">高精度</span>
+                        </div>
+                    </div>
+                    <div class="card-analysis">
+                        <p data-key="priceAnalysisText">结论：近7日均价$385处于高点，当前$285低于均值26%，预测峰值$450，存在较大套利空间</p>
+                    </div>
+                </div>
+
+                <!-- Market Analytics -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <span class="card-icon">📊</span>
+                            <span data-key="marketAnalytics">市场维度</span>
+                        </h3>
+                        <div class="card-status warning" data-key="marketStatus">极可能上涨</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="supplyRatio">供需比</span>
+                            <span class="metric-value">0.92</span>
+                            <span class="metric-change up" data-key="supplyTight">供应紧张</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="supplyGap">供需缺口</span>
+                            <span class="metric-value">650MW</span>
+                            <span class="metric-change up" data-key="gapExpanding">缺口扩大</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="demandGrowthRate">需求变动率</span>
+                            <span class="metric-value">+8.5%/h</span>
+                            <span class="metric-change up" data-key="rapidGrowth">快速增长</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="generationGrowthRate">发电变动率</span>
+                            <span class="metric-value">-2.3%/h</span>
+                            <span class="metric-change up" data-key="continuousDecline">持续下降</span>
+                        </div>
+                    </div>
+                    <div class="card-analysis">
+                        <p data-key="marketAnalysisText">结论：需求增长8.5%/h市场电下降2.3%/h，供需缺口持续扩大至650MW，电价必然大幅上涨</p>
+                    </div>
+                </div>
+
+                <!-- User Analytics -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <span class="card-icon">👥</span>
+                            <span data-key="userAnalytics">用户维度</span>
+                        </h3>
+                        <div class="card-status yellow" data-key="userStatus">放电量下降</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="participationRate">可参与率</span>
+                            <span class="metric-value">98.5%</span>
+                            <span class="metric-change up" data-key="fullCoverage">覆盖全面</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="availableCapacity">可放电量</span>
+                            <span class="metric-value">45.8kWh</span>
+                            <span class="metric-change down">(37%)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="todayPlannedDischarge">今日预计放电</span>
+                            <span class="metric-value">45.3kWh</span>
+                            <span class="metric-change down" data-key="belowHistory">低于历史</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name" data-key="nearWeekAvgDischarge">近7日平均放电量</span>
+                            <span class="metric-value">52.3kWh</span>
+                            <span class="metric-change up" data-key="dailyAvgPerformance">日均表现</span>
+                        </div>
+                    </div>
+                    <div class="card-analysis">
+                        <p data-key="userAnalysisText">结论：可参与率98.5%覆盖全面，可放电量45.8kWh(37%)，今日预计放电45.3kWh低于历史</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historical Content -->
+        <div id="historicalContent">
+            <!-- Combined Tabs and Time Selector Container -->
+            <div class="tabs-time-container">
+                <!-- Dimension Tabs Row -->
+                <div class="dimension-tabs-row">
+                    <div class="dimension-tabs">
+                        <div class="dimension-tab active" onclick="switchDimension('price', this)">
+                            <span class="dimension-icon">💰</span>
+                            <span class="dimension-name" data-key="priceAnalysis">价格分析</span>
+                        </div>
+                        <div class="dimension-tab" onclick="switchDimension('operation', this)">
+                            <span class="dimension-icon">⚙️</span>
+                            <span class="dimension-name" data-key="operationAnalysis">操作分析</span>
+                        </div>
+                        <div class="dimension-tab" onclick="switchDimension('user', this)">
+                            <span class="dimension-icon">👤</span>
+                            <span class="dimension-name" data-key="userAnalysis">用户分析</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Region and Time Selector Row -->
+                <div class="region-time-row">
+                    <!-- Region Selector -->
+                    <div class="historical-region-selector">
+                        <div class="historical-region-tabs">
+                            <div class="historical-region-tab active" data-region="nsw" onclick="switchHistoricalRegion('nsw', this)">
+                                <span data-key="nswRegion">NSW</span>
+                            </div>
+                            <div class="historical-region-tab" data-region="qld" onclick="switchHistoricalRegion('qld', this)">
+                                <span data-key="qldRegion">QLD</span>
+                            </div>
+                            <div class="historical-region-tab" data-region="vic" onclick="switchHistoricalRegion('vic', this)">
+                                <span data-key="vicRegion">VIC</span>
+                            </div>
+                            <div class="historical-region-tab" data-region="sa" onclick="switchHistoricalRegion('sa', this)">
+                                <span data-key="saRegion">SA</span>
+                            </div>
+                            <div class="historical-region-tab" data-region="tas" onclick="switchHistoricalRegion('tas', this)">
+                                <span data-key="tasRegion">TAS</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Time Dimension Selector -->
+                    <div class="time-dimension-selector">
+                        <button class="time-tab active" data-range="yesterday" onclick="switchTimeDimension('yesterday', this)" data-key="yesterday">昨天</button>
+                        <button class="time-tab" data-range="7d" onclick="switchTimeDimension('7d', this)" data-key="recent7days">近7天</button>
+                        <button class="time-tab" data-range="30d" onclick="switchTimeDimension('30d', this)" data-key="recent30days">近30天</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Content -->
+            <div class="dimension-content active" id="price">
+                <!-- Top Section: Half-Half Layout -->
+                <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                    <!-- Left Half: Summary Card -->
+                    <div class="summary-card" style="flex: 1; margin: 0; padding: 20px; height: 380px;">
+                        <div class="summary-card-header" style="margin-bottom: 12px;">
+                            <h2 class="summary-card-title" style="font-size: 18px;" data-key="pricePrediction">价格预测</h2>
+                            <div class="summary-card-value" style="font-size: 32px;">94.7<span data-key="score">分</span></div>
+                        </div>
+                        <div class="summary-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="summary-metric positive">
+                                <div class="summary-metric-label" data-key="accuratePrediction">准确预测</div>
+                                <div class="summary-metric-value">68%</div>
+                                <div class="summary-metric-subtitle" data-key="deviationLessThan1">偏差≤1%</div>
+                                <div class="summary-metric-trend positive">
+                                    <span>✓</span>
+                                    <span data-key="veryHighAccuracy">极高精度</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric">
+                                <div class="summary-metric-label" data-key="moderatelyAccuratePrediction">较准预测</div>
+                                <div class="summary-metric-value">26.7%</div>
+                                <div class="summary-metric-subtitle" data-key="deviation1to5">偏差1-5%</div>
+                                <div class="summary-metric-trend positive">
+                                    <span>~</span>
+                                    <span data-key="acceptable">可接受</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric negative">
+                                <div class="summary-metric-label" data-key="largeDeviation">偏差较大</div>
+                                <div class="summary-metric-value">5.3%</div>
+                                <div class="summary-metric-subtitle" data-key="deviationGreaterThan5">偏差>5%</div>
+                                <div class="summary-metric-trend negative">
+                                    <span>!</span>
+                                    <span data-key="needImprovement">需改进</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric warning">
+                                <div class="summary-metric-label" data-key="priceError">价格误差</div>
+                                <div class="summary-metric-value">$8/MWh</div>
+                                <div class="summary-metric-subtitle" data-key="avgPriceDifference">平均价格差异</div>
+                                <div class="summary-metric-trend positive">
+                                    <span>▼</span>
+                                    <span data-key="verySmallError">误差很小</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Half: Analysis Conclusion -->
+                    <div class="insight-box" style="flex: 1; margin: 0; height: 380px; display: flex; flex-direction: column;">
+                        <div class="insight-title" style="flex-shrink: 0;">
+                            <span>🎯</span>
+                            <span data-key="analysisConclusion">分析结论</span>
+                        </div>
+                        <div class="insight-content" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 10px; color: #fff; line-height: 1.6;">
+                            <strong style="font-size: 16px; color: #fff;">✨ <span data-key="predictionReliabilityHigh">预测可靠性很高</span></strong>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li style="margin-bottom: 10px;" class="price-analysis-item" data-key="accuracyAnalysis1">具有<span style="color: #00ff88; font-weight: 600;">94.7%</span>准确性，平均偏差率仅<span style="color: #00ff88; font-weight: 600;">1.9%</span>，平均价格误差<span style="color: #ff9500; font-weight: 600;">$8/MWh</span>，说明预测准确性高且误差很小</li>
+                                <li style="margin-bottom: 10px;" class="price-analysis-item" data-key="accuracyAnalysis2">价格趋势预测准确率<span style="color: #00ff88; font-weight: 600;">96.8%</span>，说明趋势预判准确，尤其谷值预测准确率高达<span style="color: #00ff88; font-weight: 600;">95.2%</span></li>
+                                <li class="price-analysis-item" data-key="accuracyAnalysis3">高准确率时段：凌晨2-6点和下午2-6点，准确率超过<span style="color: #00ff88; font-weight: 600;">95%</span></li>
+                            </ul>
+                            
+                            <strong style="font-size: 16px; color: #fff; display: block; margin-top: 20px;">⚠️ <span data-key="attention">注意</span></strong>
+                            <div style="margin: 15px 0; line-height: 1.6;" class="price-analysis-item" data-key="warningMessage">
+                                晚上<span style="color: #ff9500; font-weight: 600;">7-9点</span>用电高峰期，价格波动大，准确性较低，建议谨慎操作
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Metrics Grid -->
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <span class="card-title" data-key="priceTrendAccuracy">价格趋势准确率</span>
+                        </div>
+                        <div class="card-subtitle">96.8%</div>
+                        <div class="card-value" data-key="correctlyIdentifyTrends">正确识别涨跌趋势</div>
+                        <div class="card-trend trend-positive">
+                            <span>▲</span>
+                            <span data-key="accurateTrendJudgment">趋势判断精准</span>
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <span class="card-title" data-key="peakPricePredictionAccuracy">峰值价格预测准确率</span>
+                        </div>
+                        <div class="card-subtitle">91.2%</div>
+                        <div class="card-value" data-key="priceGreater300">价格>$300/MWh时段</div>
+                        <div class="card-trend trend-negative">
+                            <span>▼</span>
+                            <span data-key="lower35ThanOverall">较整体低3.5%</span>
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <span class="card-title" data-key="valleyPricePredictionAccuracy">谷值价格预测准确率</span>
+                        </div>
+                        <div class="card-subtitle">97.8%</div>
+                        <div class="card-value" data-key="priceLess50">价格<$50/MWh时段</div>
+                        <div class="card-trend trend-positive">
+                            <span>▲</span>
+                            <span data-key="higher31ThanOverall">较整体高3.1%</span>
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <span class="card-title" data-key="midTermPredictionAccuracy">中期预测准确性</span>
+                        </div>
+                        <div class="card-subtitle">89.3%</div>
+                        <div class="card-value" data-key="priceBetween50And300">$50/MWh&lt;价格&lt;$300/MWh时段</div>
+                        <div class="card-trend trend-negative">
+                            <span>▼</span>
+                            <span data-key="lower54ThanOverall">较整体低5.4%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction Accuracy Trend Card -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title" data-key="accuracyTrendChart">预测准确率趋势</span>
+                        <button class="chart-detail-btn" onclick="showDetailsModal()" style="float: right;" data-key="viewDetails">查看详情</button>
+                    </div>
+                    <div id="accuracyTrendChart" class="chart-box"></div>
+                </div>
+            </div>
+
+            <!-- Operation Analysis Content -->
+            <div class="dimension-content" id="operation">
+                <!-- Top Section: Half-Half Layout -->
+                <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                    <!-- Left Half: Summary Card -->
+                    <div class="summary-card" style="flex: 1; margin: 0; padding: 20px; height: 380px;">
+                        <div class="summary-card-header" style="margin-bottom: 12px;">
+                            <h2 class="summary-card-title" style="font-size: 18px;" data-key="dischargeAnalysis">放电分析</h2>
+                            <div class="summary-card-value" style="font-size: 32px;">85<span data-key="score">分</span></div>
+                        </div>
+                        <div class="summary-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="summary-metric positive">
+                                <div class="summary-metric-label" data-key="sellAtBestPoint">卖在最佳点</div>
+                                <div class="summary-metric-value">37.1%</div>
+                                <div class="summary-metric-subtitle" data-key="peakAbove95">峰值95%以上区间</div>
+                                <div class="summary-metric-trend positive">
+                                    <span>🎯</span>
+                                    <span data-key="preciseTiming">时机精准</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric">
+                                <div class="summary-metric-label" data-key="sellAtHighPoint">卖在高点</div>
+                                <div class="summary-metric-value">40.8%</div>
+                                <div class="summary-metric-subtitle" data-key="peak80to95">峰值80%-95%区间</div>
+                                <div class="summary-metric-trend positive">
+                                    <span>👍</span>
+                                    <span data-key="goodPerformance">表现良好</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric warning">
+                                <div class="summary-metric-label" data-key="sellAtAverage">卖在一般</div>
+                                <div class="summary-metric-value">17.6%</div>
+                                <div class="summary-metric-subtitle" data-key="peak60to80">峰值60%-80%区间</div>
+                                <div class="summary-metric-trend warning">
+                                    <span>😐</span>
+                                    <span data-key="roomForImprovement">有改进空间</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric negative">
+                                <div class="summary-metric-label" data-key="lowPrice">低价</div>
+                                <div class="summary-metric-value">4.5%</div>
+                                <div class="summary-metric-subtitle" data-key="peakBelow60">峰值60%以下</div>
+                                <div class="summary-metric-trend negative">
+                                    <span>!</span>
+                                    <span data-key="needImprovement">需改进</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Half: Analysis Conclusion -->
+                    <div class="insight-box" style="flex: 1; margin: 0; height: 380px; display: flex; flex-direction: column;">
+                        <div class="insight-title" style="flex-shrink: 0;">
+                            <span>🎯</span>
+                            <span data-key="analysisConclusion">分析结论</span>
+                        </div>
+                        <div class="insight-content" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 10px; color: #fff; line-height: 1.6;">
+                            <strong style="font-size: 16px; color: #fff;">✨ <span data-key="yourPerformanceExcellent">您的表现：优秀（85分）</span></strong>
+                            <div style="margin: 15px 0; line-height: 1.8;" class="operation-analysis-item" data-key="performanceAnalysis">
+                                您很会挑时间卖电！<span style="color: #00ff88; font-weight: 600;">37.1%</span>的电卖在了最高价，<span style="color: #00ff88; font-weight: 600;">40.8%</span>卖在高点，是一个优秀的卖电达人！
+                            </div>
+                            
+                            <strong style="font-size: 16px; color: #fff; display: block; margin-top: 20px;">📊 <span data-key="yourSellingStatus">您的卖电情况</span></strong>
+                            <div style="margin: 15px 0; line-height: 1.8;" class="operation-analysis-item" data-key="sellingAnalysis">
+                                过去30天共卖电<span style="color: #00ff88;">383次</span>，其中<span style="color: #00ff88;">298次</span>时机把握较好（77.9%），<span style="color: #ff9500;">85次</span>时机一般。<br style="margin-bottom: 10px;">
+                                整体平均放电价格：<span style="color: #00ff88; font-weight: 600;">$382/MWh</span>
+                            </div>
+                            
+                            <strong style="font-size: 16px; color: #fff; display: block; margin-top: 20px;">💡 <span data-key="optimizationSuggestions">优化建议</span></strong>
+                            <div style="margin: 15px 0; line-height: 1.8;" class="operation-analysis-item" data-key="suggestionDetails">
+                                重点关注每天17-19点的价格高峰。对于那<span style="color: #ff9500; font-weight: 600;">4.5%</span>的低价卖电，建议多等待1-2小时，往往能获得更好的价格。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Metrics Grid -->
+                <div class="analysis-grid">
+                    <div class="analysis-card excellent">
+                        <div class="card-header">
+                            <span class="card-title">🎯 <span data-key="perfectTiming">完美时机</span></span>
+                        </div>
+                        <div class="card-subtitle">142<span data-key="times">次</span></div>
+                        <div class="card-value">37.1%</div>
+                        <div class="card-trend trend-positive">
+                            <span>✨</span>
+                            <span data-key="avgPrice485">平均$485/MWh</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-card good">
+                        <div class="card-header">
+                            <span class="card-title">👍 <span data-key="goodRevenue">良好收益</span></span>
+                        </div>
+                        <div class="card-subtitle">156<span data-key="times">次</span></div>
+                        <div class="card-value">40.7%</div>
+                        <div class="card-trend trend-positive">
+                            <span>✓</span>
+                            <span data-key="avgPrice385">平均$385/MWh</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-card average">
+                        <div class="card-header">
+                            <span class="card-title">😐 <span data-key="canImprove">可以改进</span></span>
+                        </div>
+                        <div class="card-subtitle">59<span data-key="times">次</span></div>
+                        <div class="card-value">15.4%</div>
+                        <div class="card-trend trend-warning">
+                            <span>~</span>
+                            <span data-key="avgPrice285">平均$285/MWh</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-card poor">
+                        <div class="card-header">
+                            <span class="card-title">❌ <span data-key="needOptimization">需要优化</span></span>
+                        </div>
+                        <div class="card-subtitle">26<span data-key="times">次</span></div>
+                        <div class="card-value">6.8%</div>
+                        <div class="card-trend trend-negative">
+                            <span>⚠</span>
+                            <span data-key="avgPrice215">平均$215/MWh</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Selling Points Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title" data-key="sellingTimingAnalysis">售电时机分析图表</span>
+                    </div>
+                    <div id="sellingPointsChart" class="chart-box"></div>
+                    <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                        <div style="display: flex; justify-content: center; gap: 24px; align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 10px; background: rgba(0,255,136,0.3); border-radius: 2px;"></div>
+                                <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$400+ <span data-key="excellentPrice">优秀价格</span></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 10px; background: rgba(0,255,136,0.25); border-radius: 2px;"></div>
+                                <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$300-400 <span data-key="goodPrice">良好价格</span></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 10px; background: rgba(255,235,59,0.25); border-radius: 2px;"></div>
+                                <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$200-300 <span data-key="averagePrice">一般价格</span></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 10px; background: rgba(255,152,0,0.25); border-radius: 2px;"></div>
+                                <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$100-200 <span data-key="lowPrice">较低价格</span></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 10px; background: rgba(255,67,54,0.25); border-radius: 2px;"></div>
+                                <span style="color: rgba(255,255,255,0.7); font-size: 12px;">$0-100 <span data-key="veryLowPrice">极低价格</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Analysis Content -->
+            <div class="dimension-content" id="user">
+                <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                    <!-- Left Half: User Stats -->
+                    <div class="summary-card" style="flex: 1; margin: 0; padding: 20px; height: 380px;">
+                        <div class="summary-card-header" style="margin-bottom: 12px;">
+                            <h2 class="summary-card-title" style="font-size: 18px;" data-key="userAnalysis">用户分析</h2>
+                            <div class="summary-card-value" style="font-size: 32px;">96<span data-key="score">分</span></div>
+                        </div>
+                        <div class="summary-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="summary-metric positive">
+                                <div class="summary-metric-label" data-key="taskDispatchRate">任务下发率</div>
+                                <div class="summary-metric-value">98.5%</div>
+                                <div class="summary-metric-subtitle" data-key="comprehensiveCoverage">覆盖全面</div>
+                                <div class="summary-metric-trend positive">
+                                    <span>✓</span>
+                                    <span data-key="systemStable">系统稳定</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric positive">
+                                <div class="summary-metric-label" data-key="participationRate2">参与率</div>
+                                <div class="summary-metric-value">93.8%</div>
+                                <div class="summary-metric-subtitle" data-key="highCooperation">高度配合</div>
+                                <div class="summary-metric-trend positive">
+                                    <span>✓</span>
+                                    <span data-key="activeResponse">积极响应</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric">
+                                <div class="summary-metric-label" data-key="avgDischargePerPerson">人均放电量</div>
+                                <div class="summary-metric-value">45.8</div>
+                                <div class="summary-metric-subtitle">kWh/<span data-key="person">人</span></div>
+                                <div class="summary-metric-trend positive">
+                                    <span>▲</span>
+                                    <span data-key="monthOverMonth52">环比+5.2%</span>
+                                </div>
+                            </div>
+                            <div class="summary-metric warning">
+                                <div class="summary-metric-label" data-key="avgProfitPerPerson">人均获利</div>
+                                <div class="summary-metric-value">$7.08</div>
+                                <div class="summary-metric-subtitle" data-key="perPerson">每人</div>
+                                <div class="summary-metric-trend warning">
+                                    <span>▲</span>
+                                    <span data-key="monthOverMonth38">环比+3.8%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Half: User Analysis Conclusion -->
+                    <div class="insight-box" style="flex: 1; margin: 0; height: 380px; display: flex; flex-direction: column;">
+                        <div class="insight-title" style="flex-shrink: 0;">
+                            <span>👥</span>
+                            <span data-key="analysisConclusion">分析结论</span>
+                        </div>
+                        <div class="insight-content" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 10px; color: #fff; line-height: 1.6;">
+                            <strong style="font-size: 16px; color: #fff;">✨ <span data-key="userPerformanceGreat">用户表现很棒</span></strong>
+                            <div style="margin: 15px 0; line-height: 1.8;" class="user-analysis-item" data-key="userPerformanceAnalysis">
+                                有<span style="color: #00ff88; font-weight: 600;">93.8%</span>的用户积极参与放电，每人平均贡献了<span style="color: #00ff88; font-weight: 600;">45.8度电</span>，赚了<span style="color: #00ff88; font-weight: 600;">$7.08</span>。<br>
+                                有<span style="color: #00ff88; font-weight: 600;">67%</span>的活跃用户贡献了<span style="color: #00ff88; font-weight: 600;">90%</span>的获利。
+                            </div>
+                            
+                            <strong style="font-size: 16px; color: #fff; display: block; margin-top: 20px;">📈 <span data-key="betterThanLastPeriod">比上期更好了</span></strong>
+                            <div style="margin: 15px 0; line-height: 1.8;" class="user-analysis-item" data-key="improvementAnalysis">
+                                放电量增加了<span style="color: #00ff88; font-weight: 600;">5.2%</span>，收益增加了<span style="color: #00ff88; font-weight: 600;">3.8%</span>，大家赚得更多了！
+                            </div>
+                            
+                            <strong style="font-size: 16px; color: #fff; display: block; margin-top: 20px;">💡 <span data-key="canBeBetter">还能更好</span></strong>
+                            <div style="margin: 15px 0; line-height: 1.8;" class="user-analysis-item" data-key="improvementSuggestion">
+                                还有<span style="color: #ff9500; font-weight: 600;">8%</span>的用户没参与，如果能让他们也加入进来，整体收益还能提升更多。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Charts Section -->
+                <div style="display: flex; gap: 24px; margin-top: 24px;">
+                    <!-- Left: User Analysis Double Donut Chart -->
+                    <div class="chart-container" style="flex: 1;">
+                        <div class="chart-header">
+                            <span class="chart-title" data-key="userAnalysis">用户分析</span>
+                        </div>
+                        <div id="userContributionChart" class="chart-box"></div>
+                    </div>
+                    
+                    <!-- Right: User Discharge Trend Chart -->
+                    <div class="chart-container" style="flex: 1;">
+                        <div class="chart-header">
+                            <span class="chart-title" data-key="userDischargeTrend">用户放电量趋势</span>
+                        </div>
+                        <div id="userDischargeTrend" class="chart-box"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 翻译数据
+        const translations = {
+            zh: {
+                allRegions: "全部地区",
+                nswRegion: "NSW",
+                qldRegion: "QLD", 
+                vicRegion: "VIC",
+                saRegion: "SA",
+                tasRegion: "TAS",
+                waitToSell: "等待卖出",
+                waitingMessage: "预计3小时后电价上涨至峰值，建议继续持有",
+                decisionConfidence: "决策信心度",
+                expectedWaitTime: "预计等待时间",
+                hours: "小时",
+                estimatedPrice: "预计价格",
+                estimatedProfit: "预计多获利",
+                riskAlert: "风险提示",
+                dischargingCapacityDecline: "可放电量下降，峰值时刻仅剩52MWh",
+                priceVolatility: "价格波动大，容易错失放电时机",
+                opportunityHint: "机会提示",
+                eveningPeak: "晚高峰将至，需求将会增加",
+                demandGrowth: "需求快速增长，发电量持续下降，缺口将继续扩大",
+                todayPriceOpp: "今日价格预测偏差小，峰值$450",
+                priceAnalytics: "价格维度",
+                priceStatus: "价格偏低",
+                currentPrice: "当前价格",
+                predictedTodayPeak: "预测今日峰值",
+                nearWeekAvg: "近7日平均电价",
+                todayPriceDrop: "今日价格预测偏差",
+                priceAnalysisText: "结论：近7日均价$385处于高点，当前$285低于均值26%，预测峰值$450，存在较大套利空间",
+                marketAnalytics: "市场维度",
+                marketStatus: "极可能上涨",
+                supplyRatio: "供需比",
+                supplyGap: "供需缺口",
+                demandGrowthRate: "需求变动率",
+                generationGrowthRate: "发电变动率",
+                marketAnalysisText: "结论：需求增长8.5%/h市场电下降2.3%/h，供需缺口持续扩大至650MW，电价必然大幅上涨",
+                userAnalytics: "用户维度",
+                userStatus: "放电量下降",
+                participationRate: "可参与率",
+                availableCapacity: "可放电量",
+                todayPlannedDischarge: "今日预计放电",
+                nearWeekAvgDischarge: "近7日平均放电量",
+                userAnalysisText: "结论：可参与率98.5%覆盖全面，可放电量45.8kWh(37%)，今日预计放电45.3kWh低于历史",
+                realtime: "实时分析",
+                historical: "历史分析",
+                avgPrice: "平均价",
+                highAccuracy: "高精度",
+                supplyTight: "供应紧张",
+                gapExpanding: "缺口扩大",
+                rapidGrowth: "快速增长",
+                continuousDecline: "持续下降",
+                fullCoverage: "覆盖全面",
+                belowHistory: "低于历史",
+                dailyAvgPerformance: "日均表现",
+                priceAnalysis: "价格分析",
+                operationAnalysis: "操作分析",
+                userAnalysis: "用户分析",
+                yesterday: "昨天",
+                recent7days: "近7天",
+                recent30days: "近30天",
+                pricePrediction: "价格预测",
+                score: "分",
+                accuratePrediction: "准确预测",
+                deviationLessThan1: "偏差≤1%",
+                veryHighAccuracy: "极高精度",
+                moderatelyAccuratePrediction: "较准预测",
+                deviation1to5: "偏差1-5%",
+                acceptable: "可接受",
+                largeDeviation: "偏差较大",
+                deviationGreaterThan5: "偏差>5%",
+                needImprovement: "需改进",
+                priceError: "价格误差",
+                avgPriceDifference: "平均价格差异",
+                verySmallError: "误差很小",
+                analysisConclusion: "分析结论",
+                predictionReliabilityHigh: "预测可靠性很高",
+                accuracyAnalysis1: "具有94.7%准确性，平均偏差率仅1.9%，说明预测准确性高且误差很小",
+                accuracyAnalysis2: "价格趋势预测准确率96.8%，说明趋势预判准确，尤其谷值预测准确率高达95.2%",
+                accuracyAnalysis3: "高准确率时段：凌晨2-6点和下午2-6点，准确率超过95%",
+                attention: "注意",
+                warningMessage: "晚上7-9点用电高峰期，价格波动大，准确性较低，建议谨慎操作",
+                priceTrendAccuracy: "价格趋势准确率",
+                correctlyIdentifyTrends: "正确识别涨跌趋势",
+                accurateTrendJudgment: "趋势判断精准",
+                peakPricePredictionAccuracy: "峰值价格预测准确率",
+                priceGreater300: "价格>$300/MWh时段",
+                lower35ThanOverall: "较整体低3.5%",
+                valleyPricePredictionAccuracy: "谷值价格预测准确率",
+                priceLess50: "价格<$50/MWh时段",
+                higher31ThanOverall: "较整体高3.1%",
+                midTermPredictionAccuracy: "中期预测准确性",
+                priceBetween50And300: "$50/MWh<价格<$300/MWh时段",
+                lower54ThanOverall: "较整体低5.4%",
+                accuracyTrendChart: "预测准确率趋势",
+                dischargeAnalysis: "放电分析",
+                sellAtBestPoint: "卖在最佳点",
+                peakAbove95: "峰值95%以上区间",
+                preciseTiming: "时机精准",
+                sellAtHighPoint: "卖在高点",
+                peak80to95: "峰值80%-95%区间",
+                goodPerformance: "表现良好",
+                sellAtAverage: "卖在一般",
+                peak60to80: "峰值60%-80%区间",
+                roomForImprovement: "有改进空间",
+                lowPrice: "低价",
+                peakBelow60: "峰值60%以下",
+                yourPerformanceExcellent: "您的表现：优秀（85分）",
+                performanceAnalysis: "您很会挑时间卖电！37.1%的电卖在了最高价，40.8%卖在高点，是一个优秀的卖电达人！",
+                yourSellingStatus: "您的卖电情况",
+                sellingAnalysis: "过去30天共卖电383次，其中298次时机把握较好（77.9%），85次时机一般。整体平均放电价格：$382/MWh",
+                optimizationSuggestions: "优化建议",
+                suggestionDetails: "重点关注每天17-19点的价格高峰。对于那4.5%的低价卖电，建议多等待1-2小时，往往能获得更好的价格。",
+                perfectTiming: "完美时机",
+                times: "次",
+                avgPrice485: "平均$485/MWh",
+                goodRevenue: "良好收益",
+                avgPrice385: "平均$385/MWh",
+                canImprove: "可以改进",
+                avgPrice285: "平均$285/MWh",
+                needOptimization: "需要优化",
+                avgPrice215: "平均$215/MWh",
+                sellingTimingAnalysis: "售电时机分析图表",
+                taskDispatchRate: "任务下发率",
+                comprehensiveCoverage: "覆盖全面",
+                systemStable: "系统稳定",
+                participationRate2: "参与率",
+                highCooperation: "高度配合",
+                activeResponse: "积极响应",
+                avgDischargePerPerson: "人均放电量",
+                person: "人",
+                monthOverMonth52: "环比+5.2%",
+                avgProfitPerPerson: "人均获利",
+                perPerson: "每人",
+                monthOverMonth38: "环比+3.8%",
+                userPerformanceGreat: "用户表现很棒",
+                userPerformanceAnalysis: "有93.8%的用户积极参与放电，每人平均贡献了45.8度电，赚了$7.08。有67%的活跃用户贡献了90%的获利。",
+                betterThanLastPeriod: "比上期更好了",
+                improvementAnalysis: "放电量增加了5.2%，收益增加了3.8%，大家赚得更多了！",
+                canBeBetter: "还能更好",
+                improvementSuggestion: "还有8%的用户没参与，如果能让他们也加入进来，整体收益还能提升更多。",
+                userDischargeTrend: "用户放电量趋势",
+                viewDetails: "查看详情",
+                accuracyDetailsTitle: "详细分析图表",
+                priceComparison: "价格对比",
+                supplyDemandGapAnalysis: "供需缺口分析",
+                actualPrice: "实际价格",
+                predictedPrice: "预测价格",
+                deviationActualPredicted: "偏差(实际-预测)",
+                demand: "需求量",
+                generation: "发电量",
+                gap: "缺口",
+                balanceLine: "平衡线",
+                electricity: "电量",
+                price: "价格",
+                predictionAccuracy: "预测准确率",
+                averageLine: "平均线",
+                highest: "最高点",
+                lowest: "最低点",
+                closeModal: "关闭"
+            },
+            en: {
+                allRegions: "All Regions",
+                nswRegion: "NSW",
+                qldRegion: "QLD",
+                vicRegion: "VIC", 
+                saRegion: "SA",
+                tasRegion: "TAS",
+                waitToSell: "Wait to Sell",
+                waitingMessage: "Expected price peak in 3 hours, recommend continuing to hold",
+                decisionConfidence: "Decision Confidence",
+                expectedWaitTime: "Expected Wait Time",
+                hours: "hours",
+                estimatedPrice: "Estimated Price",
+                estimatedProfit: "Estimated Extra Profit",
+                riskAlert: "Risk Alert",
+                dischargingCapacityDecline: "Discharging capacity declining, only 52MWh left at peak",
+                priceVolatility: "High price volatility, easy to miss discharge opportunities",
+                opportunityHint: "Opportunity Hint",
+                eveningPeak: "Evening peak approaching, demand will increase",
+                demandGrowth: "Rapid demand growth, generation continues to decline, gap will keep expanding",
+                todayPriceOpp: "Today's price prediction deviation is small, peak at $450",
+                priceAnalytics: "Price Dimension",
+                priceStatus: "Price Low",
+                currentPrice: "Current Price",
+                predictedTodayPeak: "Predicted Today Peak",
+                nearWeekAvg: "7-day Average Price",
+                todayPriceDrop: "Today Price Prediction Error",
+                priceAnalysisText: "Conclusion: 7-day average $385 at high point, current $285 is 26% below average, predicted peak $450, large arbitrage opportunity exists",
+                marketAnalytics: "Market Dimension",
+                marketStatus: "Likely to Rise",
+                supplyRatio: "Supply Ratio",
+                supplyGap: "Supply Gap",
+                demandGrowthRate: "Demand Growth Rate",
+                generationGrowthRate: "Generation Growth Rate",
+                marketAnalysisText: "Conclusion: Demand growth 8.5%/h, market generation down 2.3%/h, supply gap continues to expand to 650MW, prices will inevitably rise significantly",
+                userAnalytics: "User Dimension",
+                userStatus: "Discharge Declining",
+                participationRate: "Participation Rate",
+                availableCapacity: "Available Capacity",
+                todayPlannedDischarge: "Today Planned Discharge",
+                nearWeekAvgDischarge: "7-day Average Discharge",
+                userAnalysisText: "Conclusion: 98.5% participation rate with comprehensive coverage, 45.8kWh (37%) available capacity, today's planned discharge 45.3kWh below historical average",
+                realtime: "Realtime Analysis",
+                historical: "Historical Analysis",
+                avgPrice: "Average Price",
+                highAccuracy: "High Accuracy",
+                supplyTight: "Supply Tight",
+                gapExpanding: "Gap Expanding",
+                rapidGrowth: "Rapid Growth",
+                continuousDecline: "Continuous Decline",
+                fullCoverage: "Full Coverage",
+                belowHistory: "Below History",
+                dailyAvgPerformance: "Daily Avg Performance",
+                priceAnalysis: "Price Analysis",
+                operationAnalysis: "Operation Analysis",
+                userAnalysis: "User Analysis",
+                yesterday: "Yesterday",
+                recent7days: "Last 7 Days",
+                recent30days: "Last 30 Days",
+                pricePrediction: "Price Prediction",
+                score: " Points",
+                accuratePrediction: "Accurate Prediction",
+                deviationLessThan1: "Deviation ≤1%",
+                veryHighAccuracy: "Very High Accuracy",
+                moderatelyAccuratePrediction: "Moderately Accurate",
+                deviation1to5: "Deviation 1-5%",
+                acceptable: "Acceptable",
+                largeDeviation: "Large Deviation",
+                deviationGreaterThan5: "Deviation >5%",
+                needImprovement: "Need Improvement",
+                priceError: "Price Error",
+                avgPriceDifference: "Average Price Difference",
+                verySmallError: "Very Small Error",
+                analysisConclusion: "Analysis Conclusion",
+                predictionReliabilityHigh: "Prediction Reliability is Very High",
+                accuracyAnalysis1: "With 94.7% accuracy and only 1.9% average deviation rate, indicating high prediction accuracy with minimal error",
+                accuracyAnalysis2: "Price trend prediction accuracy is 96.8%, indicating accurate trend judgment, especially valley prediction accuracy up to 95.2%",
+                accuracyAnalysis3: "High accuracy periods: 2-6 AM and 2-6 PM, with accuracy exceeding 95%",
+                attention: "Attention",
+                warningMessage: "7-9 PM peak electricity period has high price volatility and lower accuracy, suggest operating cautiously",
+                priceTrendAccuracy: "Price Trend Accuracy",
+                correctlyIdentifyTrends: "Correctly Identify Trends",
+                accurateTrendJudgment: "Accurate Trend Judgment",
+                peakPricePredictionAccuracy: "Peak Price Prediction Accuracy",
+                priceGreater300: "Price >$300/MWh Period",
+                lower35ThanOverall: "3.5% Lower Than Overall",
+                valleyPricePredictionAccuracy: "Valley Price Prediction Accuracy",
+                priceLess50: "Price <$50/MWh Period",
+                higher31ThanOverall: "3.1% Higher Than Overall",
+                midTermPredictionAccuracy: "Mid-term Prediction Accuracy",
+                priceBetween50And300: "$50/MWh<Price<$300/MWh Period",
+                lower54ThanOverall: "5.4% Lower Than Overall",
+                accuracyTrendChart: "Prediction Accuracy Trend",
+                dischargeAnalysis: "Discharge Analysis",
+                sellAtBestPoint: "Sell at Best Point",
+                peakAbove95: "Peak >95% Range",
+                preciseTiming: "Precise Timing",
+                sellAtHighPoint: "Sell at High Point",
+                peak80to95: "Peak 80%-95% Range",
+                goodPerformance: "Good Performance",
+                sellAtAverage: "Sell at Average",
+                peak60to80: "Peak 60%-80% Range",
+                roomForImprovement: "Room for Improvement",
+                lowPrice: "Low Price",
+                peakBelow60: "Peak <60%",
+                yourPerformanceExcellent: "Your Performance: Excellent (85 points)",
+                performanceAnalysis: "You're great at timing electricity sales! 37.1% sold at peak prices, 40.8% at high points - an excellent electricity seller!",
+                yourSellingStatus: "Your Selling Status",
+                sellingAnalysis: "383 sales in the past 30 days, 298 with good timing (77.9%), 85 average. Overall average discharge price: $382/MWh",
+                optimizationSuggestions: "Optimization Suggestions",
+                suggestionDetails: "Focus on daily price peaks at 17-19:00. For the 4.5% low-price sales, waiting 1-2 more hours often yields better prices.",
+                perfectTiming: "Perfect Timing",
+                times: " times",
+                avgPrice485: "Average $485/MWh",
+                goodRevenue: "Good Revenue",
+                avgPrice385: "Average $385/MWh",
+                canImprove: "Can Improve",
+                avgPrice285: "Average $285/MWh",
+                needOptimization: "Need Optimization",
+                avgPrice215: "Average $215/MWh",
+                sellingTimingAnalysis: "Selling Timing Analysis Chart",
+                taskDispatchRate: "Task Dispatch Rate",
+                comprehensiveCoverage: "Comprehensive Coverage",
+                systemStable: "System Stable",
+                participationRate2: "Participation Rate",
+                highCooperation: "High Cooperation",
+                activeResponse: "Active Response",
+                avgDischargePerPerson: "Avg Discharge/Person",
+                person: "person",
+                monthOverMonth52: "MoM +5.2%",
+                avgProfitPerPerson: "Avg Profit/Person",
+                perPerson: "Per Person",
+                monthOverMonth38: "MoM +3.8%",
+                userPerformanceGreat: "User Performance is Great",
+                userPerformanceAnalysis: "93.8% of users actively participated in discharge, contributing an average of 45.8 kWh and earning $7.08 per person. 67% of active users contributed 90% of profits.",
+                betterThanLastPeriod: "Better Than Last Period",
+                improvementAnalysis: "Discharge volume increased by 5.2%, revenue increased by 3.8%, everyone earned more!",
+                canBeBetter: "Can Be Better",
+                improvementSuggestion: "8% of users haven't participated yet. If they join, overall revenue can increase even more.",
+                userDischargeTrend: "User Discharge Trend",
+                viewDetails: "View Details",
+                accuracyDetailsTitle: "Detailed Analysis Charts",
+                priceComparison: "Price Comparison",
+                supplyDemandGapAnalysis: "Supply-Demand Gap Analysis",
+                actualPrice: "Actual Price",
+                predictedPrice: "Predicted Price",
+                deviationActualPredicted: "Deviation (Actual-Predicted)",
+                demand: "Demand",
+                generation: "Generation",
+                gap: "Gap",
+                balanceLine: "Balance Line",
+                electricity: "Electricity",
+                price: "Price",
+                predictionAccuracy: "Prediction Accuracy",
+                averageLine: "Average Line",
+                highest: "Max",
+                lowest: "Min",
+                closeModal: "Close"
+            }
+        };
+
+        // Initialize language from localStorage to match other pages
+        let currentLanguage = localStorage.getItem('app_language') || 'zh';
+        
+        // Set initial HTML lang attribute
+        document.documentElement.lang = currentLanguage === 'zh' ? 'zh-CN' : currentLanguage;
+        let currentTimeDimension = 'yesterday';
+        let currentDimension = 'price';
+        
+        // 历史分析地区选择
+        window.currentHistoricalRegion = 'nsw';
+
+        // Language switching is now handled by the HeaderNav component's i18n system
+
+        // 更新所有翻译文本
+        function updateAllTexts() {
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[currentLanguage] && translations[currentLanguage][key]) {
+                    // Special handling for analysis items with colored spans
+                    if (element.classList.contains('price-analysis-item')) {
+                        updatePriceAnalysisItem(element, key);
+                    } else if (element.classList.contains('operation-analysis-item')) {
+                        updateOperationAnalysisItem(element, key);
+                    } else if (element.classList.contains('user-analysis-item')) {
+                        updateUserAnalysisItem(element, key);
+                    } else {
+                        element.textContent = translations[currentLanguage][key];
+                    }
+                }
+            });
+        }
+        
+        // Special function to update price analysis items while preserving colored spans
+        function updatePriceAnalysisItem(element, key) {
+            if (currentLanguage === 'zh') {
+                // Chinese content with colored spans
+                switch(key) {
+                    case 'accuracyAnalysis1':
+                        element.innerHTML = '具有<span style="color: #00ff88; font-weight: 600;">94.7%</span>准确性，平均偏差率仅<span style="color: #00ff88; font-weight: 600;">1.9%</span>，平均价格误差<span style="color: #ff9500; font-weight: 600;">$8/MWh</span>，说明预测准确性高且误差很小';
+                        break;
+                    case 'accuracyAnalysis2':
+                        element.innerHTML = '价格趋势预测准确率<span style="color: #00ff88; font-weight: 600;">96.8%</span>，说明趋势预判准确，尤其谷值预测准确率高达<span style="color: #00ff88; font-weight: 600;">95.2%</span>';
+                        break;
+                    case 'accuracyAnalysis3':
+                        element.innerHTML = '高准确率时段：凌晨2-6点和下午2-6点，准确率超过<span style="color: #00ff88; font-weight: 600;">95%</span>';
+                        break;
+                    case 'warningMessage':
+                        element.innerHTML = '晚上<span style="color: #ff9500; font-weight: 600;">7-9点</span>用电高峰期，价格波动大，准确性较低，建议谨慎操作';
+                        break;
+                }
+            } else {
+                // English content with colored spans
+                switch(key) {
+                    case 'accuracyAnalysis1':
+                        element.innerHTML = 'With <span style="color: #00ff88; font-weight: 600;">94.7%</span> accuracy and only <span style="color: #00ff88; font-weight: 600;">1.9%</span> average deviation rate, average price error <span style="color: #ff9500; font-weight: 600;">$8/MWh</span>, indicating high prediction accuracy with minimal error';
+                        break;
+                    case 'accuracyAnalysis2':
+                        element.innerHTML = 'Price trend prediction accuracy is <span style="color: #00ff88; font-weight: 600;">96.8%</span>, indicating accurate trend judgment, especially valley prediction accuracy up to <span style="color: #00ff88; font-weight: 600;">95.2%</span>';
+                        break;
+                    case 'accuracyAnalysis3':
+                        element.innerHTML = 'High accuracy periods: 2-6 AM and 2-6 PM, with accuracy exceeding <span style="color: #00ff88; font-weight: 600;">95%</span>';
+                        break;
+                    case 'warningMessage':
+                        element.innerHTML = '<span style="color: #ff9500; font-weight: 600;">7-9 PM</span> peak electricity period has high price volatility and lower accuracy, suggest operating cautiously';
+                        break;
+                }
+            }
+        }
+        
+        // Special function to update operation analysis items while preserving colored spans
+        function updateOperationAnalysisItem(element, key) {
+            if (currentLanguage === 'zh') {
+                // Chinese content with colored spans
+                switch(key) {
+                    case 'performanceAnalysis':
+                        element.innerHTML = '您很会挑时间卖电！<span style="color: #00ff88; font-weight: 600;">37.1%</span>的电卖在了最高价，<span style="color: #00ff88; font-weight: 600;">40.8%</span>卖在高点，是一个优秀的卖电达人！';
+                        break;
+                    case 'sellingAnalysis':
+                        element.innerHTML = '过去30天共卖电<span style="color: #00ff88;">383次</span>，其中<span style="color: #00ff88;">298次</span>时机把握较好（77.9%），<span style="color: #ff9500;">85次</span>时机一般。<br style="margin-bottom: 10px;">整体平均放电价格：<span style="color: #00ff88; font-weight: 600;">$382/MWh</span>';
+                        break;
+                    case 'suggestionDetails':
+                        element.innerHTML = '重点关注每天17-19点的价格高峰。对于那<span style="color: #ff9500; font-weight: 600;">4.5%</span>的低价卖电，建议多等待1-2小时，往往能获得更好的价格。';
+                        break;
+                }
+            } else {
+                // English content with colored spans
+                switch(key) {
+                    case 'performanceAnalysis':
+                        element.innerHTML = 'You\'re great at timing electricity sales! <span style="color: #00ff88; font-weight: 600;">37.1%</span> sold at peak prices, <span style="color: #00ff88; font-weight: 600;">40.8%</span> at high points - an excellent electricity seller!';
+                        break;
+                    case 'sellingAnalysis':
+                        element.innerHTML = '<span style="color: #00ff88;">383</span> sales in the past 30 days, <span style="color: #00ff88;">298</span> with good timing (77.9%), <span style="color: #ff9500;">85</span> average.<br style="margin-bottom: 10px;">Overall average discharge price: <span style="color: #00ff88; font-weight: 600;">$382/MWh</span>';
+                        break;
+                    case 'suggestionDetails':
+                        element.innerHTML = 'Focus on the 5-7 PM price peaks daily. For the <span style="color: #ff9500; font-weight: 600;">4.5%</span> low-price sales, suggest waiting 1-2 more hours for better prices.';
+                        break;
+                }
+            }
+        }
+        
+        // Special function to update user analysis items while preserving colored spans
+        function updateUserAnalysisItem(element, key) {
+            if (currentLanguage === 'zh') {
+                // Chinese content with colored spans
+                switch(key) {
+                    case 'userPerformanceAnalysis':
+                        element.innerHTML = '有<span style="color: #00ff88; font-weight: 600;">93.8%</span>的用户积极参与放电，每人平均贡献了<span style="color: #00ff88; font-weight: 600;">45.8度电</span>，赚了<span style="color: #00ff88; font-weight: 600;">$7.08</span>。<br>有<span style="color: #00ff88; font-weight: 600;">67%</span>的活跃用户贡献了<span style="color: #00ff88; font-weight: 600;">90%</span>的获利。';
+                        break;
+                    case 'improvementAnalysis':
+                        element.innerHTML = '放电量增加了<span style="color: #00ff88; font-weight: 600;">5.2%</span>，收益增加了<span style="color: #00ff88; font-weight: 600;">3.8%</span>，大家赚得更多了！';
+                        break;
+                    case 'improvementSuggestion':
+                        element.innerHTML = '还有<span style="color: #ff9500; font-weight: 600;">8%</span>的用户没参与，如果能让他们也加入进来，整体收益还能提升更多。';
+                        break;
+                }
+            } else {
+                // English content with colored spans
+                switch(key) {
+                    case 'userPerformanceAnalysis':
+                        element.innerHTML = '<span style="color: #00ff88; font-weight: 600;">93.8%</span> of users actively participated in discharge, averaging <span style="color: #00ff88; font-weight: 600;">45.8 kWh</span> per person, earning <span style="color: #00ff88; font-weight: 600;">$7.08</span>.<br><span style="color: #00ff88; font-weight: 600;">67%</span> of active users contributed <span style="color: #00ff88; font-weight: 600;">90%</span> of profits.';
+                        break;
+                    case 'improvementAnalysis':
+                        element.innerHTML = 'Discharge volume increased by <span style="color: #00ff88; font-weight: 600;">5.2%</span>, revenue increased by <span style="color: #00ff88; font-weight: 600;">3.8%</span> - everyone earned more!';
+                        break;
+                    case 'improvementSuggestion':
+                        element.innerHTML = '<span style="color: #ff9500; font-weight: 600;">8%</span> of users haven\'t participated yet. If they join in, overall revenue could increase even more.';
+                        break;
+                }
+            }
+        }
+
+        // 切换区域
+        function switchRegion(region, button) {
+            document.querySelectorAll('.region-tab').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            console.log('Switched to region:', region);
+        }
+        
+        // 历史分析地区切换
+        function switchHistoricalRegion(region, button) {
+            document.querySelectorAll('.historical-region-tab').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            console.log('Historical analysis switched to region:', region);
+            
+            // 更新当前选中的地区
+            window.currentHistoricalRegion = region;
+            
+            // 根据当前维度更新数据
+            updateHistoricalData();
+        }
+        
+        // 更新历史分析数据
+        function updateHistoricalData() {
+            const currentDimension = document.querySelector('.dimension-tab.active')?.getAttribute('onclick')?.match(/switchDimension\('([^']+)'/)?.[1] || 'price';
+            const currentTimeDimension = document.querySelector('.time-tab.active')?.getAttribute('data-range') || 'yesterday';
+            
+            console.log('Updating historical data for:', {
+                region: window.currentHistoricalRegion || 'nsw',
+                dimension: currentDimension,
+                timeDimension: currentTimeDimension
+            });
+            
+            // 根据维度重新初始化图表
+            if (currentDimension === 'price' || currentDimension === 'operation' || currentDimension === 'user') {
+                initializeCharts();
+            }
+        }
+
+        // 切换分析模式
+        function switchAnalysisMode(mode, button) {
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            const realtimeContent = document.getElementById('realtimeContent');
+            const historicalContent = document.getElementById('historicalContent');
+            const regionSelector = document.getElementById('regionSelector');
+            
+            if (mode === 'realtime') {
+                realtimeContent.style.display = 'block';
+                historicalContent.style.display = 'none';
+                regionSelector.style.display = 'block';
+            } else {
+                realtimeContent.style.display = 'none';
+                historicalContent.style.display = 'block';
+                regionSelector.style.display = 'none';
+                // Initialize charts when switching to historical
+                setTimeout(() => {
+                    initializeCharts();
+                }, 100);
+            }
+        }
+
+        // Switch dimension
+        function switchDimension(dimension, button) {
+            // Update active button
+            document.querySelectorAll('.dimension-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+
+            // Hide all content
+            document.querySelectorAll('.dimension-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Show selected content
+            const selectedContent = document.getElementById(dimension);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+                currentDimension = dimension;
+                // Initialize charts for this dimension
+                setTimeout(() => {
+                    initializeCharts();
+                }, 100);
+            }
+        }
+
+        // Switch time dimension
+        function switchTimeDimension(range, button) {
+            // Update active button
+            document.querySelectorAll('.time-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+
+            currentTimeDimension = range;
+            
+            // Update charts based on new time dimension
+            updateAllCharts(range);
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            if (currentDimension === 'price') {
+                initPriceCharts();
+            } else if (currentDimension === 'operation') {
+                initOperationCharts();
+            } else if (currentDimension === 'user') {
+                initUserCharts();
+            }
+        }
+
+        // Initialize price charts
+        function initPriceCharts() {
+            const chartDom = document.getElementById('accuracyTrendChart');
+            if (!chartDom) return;
+            
+            const accuracyChart = echarts.init(chartDom);
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    borderColor: '#333',
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                legend: {
+                    data: [
+                        currentLanguage === 'zh' ? '预测准确率' : 'Prediction Accuracy',
+                        currentLanguage === 'zh' ? '平均线' : 'Average Line'
+                    ],
+                    textStyle: { color: 'rgba(255,255,255,0.7)' },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.2)'
+                        }
+                    },
+                    axisLabel: {
+                        color: 'rgba(255,255,255,0.6)'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 80,
+                    max: 100,
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.2)'
+                        }
+                    },
+                    axisLabel: {
+                        color: 'rgba(255,255,255,0.6)',
+                        formatter: '{value}%'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.1)'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: currentLanguage === 'zh' ? '预测准确率' : 'Prediction Accuracy',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        data: [95, 96, 97, 93, 92, 96, 88, 85],
+                        lineStyle: {
+                            color: '#00ff88',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#00ff88'
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {
+                                    offset: 0,
+                                    color: 'rgba(0, 255, 136, 0.3)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(0, 255, 136, 0.05)'
+                                }
+                            ])
+                        },
+                        markPoint: {
+                            data: [
+                                {
+                                    type: 'max',
+                                    name: currentLanguage === 'zh' ? '最高点' : 'Max',
+                                    symbol: 'pin',
+                                    symbolSize: 60,
+                                    label: {
+                                        show: true,
+                                        color: '#000',
+                                        fontWeight: 'bold'
+                                    },
+                                    itemStyle: {
+                                        color: '#00ff88'
+                                    }
+                                },
+                                {
+                                    type: 'min',
+                                    name: currentLanguage === 'zh' ? '最低点' : 'Min',
+                                    symbol: 'pin',
+                                    symbolSize: 60,
+                                    label: {
+                                        show: true,
+                                        color: '#000',
+                                        fontWeight: 'bold'
+                                    },
+                                    itemStyle: {
+                                        color: '#ff9500'
+                                    }
+                                }
+                            ]
+                        },
+                        markLine: {
+                            data: [
+                                {
+                                    type: 'average',
+                                    name: currentLanguage === 'zh' ? '平均值' : 'Average',
+                                    label: {
+                                        show: false  // Hide label on chart
+                                    },
+                                    lineStyle: {
+                                        color: '#ff9500',
+                                        type: 'dashed',
+                                        width: 2
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        name: currentLanguage === 'zh' ? '平均线' : 'Average Line',
+                        type: 'line',
+                        data: (() => {
+                            const avg = [95, 96, 97, 93, 92, 96, 88, 85].reduce((sum, val) => sum + val, 0) / 8;
+                            return new Array(8).fill(avg.toFixed(1));
+                        })(),
+                        lineStyle: {
+                            color: '#ff9500',
+                            width: 2,
+                            type: 'dashed'
+                        },
+                        symbol: 'none',
+                        emphasis: {
+                            disabled: true
+                        },
+                        silent: true
+                    }
+                ]
+            };
+            
+            accuracyChart.setOption(option);
+            window.addEventListener('resize', () => {
+                accuracyChart.resize();
+            });
+        }
+
+        // Initialize operation charts
+        function initOperationCharts() {
+            const chartDom = document.getElementById('sellingPointsChart');
+            if (!chartDom) return;
+            
+            const sellingChart = echarts.init(chartDom);
+            
+            const actualPrices = [120, 100, 150, 280, 320, 380, 450, 350];
+            const predictedPrices = [135, 85, 165, 265, 340, 365, 470, 330];
+            const avgPrice = actualPrices.reduce((a, b) => a + b, 0) / actualPrices.length;
+            
+            const option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    borderColor: '#333',
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                legend: {
+                    data: [
+                        currentLanguage === 'zh' ? '实际电价' : 'Actual Price',
+                        currentLanguage === 'zh' ? '预测电价' : 'Predicted Price',
+                        currentLanguage === 'zh' ? '平均电价' : 'Average Price'
+                    ],
+                    textStyle: {
+                        color: 'rgba(255,255,255,0.6)'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.2)'
+                        }
+                    },
+                    axisLabel: {
+                        color: 'rgba(255,255,255,0.6)'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 500,
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.2)'
+                        }
+                    },
+                    axisLabel: {
+                        color: 'rgba(255,255,255,0.6)',
+                        formatter: '${value}'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.1)'
+                        }
+                    }
+                },
+                visualMap: {
+                    show: false,
+                    dimension: 1,
+                    pieces: [
+                        {gte: 400, color: 'rgba(0,255,136,0.2)'},
+                        {gte: 300, lt: 400, color: 'rgba(0,255,136,0.15)'},
+                        {gte: 200, lt: 300, color: 'rgba(255,235,59,0.15)'},
+                        {gte: 100, lt: 200, color: 'rgba(255,152,0,0.15)'},
+                        {lt: 100, color: 'rgba(255,67,54,0.15)'}
+                    ]
+                },
+                series: [
+                    {
+                        name: currentLanguage === 'zh' ? '实际电价' : 'Actual Price',
+                        type: 'line',
+                        smooth: true,
+                        data: actualPrices,
+                        lineStyle: {
+                            color: '#00ff88',
+                            width: 3
+                        },
+                        markArea: {
+                            silent: true,
+                            data: [
+                                [{
+                                    yAxis: 400,
+                                    itemStyle: {
+                                        color: 'rgba(0,255,136,0.07)'
+                                    }
+                                }, {
+                                    yAxis: 500
+                                }],
+                                [{
+                                    yAxis: 300,
+                                    itemStyle: {
+                                        color: 'rgba(0,255,136,0.065)'
+                                    }
+                                }, {
+                                    yAxis: 400
+                                }],
+                                [{
+                                    yAxis: 200,
+                                    itemStyle: {
+                                        color: 'rgba(255,235,59,0.065)'
+                                    }
+                                }, {
+                                    yAxis: 300
+                                }],
+                                [{
+                                    yAxis: 100,
+                                    itemStyle: {
+                                        color: 'rgba(255,152,0,0.065)'
+                                    }
+                                }, {
+                                    yAxis: 200
+                                }],
+                                [{
+                                    yAxis: 0,
+                                    itemStyle: {
+                                        color: 'rgba(255,67,54,0.065)'
+                                    }
+                                }, {
+                                    yAxis: 100
+                                }]
+                            ]
+                        },
+                        markPoint: {
+                            data: [
+                                {
+                                    coord: [1, 100],
+                                    value: currentLanguage === 'zh' ? '停' : 'Stop',
+                                    symbol: 'circle',
+                                    symbolSize: 20,
+                                    itemStyle: {
+                                        color: '#ff9500'
+                                    },
+                                    label: {
+                                        show: true,
+                                        color: '#fff',
+                                        fontWeight: 'bold',
+                                        fontSize: 10
+                                    }
+                                },
+                                {
+                                    coord: [6, 450],
+                                    value: currentLanguage === 'zh' ? '卖' : 'Sell',
+                                    symbol: 'circle',
+                                    symbolSize: 20,
+                                    itemStyle: {
+                                        color: '#00ff88'
+                                    },
+                                    label: {
+                                        show: true,
+                                        color: '#000',
+                                        fontWeight: 'bold',
+                                        fontSize: 10
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        name: currentLanguage === 'zh' ? '预测电价' : 'Predicted Price',
+                        type: 'line',
+                        smooth: true,
+                        data: predictedPrices,
+                        lineStyle: {
+                            color: '#1e90ff',
+                            width: 2,
+                            type: 'dashed'
+                        }
+                    },
+                    {
+                        name: currentLanguage === 'zh' ? '平均电价' : 'Average Price',
+                        type: 'line',
+                        data: new Array(8).fill(avgPrice),
+                        lineStyle: {
+                            color: '#ff9500',
+                            width: 2,
+                            type: 'dashed'
+                        },
+                        symbol: 'none',
+                        markLine: {
+                            silent: true,
+                            lineStyle: {
+                                color: '#ff9500',
+                                type: 'dashed',
+                                width: 2
+                            },
+                            data: [
+                                {
+                                    yAxis: avgPrice,
+                                    label: {
+                                        show: true,
+                                        position: 'end',
+                                        formatter: currentLanguage === 'zh' ? '平均电价' : 'Avg Price',
+                                        color: '#ff9500'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            };
+            
+            sellingChart.setOption(option);
+            window.addEventListener('resize', () => {
+                sellingChart.resize();
+            });
+        }
+
+        // Initialize user charts
+        function initUserCharts() {
+            // User contribution donut chart
+            const contributionDom = document.getElementById('userContributionChart');
+            if (contributionDom) {
+                const contributionChart = echarts.init(contributionDom);
+                
+                const contributionOption = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'item',
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        borderColor: '#333',
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    },
+                    series: [
+                        // Inner ring - User proportions
+                        {
+                            name: currentLanguage === 'zh' ? '用户占比' : 'User Proportion',
+                            type: 'pie',
+                            radius: ['30%', '45%'],
+                            center: ['50%', '50%'],
+                            data: [
+                                {value: 67, name: currentLanguage === 'zh' ? '活跃用户' : 'Active Users', itemStyle: {color: '#00ff88'}},
+                                {value: 25, name: currentLanguage === 'zh' ? '非活跃用户' : 'Inactive Users', itemStyle: {color: '#ff9500'}},
+                                {value: 8, name: currentLanguage === 'zh' ? '未参与用户' : 'Non-participants', itemStyle: {color: '#ff3b30'}}
+                            ],
+                            label: {
+                                show: false
+                            },
+                            labelLine: {
+                                show: false
+                            },
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        },
+                        // Outer ring - User profits
+                        {
+                            name: currentLanguage === 'zh' ? '用户获利' : 'User Profits',
+                            type: 'pie',
+                            radius: ['55%', '70%'],
+                            center: ['50%', '50%'],
+                            data: [
+                                {value: 82, name: currentLanguage === 'zh' ? '活跃用户收益' : 'Active User Profits', itemStyle: {color: 'rgba(0,255,136,0.8)'}},
+                                {value: 15, name: currentLanguage === 'zh' ? '非活跃用户收益' : 'Inactive User Profits', itemStyle: {color: 'rgba(255,149,0,0.8)'}},
+                                {value: 3, name: currentLanguage === 'zh' ? '未参与用户收益' : 'Non-participant Profits', itemStyle: {color: 'rgba(255,59,48,0.8)'}}
+                            ],
+                            label: {
+                                color: 'rgba(255,255,255,0.8)',
+                                formatter: '{b}: {d}%'
+                            },
+                            labelLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,0.3)'
+                                }
+                            },
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+                
+                contributionChart.setOption(contributionOption);
+                window.addEventListener('resize', () => {
+                    contributionChart.resize();
+                });
+            }
+
+            // User discharge trend chart
+            const trendDom = document.getElementById('userDischargeTrend');
+            if (trendDom) {
+                const trendChart = echarts.init(trendDom);
+                
+                const trendOption = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        borderColor: '#333',
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    legend: {
+                        data: [
+                            currentLanguage === 'zh' ? '放电量' : 'Discharge Volume',
+                            currentLanguage === 'zh' ? '参与用户数' : 'Active Users'
+                        ],
+                        textStyle: {
+                            color: 'rgba(255,255,255,0.6)'
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: true,
+                        data: Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`),
+                        axisLine: {
+                            lineStyle: {
+                                color: 'rgba(255,255,255,0.2)'
+                            }
+                        },
+                        axisLabel: {
+                            color: 'rgba(255,255,255,0.6)'
+                        }
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: currentLanguage === 'zh' ? '放电量 (MWh)' : 'Discharge (MWh)',
+                            position: 'left',
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,0.2)'
+                                }
+                            },
+                            axisLabel: {
+                                color: 'rgba(255,255,255,0.6)',
+                                formatter: '{value}'
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            }
+                        },
+                        {
+                            type: 'value',
+                            name: currentLanguage === 'zh' ? '用户数' : 'Users',
+                            position: 'right',
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,0.2)'
+                                }
+                            },
+                            axisLabel: {
+                                color: 'rgba(255,255,255,0.6)',
+                                formatter: '{value}'
+                            },
+                            splitLine: {
+                                show: false
+                            }
+                        }
+                    ],
+                    series: [
+                        {
+                            name: currentLanguage === 'zh' ? '放电量' : 'Discharge Volume',
+                            type: 'bar',
+                            data: [200, 180, 170, 190, 220, 280, 380, 420, 450, 460, 470, 480, 475, 465, 455, 440, 480, 520, 510, 490, 450, 380, 320, 250],
+                            itemStyle: {
+                                color: '#00ff88'
+                            }
+                        },
+                        {
+                            name: currentLanguage === 'zh' ? '参与用户数' : 'Active Users',
+                            type: 'line',
+                            yAxisIndex: 1,
+                            smooth: true,
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            data: [40, 38, 35, 42, 48, 55, 65, 68, 72, 73, 74, 75, 74, 73, 71, 69, 75, 78, 76, 74, 70, 65, 58, 48],
+                            lineStyle: {
+                                color: '#ff9500',
+                                width: 3
+                            },
+                            itemStyle: {
+                                color: '#ff9500'
+                            }
+                        }
+                    ]
+                };
+                
+                trendChart.setOption(trendOption);
+                window.addEventListener('resize', () => {
+                    trendChart.resize();
+                });
+            }
+        }
+
+        // Update all charts based on time dimension
+        function updateAllCharts(range) {
+            // This would update chart data based on the selected time range
+            // For now, we'll just reinitialize the charts
+            initializeCharts();
+        }
+
+        // Show details modal
+        function showDetailsModal() {
+            const modal = document.getElementById('detailsModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                
+                // Update dropdown options based on current time dimension
+                const dropdown = modal.querySelector('.modal-time-dropdown');
+                if (dropdown) {
+                    dropdown.innerHTML = ''; // Clear existing options
+                    
+                    if (currentTimeDimension === 'yesterday') {
+                        // Only show yesterday option
+                        const option = document.createElement('option');
+                        option.value = 'yesterday';
+                        option.textContent = currentLanguage === 'zh' ? '昨天' : 'Yesterday';
+                        dropdown.appendChild(option);
+                    } else if (currentTimeDimension === '7d') {
+                        // Show 7 day options
+                        const days = currentLanguage === 'zh' ? 
+                            ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] : 
+                            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        days.forEach((day, index) => {
+                            const option = document.createElement('option');
+                            option.value = `day${index + 1}`;
+                            option.textContent = day;
+                            dropdown.appendChild(option);
+                        });
+                    } else if (currentTimeDimension === '30d') {
+                        // Show 30 day options
+                        for (let i = 1; i <= 30; i++) {
+                            const option = document.createElement('option');
+                            option.value = `day${i}`;
+                            const date = new Date();
+                            date.setDate(date.getDate() - (30 - i));
+                            option.textContent = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+                            dropdown.appendChild(option);
+                        }
+                    }
+                    
+                    dropdown.value = dropdown.options[0]?.value || '';
+                }
+                
+                // Initialize detail charts
+                setTimeout(() => {
+                    initializeModalCharts();
+                }, 100);
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('detailsModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Initialize charts in modal
+        function initializeModalCharts() {
+            // Generate data based on currentTimeDimension
+            let timeLabels, actualPrices, predictedPrices, deviations;
+            let demandData, generationData, gapData;
+            
+            if (currentTimeDimension === 'yesterday') {
+                // 24 hours of yesterday
+                timeLabels = Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+                actualPrices = [120, 110, 105, 108, 115, 125, 135, 180, 250, 280, 290, 285, 280, 275, 270, 265, 340, 380, 390, 360, 320, 280, 240, 180];
+                predictedPrices = [125, 118, 102, 112, 120, 130, 128, 175, 245, 275, 295, 282, 285, 280, 265, 270, 335, 375, 395, 355, 315, 285, 235, 185];
+                demandData = [5200, 5100, 5000, 5100, 5300, 5800, 6800, 7900, 8800, 9200, 9500, 9600, 9500, 9400, 9300, 9400, 9800, 10500, 11500, 11000, 9500, 8000, 7000, 6000];
+                generationData = [5100, 5050, 4950, 5200, 5250, 5700, 6700, 7800, 8700, 9100, 9400, 9550, 9450, 9350, 9200, 9350, 9700, 10400, 11300, 10800, 9300, 7900, 6900, 5900];
+            } else if (currentTimeDimension === '7d') {
+                // 7 days
+                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                timeLabels = currentLanguage === 'zh' ? ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] : days;
+                actualPrices = [285, 290, 280, 295, 310, 260, 250];
+                predictedPrices = [278, 295, 272, 302, 305, 268, 242];
+                demandData = [9200, 9400, 9300, 9500, 9600, 8500, 8200];
+                generationData = [9050, 9250, 9150, 9350, 9450, 8350, 8050];
+            } else {
+                // 30 days
+                timeLabels = Array.from({length: 30}, (_, i) => {
+                    const date = new Date();
+                    date.setDate(date.getDate() - (29 - i));
+                    return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+                });
+                actualPrices = Array.from({length: 30}, (_, i) => {
+                    const base = 280 + Math.sin(i * 0.3) * 80;
+                    return base + Math.random() * 40;
+                });
+                predictedPrices = actualPrices.map((p, i) => {
+                    const offset = Math.sin(i * 0.2) * 15 + (Math.random() - 0.5) * 20;
+                    return p + offset;
+                });
+                demandData = Array.from({length: 30}, (_, i) => {
+                    const base = 9000 + Math.sin(i * 0.2) * 1000;
+                    return base + Math.random() * 500;
+                });
+                generationData = Array.from({length: 30}, (_, i) => {
+                    const base = 8800 + Math.sin(i * 0.2 + 0.5) * 1000;
+                    return base + Math.random() * 500;
+                });
+            }
+            
+            deviations = actualPrices.map((actual, i) => actual - predictedPrices[i]);
+            gapData = demandData.map((demand, i) => demand - generationData[i]);
+            
+            // Initialize price comparison chart
+            const priceChart = echarts.init(document.getElementById('modalPriceChart'));
+            const priceOption = {
+                backgroundColor: 'transparent',
+                title: {
+                    text: currentLanguage === 'zh' ? '价格对比' : 'Price Comparison',
+                    textStyle: {
+                        color: 'rgba(255,255,255,0.9)',
+                        fontSize: 18,
+                        fontWeight: 'normal'
+                    },
+                    left: '20',
+                    top: '10'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0,0,0,0.9)',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    padding: [10, 15],
+                    textStyle: {
+                        color: '#fff',
+                        fontSize: 13
+                    },
+                    axisPointer: {
+                        type: 'cross',
+                        crossStyle: {
+                            color: 'rgba(255,255,255,0.3)'
+                        }
+                    }
+                },
+                legend: {
+                    data: [
+                        currentLanguage === 'zh' ? '实际价格' : 'Actual Price',
+                        currentLanguage === 'zh' ? '预测价格' : 'Predicted Price',
+                        currentLanguage === 'zh' ? '偏差(实际-预测)' : 'Deviation (Actual-Predicted)'
+                    ],
+                    textStyle: { 
+                        color: 'rgba(255,255,255,0.7)',
+                        fontSize: 12
+                    },
+                    top: 40,
+                    left: 'center',
+                    itemWidth: 25,
+                    itemHeight: 14,
+                    itemGap: 20
+                },
+                grid: {
+                    left: '60',
+                    right: '80',
+                    bottom: '60',
+                    top: '80',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: timeLabels,
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.2)'
+                        }
+                    },
+                    axisLabel: {
+                        color: 'rgba(255,255,255,0.6)',
+                        interval: 0,
+                        rotate: currentTimeDimension === '30d' ? 45 : 0
+                    },
+                    axisTick: {
+                        show: false
+                    }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: currentLanguage === 'zh' ? '价格 ($/MWh)' : 'Price ($/MWh)',
+                        position: 'left',
+                        axisLine: {
+                            lineStyle: {
+                                color: 'rgba(255,255,255,0.2)'
+                            }
+                        },
+                        axisLabel: {
+                            color: 'rgba(255,255,255,0.6)',
+                            formatter: '${value}'
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(255,255,255,0.1)'
+                            }
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: currentLanguage === 'zh' ? '偏差' : 'Deviation',
+                        position: 'right',
+                        axisLine: {
+                            lineStyle: {
+                                color: 'rgba(255,255,255,0.2)'
+                            }
+                        },
+                        axisLabel: {
+                            color: 'rgba(255,255,255,0.6)',
+                            formatter: '${value}'
+                        },
+                        splitLine: {
+                            show: false
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: currentLanguage === 'zh' ? '实际价格' : 'Actual Price',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        showSymbol: currentTimeDimension === 'yesterday' ? false : true,
+                        data: actualPrices,
+                        lineStyle: {
+                            color: '#00ff88',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#00ff88',
+                            borderColor: '#00ff88',
+                            borderWidth: 2
+                        },
+                        emphasis: {
+                            scale: true,
+                            focus: 'series'
+                        }
+                    },
+                    {
+                        name: currentLanguage === 'zh' ? '预测价格' : 'Predicted Price',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        showSymbol: currentTimeDimension === 'yesterday' ? false : true,
+                        data: predictedPrices,
+                        lineStyle: {
+                            color: '#1e90ff',
+                            width: 3,
+                            type: 'dashed'
+                        },
+                        itemStyle: {
+                            color: '#1e90ff',
+                            borderColor: '#1e90ff',
+                            borderWidth: 2
+                        },
+                        emphasis: {
+                            scale: true,
+                            focus: 'series'
+                        }
+                    },
+                    {
+                        name: currentLanguage === 'zh' ? '偏差(实际-预测)' : 'Deviation (Actual-Predicted)',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        smooth: true,
+                        symbol: 'none',
+                        data: deviations,
+                        lineStyle: {
+                            color: '#ff9500',
+                            width: 2
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(255,149,0,0.3)' },
+                                { offset: 0.5, color: 'rgba(255,149,0,0.15)' },
+                                { offset: 1, color: 'rgba(255,149,0,0.05)' }
+                            ])
+                        },
+                    }
+                ]
+            };
+            priceChart.setOption(priceOption);
+
+            // Initialize supply-demand gap chart
+            const gapChart = echarts.init(document.getElementById('modalGapChart'));
+            const gapOption = {
+                backgroundColor: 'transparent',
+                title: {
+                    text: currentLanguage === 'zh' ? '供需缺口分析' : 'Supply-Demand Gap Analysis',
+                    textStyle: {
+                        color: 'rgba(255,255,255,0.9)',
+                        fontSize: 18,
+                        fontWeight: 'normal'
+                    },
+                    left: '20',
+                    top: '10'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0,0,0,0.9)',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    padding: [10, 15],
+                    textStyle: {
+                        color: '#fff',
+                        fontSize: 13
+                    },
+                    axisPointer: {
+                        type: 'cross',
+                        crossStyle: {
+                            color: 'rgba(255,255,255,0.3)'
+                        }
+                    }
+                },
+                legend: {
+                    data: [
+                        currentLanguage === 'zh' ? '需求量' : 'Demand',
+                        currentLanguage === 'zh' ? '发电量' : 'Generation',
+                        currentLanguage === 'zh' ? '缺口' : 'Gap'
+                    ],
+                    textStyle: { 
+                        color: 'rgba(255,255,255,0.7)',
+                        fontSize: 12
+                    },
+                    top: 40,
+                    left: 'center',
+                    itemWidth: 25,
+                    itemHeight: 14,
+                    itemGap: 20
+                },
+                grid: {
+                    left: '60',
+                    right: '80',
+                    bottom: '60',
+                    top: '80',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: timeLabels,
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.2)'
+                        }
+                    },
+                    axisLabel: {
+                        color: 'rgba(255,255,255,0.6)',
+                        interval: 0,
+                        rotate: currentTimeDimension === '30d' ? 45 : 0
+                    },
+                    axisTick: {
+                        show: false
+                    }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: currentLanguage === 'zh' ? '电量 (MW)' : 'Electricity (MW)',
+                        position: 'left',
+                        axisLine: {
+                            lineStyle: {
+                                color: 'rgba(255,255,255,0.2)'
+                            }
+                        },
+                        axisLabel: {
+                            color: 'rgba(255,255,255,0.6)',
+                            formatter: '{value}'
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(255,255,255,0.1)'
+                            }
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: currentLanguage === 'zh' ? '缺口 (MW)' : 'Gap (MW)',
+                        position: 'right',
+                        axisLine: {
+                            lineStyle: {
+                                color: 'rgba(255,255,255,0.2)'
+                            }
+                        },
+                        axisLabel: {
+                            color: 'rgba(255,255,255,0.6)',
+                            formatter: '+{value}'
+                        },
+                        splitLine: {
+                            show: false
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: currentLanguage === 'zh' ? '需求量' : 'Demand',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        showSymbol: currentTimeDimension === 'yesterday' ? false : true,
+                        data: demandData,
+                        lineStyle: {
+                            color: '#1e90ff',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#1e90ff',
+                            borderColor: '#1e90ff',
+                            borderWidth: 2
+                        },
+                        emphasis: {
+                            scale: true,
+                            focus: 'series'
+                        }
+                    },
+                    {
+                        name: currentLanguage === 'zh' ? '发电量' : 'Generation',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        showSymbol: currentTimeDimension === 'yesterday' ? false : true,
+                        data: generationData,
+                        lineStyle: {
+                            color: '#00ff88',
+                            width: 3,
+                            type: 'dashed'
+                        },
+                        itemStyle: {
+                            color: '#00ff88',
+                            borderColor: '#00ff88',
+                            borderWidth: 2
+                        },
+                        emphasis: {
+                            scale: true,
+                            focus: 'series'
+                        }
+                    },
+                    {
+                        name: currentLanguage === 'zh' ? '缺口' : 'Gap',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        smooth: true,
+                        symbol: 'none',
+                        data: gapData,
+                        lineStyle: {
+                            color: '#ff9500',
+                            width: 2
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(255,149,0,0.3)' },
+                                { offset: 0.5, color: 'rgba(255,149,0,0.15)' },
+                                { offset: 1, color: 'rgba(255,149,0,0.05)' }
+                            ])
+                        },
+                    }
+                ]
+            };
+            gapChart.setOption(gapOption);
+
+            // Resize charts on window resize
+            window.addEventListener('resize', () => {
+                priceChart.resize();
+                gapChart.resize();
+            });
+        }
+
+        // Update modal charts based on time selection
+        function updateModalCharts(timeRange) {
+            // Re-initialize charts with new time range
+            initializeModalCharts();
+        }
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize HeaderNav component
+            console.log('Initializing HeaderNav...');
+            if (typeof HeaderNav === 'undefined') {
+                console.error('HeaderNav class not found!');
+                return;
+            }
+            
+            const headerNav = new HeaderNav({
+                currentPage: 'analysis',  // Set current page as analysis
+                containerId: 'headerContainer'
+            });
+            console.log('HeaderNav initialized successfully');
+            
+            // Wait for i18n to be initialized by HeaderNav
+            function waitForI18nReady() {
+                if (window.i18n && window.i18n.isReady) {
+                    console.log('I18n ready, current language:', window.i18n.getCurrentLanguage());
+                    // Get current language from i18n system
+                    currentLanguage = window.i18n.getCurrentLanguage();
+                    
+                    // Add observer for language changes
+                    window.i18n.addObserver((newLanguage, oldLanguage) => {
+                        currentLanguage = newLanguage;
+                        updateAllTexts();
+                        
+                        // Update charts if in historical view
+                        if (document.getElementById('historicalContent').style.display !== 'none') {
+                            initializeCharts();
+                        }
+                    });
+                    
+                    // Also listen for languageChanged events
+                    document.addEventListener('languageChanged', function(event) {
+                        currentLanguage = event.detail.newLanguage;
+                        updateAllTexts();
+                        
+                        // Update charts if in historical view
+                        if (document.getElementById('historicalContent').style.display !== 'none') {
+                            initializeCharts();
+                        }
+                    });
+                    
+                    // Initialize translations with correct language
+                    updateAllTexts();
+                } else {
+                    console.log('I18n not ready, waiting...');
+                    setTimeout(waitForI18nReady, 50);
+                }
+            }
+            
+            setTimeout(waitForI18nReady, 100);
+        });
+    </script>
+
+    <!-- Details Modal -->
+    <div class="modal-overlay" id="detailsModal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" data-key="accuracyDetailsTitle">详细分析图表</h2>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <select class="modal-time-dropdown" onchange="updateModalCharts(this.value)">
+                        <option value="yesterday" data-key="yesterday">昨天</option>
+                        <option value="7d" data-key="recent7days">近7天</option>
+                        <option value="30d" data-key="recent30days">近30天</option>
+                    </select>
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-charts-grid">
+                    <div class="chart-container" style="height: 420px; background: rgba(255,255,255,0.02); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div id="modalPriceChart" style="width: 100%; height: 100%;"></div>
+                    </div>
+                    <div class="chart-container" style="height: 420px; background: rgba(255,255,255,0.02); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div id="modalGapChart" style="width: 100%; height: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

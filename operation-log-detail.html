@@ -1,0 +1,2558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电站运营详情 - AlwaysControl</title>
+
+    <!-- Standard Stylesheets -->
+    <link rel="stylesheet" href="components/common-styles.css">
+    <link rel="stylesheet" href="components/header-nav.css">
+    <link rel="stylesheet" href="components/i18n.css">
+    <link rel="stylesheet" href="components/notification-center.css">
+    <link rel="stylesheet" href="components/user-dropdown.css">
+    <link rel="stylesheet" href="components/standard-layout.css">
+
+    <!-- Standard Scripts -->
+    <script src="components/i18n.js"></script>
+    <script src="components/simple-message-icon.js"></script>
+    <script src="components/user-dropdown-simple-new.js"></script>
+    <script src="components/header-nav.js"></script>
+    <script src="vendor/echarts.min.js"></script>
+
+    <style>
+        /* Page Container */
+        body {
+            background: #000 !important;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 136, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 122, 255, 0.03) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 30px 40px;
+            min-height: calc(100vh - 140px);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header Section */
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid transparent;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent) bottom / 100% 2px no-repeat;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--color-text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .back-button:hover::before {
+            left: 100%;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 255, 136, 0.05));
+            transform: translateX(-5px);
+            border-color: var(--color-primary);
+        }
+
+        .back-icon {
+            font-size: 18px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .back-button:hover .back-icon {
+            transform: translateX(-5px);
+        }
+
+        .detail-title-section {
+            flex: 1;
+            margin: 0 30px;
+        }
+
+        .detail-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #fff 0%, rgba(0, 255, 136, 0.9) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            animation: titleGlow 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.95;
+            }
+        }
+
+        .detail-subtitle {
+            font-size: 14px;
+            margin: 0;
+            color: var(--color-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.8s ease-out 0.2s backwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .date-selector-wrapper {
+            animation: fadeIn 0.8s ease-out 0.3s backwards;
+        }
+
+        .date-selector {
+            font-size: 16px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(0, 255, 136, 0.3);
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 255, 136, 0.05));
+            color: var(--color-text);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            font-weight: 600;
+            min-width: 200px;
+        }
+
+        .date-selector:hover {
+            border-color: rgba(0, 255, 136, 0.5);
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 255, 136, 0.08));
+            transform: translateY(-2px);
+        }
+
+        .date-selector:focus {
+            border-color: #00ff88;
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .date-selector option {
+            background: #1a1a1a;
+            color: var(--color-text);
+            padding: 8px;
+        }
+
+        .subtitle-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .subtitle-item:hover {
+            background: rgba(0, 255, 136, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.15), rgba(0, 122, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(0, 122, 255, 0.3);
+            border-radius: 12px;
+            color: var(--color-text);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 122, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .action-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.25), rgba(0, 122, 255, 0.1));
+            border-color: #007aff;
+            transform: translateY(-3px);
+        }
+
+        .action-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+
+        .chart-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            animation: cardSlideIn 0.8s ease-out 0.4s backwards;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chart-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.5), transparent);
+        }
+
+        .chart-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 255, 136, 0.2);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+
+        .chart-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-primary), transparent);
+            transition: width 0.8s ease;
+        }
+
+        .chart-card:hover .chart-header::after {
+            width: 100%;
+        }
+
+        .chart-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .chart-icon-badge {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.25), rgba(0, 255, 136, 0.1));
+            border-radius: 12px;
+            font-size: 18px;
+            transition: all 0.4s ease;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        .chart-card:hover .chart-icon-badge {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            padding: 32px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chart-container:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 255, 136, 0.2);
+        }
+
+        .chart-container #operationsChart {
+            height: 500px;
+        }
+
+        /* Operations Table */
+        .operations-table-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            animation: cardSlideIn 0.8s ease-out 0.5s backwards;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .operations-table-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 122, 255, 0.2);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+
+        .table-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #007aff, transparent);
+            transition: width 0.8s ease;
+        }
+
+        .operations-table-card:hover .table-header::after {
+            width: 100%;
+        }
+
+        .table-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 0;
+            letter-spacing: -0.3px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 136, 0.3);
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 136, 0.5);
+        }
+
+        .operations-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .operations-table th {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+            padding: 16px 18px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            border-bottom: 2px solid rgba(0, 255, 136, 0.2);
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .operations-table th::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-primary), transparent);
+            transition: width 0.4s ease;
+        }
+
+        .operations-table:hover th::after {
+            width: 100%;
+        }
+
+        .operations-table td {
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 14px;
+            color: var(--color-text);
+            transition: all 0.3s ease;
+        }
+
+        .operations-table tbody tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .operations-table tbody tr::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, var(--color-primary), transparent);
+            transition: height 0.3s ease;
+        }
+
+        .operations-table tbody tr:hover::before {
+            height: 100%;
+        }
+
+        .operations-table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.05), rgba(255, 255, 255, 0.03));
+            transform: translateX(4px);
+        }
+
+        .operations-table tbody tr:hover td {
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Command Badge */
+        .command-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .command-badge::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .command-badge:hover::before {
+            transform: translateX(100%);
+        }
+
+        .command-badge.charge {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.1));
+            color: #00ff88;
+            border-color: rgba(0, 255, 136, 0.4);
+        }
+
+        .command-badge.charge:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), rgba(0, 255, 136, 0.15));
+            transform: translateY(-2px);
+        }
+
+        .command-badge.discharge {
+            background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 214, 10, 0.1));
+            color: #FFD60A;
+            border-color: rgba(255, 214, 10, 0.4);
+        }
+
+        .command-badge.discharge:hover {
+            background: linear-gradient(135deg, rgba(255, 214, 10, 0.3), rgba(255, 214, 10, 0.15));
+            transform: translateY(-2px);
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.6;
+                transform: scale(1.3);
+            }
+        }
+
+        /* Source Badge */
+        .source-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .source-badge::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .source-badge:hover::before {
+            opacity: 1;
+        }
+
+        .source-badge.aemo {
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.2), rgba(255, 149, 0, 0.1));
+            color: #ff9500;
+            border-color: rgba(255, 149, 0, 0.4);
+        }
+
+        .source-badge.aemo:hover {
+            transform: translateY(-2px);
+        }
+
+        .source-badge.ems {
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.2), rgba(0, 122, 255, 0.1));
+            color: #007aff;
+            border-color: rgba(0, 122, 255, 0.4);
+        }
+
+        .source-badge.ems:hover {
+            transform: translateY(-2px);
+        }
+
+        .source-badge.manual {
+            background: linear-gradient(135deg, rgba(88, 86, 214, 0.2), rgba(88, 86, 214, 0.1));
+            color: #5856d6;
+            border-color: rgba(88, 86, 214, 0.4);
+        }
+
+        .source-badge.manual:hover {
+            transform: translateY(-2px);
+        }
+
+        .source-badge.vpp {
+            background: linear-gradient(135deg, rgba(90, 200, 250, 0.2), rgba(90, 200, 250, 0.1));
+            color: #5ac8fa;
+            border-color: rgba(90, 200, 250, 0.4);
+        }
+
+        .source-badge.vpp:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Result Badge */
+        .result-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-badge::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .result-badge:hover::before {
+            opacity: 1;
+        }
+
+        .result-badge::after {
+            content: '✓';
+            margin-right: 2px;
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        .result-badge.failed::after {
+            content: '✕';
+        }
+
+        .result-badge.partial::after {
+            content: '◐';
+        }
+
+        .result-badge.success {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.1));
+            color: #00ff88;
+            border-color: rgba(0, 255, 136, 0.4);
+        }
+
+        .result-badge.success:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-badge.completed {
+            background: linear-gradient(135deg, rgba(52, 199, 89, 0.2), rgba(52, 199, 89, 0.1));
+            color: #34c759;
+            border-color: rgba(52, 199, 89, 0.4);
+        }
+
+        .result-badge.completed:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-badge.partial {
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.2), rgba(255, 204, 0, 0.1));
+            color: #ffcc00;
+            border-color: rgba(255, 204, 0, 0.4);
+        }
+
+        .result-badge.partial:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-badge.failed {
+            background: linear-gradient(135deg, rgba(255, 59, 48, 0.2), rgba(255, 59, 48, 0.1));
+            color: #ff3b30;
+            border-color: rgba(255, 59, 48, 0.4);
+        }
+
+        .result-badge.failed:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .toast {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.95));
+            backdrop-filter: blur(30px);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 320px;
+            transform: translateX(450px) scale(0.9);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, currentColor, transparent);
+        }
+
+        .toast.show {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            flex-shrink: 0;
+            animation: iconPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes iconPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-color: rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+        }
+
+        .toast.success .toast-icon {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+
+        .toast.error {
+            border-color: rgba(255, 59, 48, 0.3);
+            color: #ff3b30;
+        }
+
+        .toast.error .toast-icon {
+            background: linear-gradient(135deg, #ff3b30, #cc2a22);
+            color: #fff;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            opacity: 1;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 255, 136, 0.1);
+            border-top-color: #00ff88;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 24px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 500;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 255, 136, 0.4), rgba(0, 255, 136, 0.2));
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(0, 255, 136, 0.6), rgba(0, 255, 136, 0.3));
+        }
+
+        /* Selection Styling */
+        ::selection {
+            background: rgba(0, 255, 136, 0.3);
+            color: #fff;
+        }
+
+        /* Custody Timeline Styles */
+        .custody-timeline {
+            position: relative;
+            width: 100%;
+            height: 80px;
+            overflow: visible;
+        }
+
+        .timeline-bar {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: visible;
+        }
+
+        .timeline-segment {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.85), rgba(0, 200, 255, 0.85));
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: visible;
+            z-index: 10;
+        }
+
+        .timeline-segment:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.95), rgba(0, 200, 255, 0.95));
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            transform: scaleY(1.1);
+        }
+
+        .timeline-ticks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .timeline-tick {
+            position: absolute;
+            top: 25px;
+            width: 2px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .timeline-tick-label {
+            position: absolute;
+            top: 52px;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .timeline-tooltip {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid rgba(0, 255, 136, 0.5);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #fff;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 16px rgba(0, 255, 136, 0.25), 0 0 20px rgba(0, 0, 0, 0.6);
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .timeline-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid rgba(10, 10, 10, 0.98);
+        }
+
+        .timeline-segment:hover .timeline-tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: 32px;
+        }
+
+        /* Focus Outline */
+        *:focus-visible {
+            outline: 2px solid rgba(0, 255, 136, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 90px 20px 30px;
+            }
+
+            .detail-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .detail-title-section {
+                margin: 0;
+            }
+
+            .detail-title {
+                font-size: 24px;
+            }
+
+
+            .action-buttons {
+                width: 100%;
+            }
+
+            .action-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">加载运营数据中...</div>
+    </div>
+
+    <!-- Header Container -->
+    <div id="headerContainer"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Detail Header -->
+        <div class="detail-header">
+            <a href="operation-log-page.html" class="back-button">
+                <span class="back-icon">←</span>
+                <span>返回列表</span>
+            </a>
+            <div class="detail-title-section">
+                <div class="title-row">
+                    <h1 class="detail-title" id="stationName">加载中...</h1>
+                    <div class="date-selector-wrapper">
+                        <select id="dateSelector" class="date-selector">
+                            <option value="">加载中...</option>
+                        </select>
+                    </div>
+                    <div class="date-selector-wrapper">
+                        <select id="operationModeSelector" class="date-selector">
+                            <option value="all">全部操作</option>
+                            <option value="auto">智能操作</option>
+                            <option value="manual">人工操作</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Price & Operations Analysis -->
+        <div class="chart-container">
+            <h2 style="font-size: 24px; font-weight: 600; color: var(--color-text); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 28px;">📈</span>
+                调度记录
+            </h2>
+            <div id="operationsChart" style="width: 100%; height: 450px;"></div>
+
+            <!-- 智能托管 -->
+            <div style="margin-top: 30px;">
+                <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 18px;">🤖</span>
+                    智能托管
+                </h3>
+                <div id="dayTimeline" style="width: 100%; height: 80px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ========== Global Variables ==========
+        let toastCounter = 0;
+        let operationsData = [];
+        let filteredOperationsData = []; // 筛选后的数据
+        let chart = null;
+        let currentOperationFilter = 'all'; // 当前操作方式筛选：all, auto, manual
+
+        // ========== Get URL Parameters ==========
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedDate = urlParams.get('date') || new Date().toISOString().split('T')[0];
+        const selectedStation = decodeURIComponent(urlParams.get('station') || '');
+        const operationMode = urlParams.get('mode') || 'hybrid'; // manual, automated, hybrid
+
+        // ========== Mock Data Generation ==========
+        function generateMockData() {
+            const sources = ['AEMO', 'EMS', 'Manual', 'VPP'];
+            const results = ['success', 'completed'];
+            const manualOperators = ['李怡悦', '王乐康', '张三'];
+            const regions = ['NSW', 'QLD', 'VIC', 'SA', 'TAS'];
+            const maxPower = 5; // 5MW电站
+
+            // 生成真实的价格曲线（低谷和高峰明显）
+            const basePrice = 0.15;
+            const hourlyPrices = [];
+            for (let hour = 0; hour < 24; hour++) {
+                // 价格模式：凌晨低价，白天高价，晚上次高价
+                let price;
+                if (hour >= 0 && hour < 6) {
+                    // 凌晨低价时段 (0.08-0.12)
+                    price = 0.08 + Math.random() * 0.04;
+                } else if (hour >= 6 && hour < 10) {
+                    // 早上次低价 (0.12-0.16)
+                    price = 0.12 + Math.random() * 0.04;
+                } else if (hour >= 10 && hour < 16) {
+                    // 白天高价时段 (0.18-0.25)
+                    price = 0.18 + Math.random() * 0.07;
+                } else if (hour >= 16 && hour < 20) {
+                    // 傍晚次高价 (0.16-0.22)
+                    price = 0.16 + Math.random() * 0.06;
+                } else {
+                    // 晚上中等价格 (0.14-0.18)
+                    price = 0.14 + Math.random() * 0.04;
+                }
+                hourlyPrices.push(price);
+            }
+
+            // 计算价格阈值（用于决策）
+            const sortedPrices = [...hourlyPrices].sort((a, b) => a - b);
+            const lowPriceThreshold = sortedPrices[6]; // 前25%的价格
+            const highPriceThreshold = sortedPrices[18]; // 后25%的价格
+
+            const data = [];
+
+            // 设计更真实的调度模式：
+            // 1. 早上0-6点：智能托管充电（低价时段）
+            // 2. 早上6-12点：人工调度，根据实时价格决策
+            // 3. 下午12-18点：智能托管放电（高价时段）
+            // 4. 晚上18-24点：人工调度
+
+            // ========== 仿真数据：根据操作模式生成不同的操作段 ==========
+            let scheduleBlocks = [];
+
+            if (operationMode === 'manual') {
+                // 纯人工模式：1次充电、1次放电
+                scheduleBlocks = [
+                    {
+                        start: 0, end: 6, mode: 'manual', command: 'charge',
+                        reason: '低电价充电' // 价格约0.08-0.12，凌晨0-6点连续充电
+                    },
+                    {
+                        start: 13, end: 18, mode: 'manual', command: 'discharge',
+                        reason: '高电价放电' // 价格约0.18-0.25，下午13-18点连续放电
+                    }
+                ];
+            } else if (operationMode === 'automated') {
+                // 纯智能托管模式：充1次，放1次
+                scheduleBlocks = [
+                    {
+                        start: 0, end: 6, mode: 'auto', command: 'charge',
+                        reason: '低电价充电' // 价格约0.08-0.12，凌晨0-6点连续充电
+                    },
+                    {
+                        start: 13, end: 18, mode: 'auto', command: 'discharge',
+                        reason: '高电价放电' // 价格约0.18-0.25，下午13-18点连续放电
+                    }
+                ];
+            } else {
+                // 混合模式(hybrid)：2智能 + 2人工
+                scheduleBlocks = [
+                    {
+                        start: 0, end: 2, mode: 'auto', command: 'charge',
+                        reason: '低电价充电' // 价格约0.08-0.12
+                    },
+                    {
+                        start: 7, end: 8, mode: 'manual', command: 'charge',
+                        reason: '次低电价充电' // 价格约0.12-0.16
+                    },
+                    {
+                        start: 13, end: 15, mode: 'auto', command: 'discharge',
+                        reason: '高电价放电' // 价格约0.18-0.25
+                    },
+                    {
+                        start: 18, end: 19, mode: 'manual', command: 'discharge',
+                        reason: '次高电价放电' // 价格约0.16-0.22
+                    }
+                ];
+            }
+
+            scheduleBlocks.forEach(block => {
+                // 为每个小时生成一条操作记录
+                for (let hour = block.start; hour < block.end; hour++) {
+                    const minute = Math.floor(Math.random() * 60);
+                    const timeStr = `${selectedDate} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+                    // 决定操作员
+                    const isAuto = block.mode === 'auto';
+                    const operator = isAuto ? '系统自动' : manualOperators[Math.floor(Math.random() * manualOperators.length)];
+
+                    // 功率：限制在0.5-5MW范围内，充电时稍高，放电时稍低
+                    const basePower = block.command === 'charge' ? 4 : 3.5;
+                    const power = (basePower + (Math.random() - 0.5) * 1.5).toFixed(1);
+                    const clampedPower = Math.max(0.5, Math.min(maxPower, parseFloat(power))).toFixed(1);
+
+                    data.push({
+                        time: timeStr,
+                        hour: hour,
+                        command: block.command,
+                        source: sources[Math.floor(Math.random() * sources.length)],
+                        power: clampedPower,
+                        duration: Math.floor(Math.random() * 50 + 30), // 30-80分钟
+                        operator: operator,
+                        isAuto: isAuto,
+                        result: results[Math.floor(Math.random() * results.length)],
+                        region: regions[Math.floor(Math.random() * regions.length)],
+                        price: hourlyPrices[hour], // 记录当时的价格
+                        reason: block.reason // 记录决策原因
+                    });
+                }
+            });
+
+            // Sort by time
+            data.sort((a, b) => new Date(a.time) - new Date(b.time));
+
+            return data;
+        }
+
+        // ========== Initialize Page ==========
+        function initializePage() {
+            // Update page header
+            document.getElementById('stationName').textContent = selectedStation;
+
+            // Initialize date selector
+            initializeDateSelector();
+
+            // Generate mock data
+            operationsData = generateMockData();
+
+            // Render charts
+            renderChart();
+            renderDayTimeline();
+
+            // Hide loading overlay with delay for smooth transition
+            setTimeout(() => {
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay) {
+                    loadingOverlay.classList.add('hidden');
+                }
+
+                // Show success toast after loading completes
+                setTimeout(() => {
+                    showToast('success', '数据加载完成', `已加载 ${selectedStation} 在 ${selectedDate} 的运营数据`);
+                }, 300);
+            }, 800);
+        }
+
+        // ========== Initialize Date Selector ==========
+        function initializeDateSelector() {
+            const dateSelector = document.getElementById('dateSelector');
+            if (!dateSelector) return;
+
+            // Generate date options (last 30 days)
+            const dates = [];
+            const today = new Date();
+
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                dates.push(dateStr);
+            }
+
+            // Clear existing options
+            dateSelector.innerHTML = '';
+
+            // Add date options
+            dates.forEach(date => {
+                const option = document.createElement('option');
+                option.value = date;
+                option.textContent = `📅 ${date}`;
+                if (date === selectedDate) {
+                    option.selected = true;
+                }
+                dateSelector.appendChild(option);
+            });
+
+            // Listen for date changes
+            dateSelector.addEventListener('change', (e) => {
+                const newDate = e.target.value;
+                if (newDate && newDate !== selectedDate) {
+                    // Update URL and reload
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('date', newDate);
+                    window.location.search = params.toString();
+                }
+            });
+        }
+
+
+        // ========== Generate Price Data (5-minute intervals) ==========
+        function generatePriceData() {
+            const actualPrices = [];
+            const predictedPrices = [];
+            const dataPoints = 288; // 24 hours * 12 (5-minute intervals per hour)
+
+            for (let i = 0; i < dataPoints; i++) {
+                const hour = Math.floor(i / 12);
+
+                // 基于小时的价格范围
+                let basePrice;
+                if (hour >= 0 && hour < 6) {
+                    // 凌晨低价时段 (0.08-0.12)
+                    basePrice = 0.08 + Math.random() * 0.04;
+                } else if (hour >= 6 && hour < 10) {
+                    // 早上次低价 (0.12-0.16)
+                    basePrice = 0.12 + Math.random() * 0.04;
+                } else if (hour >= 10 && hour < 16) {
+                    // 白天高价时段 (0.18-0.25)
+                    basePrice = 0.18 + Math.random() * 0.07;
+                } else if (hour >= 16 && hour < 20) {
+                    // 傍晚次高价 (0.16-0.22)
+                    basePrice = 0.16 + Math.random() * 0.06;
+                } else {
+                    // 晚上中等价格 (0.14-0.18)
+                    basePrice = 0.14 + Math.random() * 0.04;
+                }
+
+                // Actual prices with small variation
+                const noise = (Math.random() - 0.5) * 0.01;
+                actualPrices.push((basePrice + noise).toFixed(3));
+
+                // Predicted prices (similar but slightly different)
+                const predictNoise = (Math.random() - 0.5) * 0.015;
+                predictedPrices.push((basePrice + predictNoise).toFixed(3));
+            }
+
+            return { actualPrices, predictedPrices };
+        }
+
+        // ========== Generate SOC Data (State of Charge) ==========
+        function generateSOCData() {
+            const socData = [];
+            const dataPoints = 288; // 24小时 * 12个5分钟间隔
+            let currentSOC = 30; // 初始SOC设为30%，这样充电后能达到较高水平
+
+            for (let i = 0; i < dataPoints; i++) {
+                const hour = Math.floor(i / 12);
+                const ops = operationsData.filter(op => op.hour === hour);
+
+                if (ops.length > 0) {
+                    // 取第一条操作记录（每小时只有一条）
+                    const op = ops[0];
+
+                    if (op.command === 'charge') {
+                        // 充电：每5分钟上升约0.7-0.95%
+                        // 目标：0-6点（6小时=72个5分钟间隔）从30%充到90%，总共上升60%
+                        // 平均每个间隔上升：60% / 72 ≈ 0.83%
+                        // 设置速率为 0.7-0.95%，让充电过程更均匀，在整个6小时内完成
+                        if (currentSOC < 90) {
+                            const chargeRate = 0.70 + Math.random() * 0.25;
+                            currentSOC = Math.min(90, currentSOC + chargeRate);
+                        }
+                    } else if (op.command === 'discharge') {
+                        // 放电：每5分钟下降约0.9-1.15%
+                        // 目标：13-18点（5小时=60个5分钟间隔）从90%放到30%，总共下降60%
+                        // 平均每个间隔下降：60% / 60 = 1%
+                        // 设置速率为 0.9-1.15%，让放电过程更均匀，在整个5小时内完成
+                        if (currentSOC > 30) {
+                            const dischargeRate = 0.90 + Math.random() * 0.25;
+                            currentSOC = Math.max(30, currentSOC - dischargeRate);
+                        }
+                    }
+                } else {
+                    // 无操作时保持稳定，仅有微小自然损耗
+                    currentSOC += (Math.random() - 0.6) * 0.15; // 轻微下降趋势
+                    currentSOC = Math.max(25, Math.min(92, currentSOC));
+                }
+
+                socData.push(currentSOC.toFixed(1));
+            }
+
+            return socData;
+        }
+
+        // ========== Render Chart ==========
+        function renderChart() {
+            const chartDom = document.getElementById('operationsChart');
+            chart = echarts.init(chartDom, 'dark');
+
+            // Generate price data and SOC data
+            const { actualPrices, predictedPrices } = generatePriceData();
+            const socData = generateSOCData();
+
+            // Generate time labels (format: HH:mm, 5-minute intervals)
+            const timeLabels = Array.from({length: 288}, (_, i) => {
+                const totalMinutes = i * 5;
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            });
+
+            // 按小时分组，同一小时只保留最后一个操作（充电和放电互斥）
+            const hourlyOperations = {};
+            operationsData.forEach(op => {
+                if (!hourlyOperations[op.hour] || new Date(op.time) > new Date(hourlyOperations[op.hour].time)) {
+                    hourlyOperations[op.hour] = op;
+                }
+            });
+
+            // 提取充电和放电的小时（区分智能和人工）
+            const autoChargeHours = [];
+            const manualChargeHours = [];
+            const autoDischargeHours = [];
+            const manualDischargeHours = [];
+
+            Object.values(hourlyOperations).forEach(op => {
+                if (op.command === 'charge') {
+                    if (op.isAuto) {
+                        autoChargeHours.push(op.hour);
+                    } else {
+                        manualChargeHours.push(op.hour);
+                    }
+                } else if (op.command === 'discharge') {
+                    if (op.isAuto) {
+                        autoDischargeHours.push(op.hour);
+                    } else {
+                        manualDischargeHours.push(op.hour);
+                    }
+                }
+            });
+
+            autoChargeHours.sort((a, b) => a - b);
+            manualChargeHours.sort((a, b) => a - b);
+            autoDischargeHours.sort((a, b) => a - b);
+            manualDischargeHours.sort((a, b) => a - b);
+
+            // 合并连续小时为时段
+            function mergeContinuousHours(hours) {
+                if (hours.length === 0) return [];
+
+                const periods = [];
+                let start = hours[0];
+                let end = hours[0];
+
+                for (let i = 1; i < hours.length; i++) {
+                    if (hours[i] === end + 1) {
+                        // 连续的小时，扩展当前时段
+                        end = hours[i];
+                    } else {
+                        // 不连续，保存当前时段，开始新时段
+                        periods.push({ start, end });
+                        start = hours[i];
+                        end = hours[i];
+                    }
+                }
+                // 保存最后一个时段
+                periods.push({ start, end });
+                return periods;
+            }
+
+            const autoChargePeriods = mergeContinuousHours(autoChargeHours);
+            const manualChargePeriods = mergeContinuousHours(manualChargeHours);
+            const autoDischargePeriods = mergeContinuousHours(autoDischargeHours);
+            const manualDischargePeriods = mergeContinuousHours(manualDischargeHours);
+
+            // 构造充电 markArea 数据（按智能/人工分别设置颜色）
+            const autoChargeMarkAreaData = [];
+            autoChargePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+                autoChargeMarkAreaData.push([
+                    { xAxis: timeLabels[startIdx], itemStyle: { color: 'rgba(0,255,136,0.18)' } }, // 智能充电：绿色
+                    { xAxis: timeLabels[endIdx] }
+                ]);
+            });
+
+            const manualChargeMarkAreaData = [];
+            manualChargePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+                manualChargeMarkAreaData.push([
+                    { xAxis: timeLabels[startIdx], itemStyle: { color: 'rgba(255,184,77,0.18)' } }, // 人工充电：橙色
+                    { xAxis: timeLabels[endIdx] }
+                ]);
+            });
+
+            // 构造放电 markArea 数据（按智能/人工分别设置颜色）
+            const autoDischargeMarkAreaData = [];
+            autoDischargePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+                autoDischargeMarkAreaData.push([
+                    { xAxis: timeLabels[startIdx], itemStyle: { color: 'rgba(255,214,10,0.18)' } }, // 智能放电：黄色
+                    { xAxis: timeLabels[endIdx] }
+                ]);
+            });
+
+            const manualDischargeMarkAreaData = [];
+            manualDischargePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+                manualDischargeMarkAreaData.push([
+                    { xAxis: timeLabels[startIdx], itemStyle: { color: 'rgba(255,107,107,0.18)' } }, // 人工放电：红色
+                    { xAxis: timeLabels[endIdx] }
+                ]);
+            });
+
+            // 构造充电 markPoint 数据（按智能/人工分别设置颜色）
+            const autoChargeMarkPointData = [];
+            autoChargePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+
+                // 智能充电开始标记
+                autoChargeMarkPointData.push({
+                    xAxis: timeLabels[startIdx],
+                    yAxis: 'max',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    symbolOffset: [0, 8],
+                    itemStyle: {
+                        color: '#00ff88', // 智能充电：绿色
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '充',
+                        fontSize: 10,
+                        fontWeight: 600,
+                        color: '#00ff88',
+                        offset: [0, -18],
+                        position: 'top'
+                    }
+                });
+
+                // 智能充电结束标记
+                autoChargeMarkPointData.push({
+                    xAxis: timeLabels[endIdx],
+                    yAxis: 'max',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    symbolOffset: [0, -8],
+                    itemStyle: {
+                        color: '#00ff88',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '■',
+                        fontSize: 8,
+                        fontWeight: 700,
+                        color: '#fff',
+                        offset: [0, 0]
+                    }
+                });
+            });
+
+            const manualChargeMarkPointData = [];
+            manualChargePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+
+                // 人工充电开始标记
+                manualChargeMarkPointData.push({
+                    xAxis: timeLabels[startIdx],
+                    yAxis: 'max',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    symbolOffset: [0, 8],
+                    itemStyle: {
+                        color: '#FFB84D', // 人工充电：橙色
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '充',
+                        fontSize: 10,
+                        fontWeight: 600,
+                        color: '#FFB84D',
+                        offset: [0, -18],
+                        position: 'top'
+                    }
+                });
+
+                // 人工充电结束标记
+                manualChargeMarkPointData.push({
+                    xAxis: timeLabels[endIdx],
+                    yAxis: 'max',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    symbolOffset: [0, -8],
+                    itemStyle: {
+                        color: '#FFB84D',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '■',
+                        fontSize: 8,
+                        fontWeight: 700,
+                        color: '#fff',
+                        offset: [0, 0]
+                    }
+                });
+            });
+
+            // 构造放电 markPoint 数据（按智能/人工分别设置颜色）
+            const autoDischargeMarkPointData = [];
+            autoDischargePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+
+                // 智能放电开始标记
+                autoDischargeMarkPointData.push({
+                    xAxis: timeLabels[startIdx],
+                    yAxis: 'min',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    symbolOffset: [0, 8],
+                    itemStyle: {
+                        color: '#FFD60A', // 智能放电：黄色
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '放',
+                        fontSize: 10,
+                        fontWeight: 600,
+                        color: '#FFD60A',
+                        offset: [0, 18],
+                        position: 'bottom'
+                    }
+                });
+
+                // 智能放电结束标记
+                autoDischargeMarkPointData.push({
+                    xAxis: timeLabels[endIdx],
+                    yAxis: 'min',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    symbolOffset: [0, -8],
+                    itemStyle: {
+                        color: '#FFD60A',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '■',
+                        fontSize: 8,
+                        fontWeight: 700,
+                        color: '#fff',
+                        offset: [0, 0]
+                    }
+                });
+            });
+
+            const manualDischargeMarkPointData = [];
+            manualDischargePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+
+                // 人工放电开始标记
+                manualDischargeMarkPointData.push({
+                    xAxis: timeLabels[startIdx],
+                    yAxis: 'min',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    symbolOffset: [0, 8],
+                    itemStyle: {
+                        color: '#FF6B6B', // 人工放电：红色
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '放',
+                        fontSize: 10,
+                        fontWeight: 600,
+                        color: '#FF6B6B',
+                        offset: [0, 18],
+                        position: 'bottom'
+                    }
+                });
+
+                // 人工放电结束标记
+                manualDischargeMarkPointData.push({
+                    xAxis: timeLabels[endIdx],
+                    yAxis: 'min',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    symbolOffset: [0, -8],
+                    itemStyle: {
+                        color: '#FF6B6B',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '■',
+                        fontSize: 8,
+                        fontWeight: 700,
+                        color: '#fff',
+                        offset: [0, 0]
+                    }
+                });
+            });
+
+            // 识别调度模式的连续时段
+            const sortedOps = Object.values(hourlyOperations).sort((a, b) => a.hour - b.hour);
+            const modePeriods = [];
+
+            for (let i = 0; i < sortedOps.length; i++) {
+                const curr = sortedOps[i];
+                const prev = i > 0 ? sortedOps[i - 1] : null;
+
+                // 检测时段开始：第一个操作、模式改变、或时间不连续（有间隔）
+                if (!prev || curr.isAuto !== prev.isAuto || curr.hour !== prev.hour + 1) {
+                    // 找到这个时段的结束
+                    let endHour = curr.hour;
+                    for (let j = i + 1; j < sortedOps.length; j++) {
+                        if (sortedOps[j].isAuto === curr.isAuto && sortedOps[j].hour === endHour + 1) {
+                            endHour = sortedOps[j].hour;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    modePeriods.push({
+                        start: curr.hour,
+                        end: endHour,
+                        isAuto: curr.isAuto
+                    });
+                }
+            }
+
+            // 构造人工/智能标记 markPoint 数据（时段开始和结束，跟随SOC曲线）
+            const autoMarkPointData = [];
+            modePeriods.forEach(period => {
+                const startIdx = period.start * 12;
+                const endIdx = Math.min((period.end + 1) * 12, 287);
+
+                // 开始标记 - 跟随SOC曲线
+                autoMarkPointData.push({
+                    xAxis: timeLabels[startIdx],
+                    yAxis: parseFloat(socData[startIdx]), // 跟随SOC数据
+                    symbol: 'circle',
+                    symbolSize: 18,
+                    symbolOffset: [0, 8],
+                    itemStyle: {
+                        color: period.isAuto ? 'rgba(138, 43, 226, 0.9)' : 'rgba(255, 140, 0, 0.9)',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: period.isAuto ? '智' : '人',
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: '#fff',
+                        offset: [0, 0]
+                    }
+                });
+
+                // 停止标记 - 在时段结束位置显示，跟随SOC曲线
+                autoMarkPointData.push({
+                    xAxis: timeLabels[endIdx],
+                    yAxis: parseFloat(socData[endIdx]), // 跟随SOC数据
+                    symbol: 'circle',
+                    symbolSize: 18,
+                    symbolOffset: [0, -8],
+                    itemStyle: {
+                        color: period.isAuto ? 'rgba(138, 43, 226, 0.9)' : 'rgba(255, 140, 0, 0.9)',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '■',
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: '#fff',
+                        offset: [0, 0]
+                    }
+                });
+            });
+
+            // ========== 动态生成 legend 数据 ==========
+            const legendData = [
+                { name: '实际价格', icon: 'rect', itemStyle: { color: 'rgba(0,255,136,0.7)' } },
+                { name: '预测价格', icon: 'rect', itemStyle: { color: 'rgba(0,122,255,0.6)' } },
+                { name: 'SOC', icon: 'rect', itemStyle: { color: 'rgba(138,43,226,0.8)' } }
+            ];
+
+            // 根据操作模式添加操作方式图例
+            if (operationMode === 'manual') {
+                // 纯人工模式：显示人工充电和人工放电
+                legendData.push(
+                    { name: '人工充电', icon: 'rect', itemStyle: { color: '#FFB84D' } }, // 橙色
+                    { name: '人工放电', icon: 'rect', itemStyle: { color: '#FF6B6B' } }  // 红色
+                );
+            } else if (operationMode === 'automated') {
+                // 纯智能模式：显示智能充电和智能放电
+                legendData.push(
+                    { name: '智能充电', icon: 'rect', itemStyle: { color: '#00ff88' } }, // 绿色
+                    { name: '智能放电', icon: 'rect', itemStyle: { color: '#FFD60A' } }  // 黄色
+                );
+            } else {
+                // 混合模式：分别显示智能和人工的充放电(4行)
+                legendData.push(
+                    { name: '智能充电', icon: 'rect', itemStyle: { color: '#00ff88' } }, // 绿色
+                    { name: '智能放电', icon: 'rect', itemStyle: { color: '#FFD60A' } }, // 黄色
+                    { name: '人工充电', icon: 'rect', itemStyle: { color: '#FFB84D' } }, // 橙色
+                    { name: '人工放电', icon: 'rect', itemStyle: { color: '#FF6B6B' } }  // 红色
+                );
+            }
+
+            legendData.push({ name: '调度类型', icon: 'circle', itemStyle: { color: 'rgba(138, 43, 226, 0.9)' } });
+
+            const option = {
+                backgroundColor: 'transparent',
+                legend: {
+                    data: legendData,
+                    top: 10,
+                    right: 20,
+                    orient: 'horizontal',
+                    itemGap: 20,
+                    textStyle: {
+                        color: 'rgba(255,255,255,0.7)',
+                        fontSize: 12,
+                        fontWeight: 500
+                    },
+                    itemWidth: 28,
+                    itemHeight: 4,
+                    inactiveColor: 'rgba(255,255,255,0.2)',
+                    selectedMode: true
+                },
+                grid: {
+                    left: 50,
+                    right: 60,
+                    top: 50,
+                    bottom: 35,
+                    containLabel: false
+                },
+                xAxis: {
+                    type: 'category',
+                    data: timeLabels,
+                    boundaryGap: false,
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: {
+                        show: true,
+                        fontSize: 10,
+                        color: 'rgba(255,255,255,0.5)',
+                        interval: function(idx) { return idx % 12 === 0; }, // 每小时显示一次
+                        formatter: function(v) { return v.substring(0, 5); } // 只显示 HH:mm
+                    },
+                    splitLine: { show: false }
+                },
+                yAxis: [
+                    {
+                        // 左侧Y轴 - 价格
+                        type: 'value',
+                        position: 'left',
+                        axisLine: { show: false },
+                        axisTick: { show: false },
+                        axisLabel: {
+                            show: true,
+                            fontSize: 10,
+                            color: 'rgba(255,255,255,0.5)',
+                            formatter: '${value}'
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        splitNumber: 4
+                    },
+                    {
+                        // 右侧Y轴 - SOC
+                        type: 'value',
+                        position: 'right',
+                        min: 0,
+                        max: 100,
+                        axisLine: { show: false },
+                        axisTick: { show: false },
+                        axisLabel: {
+                            show: true,
+                            fontSize: 10,
+                            color: 'rgba(138, 43, 226, 0.7)',
+                            formatter: '{value}%'
+                        },
+                        splitLine: { show: false }
+                    }
+                ],
+                series: [
+                    {
+                        // 实际价格（实线）
+                        name: '实际价格',
+                        type: 'line',
+                        smooth: true,
+                        showSymbol: false,
+                        data: actualPrices,
+                        yAxisIndex: 0,
+                        lineStyle: {
+                            color: 'rgba(0,255,136,0.7)',
+                            width: 2
+                        }
+                    },
+                    {
+                        // 预测价格（虚线）
+                        name: '预测价格',
+                        type: 'line',
+                        smooth: true,
+                        showSymbol: false,
+                        data: predictedPrices,
+                        yAxisIndex: 0,
+                        lineStyle: {
+                            color: 'rgba(0,122,255,0.6)',
+                            width: 2,
+                            type: 'dashed'
+                        }
+                    },
+                    {
+                        // SOC (State of Charge) - 右侧Y轴
+                        name: 'SOC',
+                        type: 'line',
+                        smooth: true,
+                        showSymbol: false,
+                        data: socData,
+                        yAxisIndex: 1,
+                        lineStyle: {
+                            color: 'rgba(138, 43, 226, 0.8)',
+                            width: 2
+                        }
+                    },
+                    {
+                        // 智能充电操作标记（独立系列，可通过图例控制）
+                        name: '智能充电',
+                        type: 'line',
+                        data: [],  // 空数据，不显示线条
+                        yAxisIndex: 0,
+                        showSymbol: false,
+                        legendHoverLink: false,
+                        silent: true,
+                        animation: false,
+                        lineStyle: {
+                            color: '#00ff88',  // 智能充电：绿色
+                            width: 2
+                        },
+                        markArea: {
+                            silent: true,
+                            data: autoChargeMarkAreaData
+                        },
+                        markPoint: {
+                            silent: true,
+                            data: autoChargeMarkPointData,
+                            animation: true
+                        }
+                    },
+                    {
+                        // 智能放电操作标记（独立系列，可通过图例控制）
+                        name: '智能放电',
+                        type: 'line',
+                        data: [],  // 空数据，不显示线条
+                        yAxisIndex: 0,
+                        showSymbol: false,
+                        legendHoverLink: false,
+                        silent: true,
+                        animation: false,
+                        lineStyle: {
+                            color: '#FFD60A',  // 智能放电：黄色
+                            width: 2
+                        },
+                        markArea: {
+                            silent: true,
+                            data: autoDischargeMarkAreaData
+                        },
+                        markPoint: {
+                            silent: true,
+                            data: autoDischargeMarkPointData,
+                            animation: true
+                        }
+                    },
+                    {
+                        // 人工充电操作标记（独立系列，可通过图例控制）
+                        name: '人工充电',
+                        type: 'line',
+                        data: [],  // 空数据，不显示线条
+                        yAxisIndex: 0,
+                        showSymbol: false,
+                        legendHoverLink: false,
+                        silent: true,
+                        animation: false,
+                        lineStyle: {
+                            color: '#FFB84D',  // 人工充电：橙色
+                            width: 2
+                        },
+                        markArea: {
+                            silent: true,
+                            data: manualChargeMarkAreaData
+                        },
+                        markPoint: {
+                            silent: true,
+                            data: manualChargeMarkPointData,
+                            animation: true
+                        }
+                    },
+                    {
+                        // 人工放电操作标记（独立系列，可通过图例控制）
+                        name: '人工放电',
+                        type: 'line',
+                        data: [],  // 空数据，不显示线条
+                        yAxisIndex: 0,
+                        showSymbol: false,
+                        legendHoverLink: false,
+                        silent: true,
+                        animation: false,
+                        lineStyle: {
+                            color: '#FF6B6B',  // 人工放电：红色
+                            width: 2
+                        },
+                        markArea: {
+                            silent: true,
+                            data: manualDischargeMarkAreaData
+                        },
+                        markPoint: {
+                            silent: true,
+                            data: manualDischargeMarkPointData,
+                            animation: true
+                        }
+                    },
+                    {
+                        // 人工/智能标记（显示操作来源）
+                        name: '调度类型',
+                        type: 'line',
+                        data: [],  // 空数据，不显示线条
+                        yAxisIndex: 1,  // 使用右侧 SOC 轴，让标记跟随 SOC 曲线
+                        showSymbol: false,
+                        legendHoverLink: false,
+                        silent: false,
+                        animation: true,
+                        lineStyle: {
+                            color: 'transparent',
+                            width: 0
+                        },
+                        markPoint: {
+                            silent: false,
+                            data: autoMarkPointData,
+                            animation: true
+                        }
+                    }
+                ],
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                    borderColor: 'rgba(0, 255, 136, 0.3)',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    padding: [10, 14],
+                    textStyle: {
+                        color: '#fff',
+                        fontSize: 12,
+                        fontWeight: 500
+                    },
+                    extraCssText: 'backdrop-filter: blur(20px);',
+                    axisPointer: {
+                        type: 'line',
+                        lineStyle: {
+                            color: 'rgba(0, 255, 136, 0.3)',
+                            width: 1,
+                            type: 'dashed'
+                        }
+                    },
+                    formatter: function(params) {
+                        if (!params || params.length === 0) return '';
+                        const timeLabel = params[0].axisValue;
+                        let result = `<div style="font-weight: 600; color: #00ff88; margin-bottom: 6px;">时间: ${timeLabel}</div>`;
+
+                        params.forEach(item => {
+                            if (item.seriesName === '实际价格') {
+                                result += `<div style="margin-top: 4px; color: rgba(255,255,255,0.8);">
+                                    实际价格: <span style="color: #00ff88; font-weight: 600;">$${item.value}</span>
+                                </div>`;
+                            } else if (item.seriesName === '预测价格') {
+                                result += `<div style="margin-top: 4px; color: rgba(255,255,255,0.8);">
+                                    预测价格: <span style="color: #007aff; font-weight: 600;">$${item.value}</span>
+                                </div>`;
+                            } else if (item.seriesName === 'SOC') {
+                                result += `<div style="margin-top: 4px; color: rgba(255,255,255,0.8);">
+                                    SOC: <span style="color: rgba(138, 43, 226, 0.9); font-weight: 600;">${item.value}%</span>
+                                </div>`;
+                            }
+                        });
+
+                        // 显示该时间点对应小时的操作
+                        const timeIdx = timeLabels.indexOf(timeLabel);
+                        if (timeIdx >= 0) {
+                            const currentHour = Math.floor(timeIdx / 12); // 转换为小时
+                            const ops = operationsData.filter(op => op.hour === currentHour);
+                            if (ops.length > 0) {
+                                result += `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);">`;
+                                ops.forEach(op => {
+                                    const color = op.command === 'charge' ? '#00ff88' : '#FFD60A';
+                                    const text = op.command === 'charge' ? '充电' : '放电';
+                                    result += `<div style="margin-top: 3px; color: ${color};">● ${text} (${op.power}MW)</div>`;
+                                });
+                                result += `</div>`;
+                            }
+                        }
+
+                        return result;
+                    }
+                }
+            };
+
+            chart.setOption(option, true);
+
+            // Responsive resize
+            window.addEventListener('resize', () => {
+                chart && chart.resize();
+            });
+        }
+
+        // ========== Render 24 Hour Timeline ==========
+        function renderDayTimeline() {
+            const timelineDom = document.getElementById('dayTimeline');
+            const timelineChart = echarts.init(timelineDom, 'dark');
+
+            // 识别智能托管时段
+            const sortedOps = operationsData.filter(op => op.isAuto).sort((a, b) => a.hour - b.hour);
+            const custodyPeriods = [];
+
+            // 在 automated 模式下，智能托管显示为全天开启
+            if (operationMode === 'automated' && sortedOps.length > 0) {
+                // 全天开启：0:00 到 24:00
+                custodyPeriods.push({
+                    opStart: 0,
+                    opEnd: 24,
+                    custodyStart: 0,
+                    custodyEnd: 24
+                });
+            } else if (sortedOps.length > 0) {
+                // 其他模式（manual, hybrid）：根据实际智能操作时段显示
+                let start = sortedOps[0].hour;
+                let end = sortedOps[0].hour;
+
+                for (let i = 1; i < sortedOps.length; i++) {
+                    if (sortedOps[i].hour === end + 1) {
+                        // 连续时段
+                        end = sortedOps[i].hour;
+                    } else {
+                        // 不连续，保存当前时段（操作时段）
+                        custodyPeriods.push({
+                            opStart: start,
+                            opEnd: end + 1,
+                            // 托管开启提前20-40分钟，关闭延后10-20分钟
+                            custodyStart: start - 0.5,  // 提前30分钟左右
+                            custodyEnd: end + 1 + 0.25  // 延后15分钟左右
+                        });
+                        start = sortedOps[i].hour;
+                        end = sortedOps[i].hour;
+                    }
+                }
+                // 保存最后一个时段
+                custodyPeriods.push({
+                    opStart: start,
+                    opEnd: end + 1,
+                    custodyStart: start - 0.5,
+                    custodyEnd: end + 1 + 0.25
+                });
+            }
+
+            // 生成24小时每15分钟的时间点（96个点）
+            const timePoints = [];
+            for (let h = 0; h < 24; h++) {
+                for (let m = 0; m < 60; m += 15) {
+                    timePoints.push({
+                        hour: h + m/60,
+                        label: `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+                    });
+                }
+            }
+
+            // 生成状态数据（0=关闭，1=开启）
+            const custodyStatus = timePoints.map(tp => {
+                return custodyPeriods.some(p => {
+                    // 处理跨越午夜的情况
+                    if (p.custodyStart < 0) {
+                        // 跨越午夜：比如 23:30(-0.5) 到 02:15(2.25)
+                        // 判断是否在23:30-24:00或0:00-02:15之间
+                        return (tp.hour >= (p.custodyStart + 24) || tp.hour < p.custodyEnd);
+                    } else {
+                        // 正常情况
+                        return tp.hour >= p.custodyStart && tp.hour < p.custodyEnd;
+                    }
+                }) ? 1 : 0;
+            });
+
+            // 构造托管时段的markArea数据（显示托管时段）- 精确到分钟
+            const custodyMarkArea = [];
+            custodyPeriods.forEach(period => {
+                // 计算开始时间（精确到分钟）
+                let startTime = period.custodyStart;
+                if (startTime < 0) startTime += 24;
+                const startHour = Math.floor(startTime);
+                const startMinute = Math.round((startTime - startHour) * 60);
+                const startTimeStr = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+
+                // 计算结束时间（精确到分钟）
+                let endTime = period.custodyEnd;
+                // 如果是24:00，显示为23:45（时间轴的最后一个点）
+                if (endTime >= 24) endTime = 23.75; // 23:45
+                const endHour = Math.floor(endTime);
+                const endMinute = Math.round((endTime - endHour) * 60);
+                const endTimeStr = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+                if (period.custodyStart < 0) {
+                    // 跨越午夜，分成两段
+                    custodyMarkArea.push([
+                        { xAxis: startTimeStr },
+                        { xAxis: '23:45' }
+                    ]);
+                    custodyMarkArea.push([
+                        { xAxis: '00:00' },
+                        { xAxis: endTimeStr }
+                    ]);
+                } else {
+                    // 正常情况
+                    custodyMarkArea.push([
+                        { xAxis: startTimeStr },
+                        { xAxis: endTimeStr }
+                    ]);
+                }
+            });
+
+            // 构造开启/关闭标记点（使用实际的托管时间，支持小数）
+            const custodyMarkPoint = [];
+            custodyPeriods.forEach(period => {
+                // 计算开启时间（处理负数情况）
+                let startTime = period.custodyStart;
+                if (startTime < 0) startTime += 24; // 跨越午夜，转换为前一天的时间
+                const startHour = Math.floor(startTime);
+                const startMinute = Math.round((startTime - startHour) * 60);
+                const startTimeStr = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+
+                // 计算关闭时间
+                let endTime = period.custodyEnd;
+                // 如果是24:00，显示为23:59
+                if (endTime >= 24) endTime = 23.98333; // 23:59
+                const endHour = Math.floor(endTime);
+                const endMinute = Math.round((endTime - endHour) * 60);
+                const endTimeStr = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+                // 开启标记
+                custodyMarkPoint.push({
+                    xAxis: startTimeStr,
+                    yAxis: 0.5,
+                    symbol: 'circle',
+                    symbolSize: 20,
+                    itemStyle: {
+                        color: 'rgba(0, 255, 136, 0.9)',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '开',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: '#fff',
+                        offset: [0, 0]
+                    }
+                });
+
+                // 关闭标记 - 在时段结束位置显示
+                custodyMarkPoint.push({
+                    xAxis: endTimeStr,
+                    yAxis: 0.5,
+                    symbol: 'circle',
+                    symbolSize: 20,
+                    itemStyle: {
+                        color: 'rgba(255, 69, 58, 0.9)',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '关',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: '#fff',
+                        offset: [0, 0]
+                    }
+                });
+            });
+
+            const option = {
+                backgroundColor: 'transparent',
+                grid: {
+                    left: 50,
+                    right: 50,
+                    top: 20,
+                    bottom: 30,
+                    containLabel: true,
+                    backgroundColor: 'rgba(40, 40, 40, 0.3)',  // 深色背景，让灰色矩形更明显
+                    borderColor: 'rgba(80, 80, 80, 0.4)',
+                    borderWidth: 1
+                },
+                xAxis: {
+                    type: 'category',
+                    data: timePoints.map(tp => tp.label),
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: 'rgba(160,160,160,0.6)',
+                        fontSize: 11,
+                        fontWeight: 500,
+                        interval: function(index) {
+                            // 只显示整点标签
+                            return index % 4 === 0;
+                        }
+                    },
+                    splitLine: {
+                        show: false
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    show: false,
+                    min: 0,
+                    max: 1
+                },
+                series: [
+                    {
+                        // 灰色背景（完整矩形）
+                        name: '托管基准',
+                        type: 'line',
+                        data: [],
+                        showSymbol: false,
+                        lineStyle: { width: 0 },
+                        silent: true,
+                        markArea: {
+                            silent: true,
+                            itemStyle: {
+                                color: 'rgba(120, 120, 120, 0.5)',  // 灰色背景
+                                borderRadius: 4
+                            },
+                            data: [[
+                                { xAxis: '00:00' },
+                                { xAxis: '23:45' }
+                            ]],
+                            z: 1
+                        }
+                    },
+                    {
+                        // 绿色开启时段（覆盖在灰色上）
+                        name: '智能托管状态',
+                        type: 'line',
+                        data: custodyStatus,  // 添加数据用于tooltip
+                        showSymbol: false,
+                        lineStyle: {
+                            width: 0,
+                            color: 'transparent'  // 透明线条
+                        },
+                        markArea: {
+                            silent: true,
+                            itemStyle: {
+                                color: 'rgba(0, 255, 136, 0.7)',  // 亮绿色
+                                borderRadius: 4
+                            },
+                            data: custodyMarkArea,
+                            z: 2
+                        },
+                        markPoint: {
+                            silent: false,
+                            data: custodyMarkPoint,
+                            animation: true,
+                            z: 3
+                        }
+                    }
+                ],
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                    borderColor: 'rgba(120, 120, 120, 0.5)',
+                    borderWidth: 1,
+                    textStyle: { color: '#fff', fontSize: 12 },
+                    formatter: (params) => {
+                        // 找到有数据的series（智能托管状态）
+                        const dataParam = params.find(p => p.seriesName === '智能托管状态');
+                        if (!dataParam) return '';
+
+                        const time = dataParam.name;
+                        const status = dataParam.value;
+                        const statusText = status === 1
+                            ? '<span style="color: #00ff88;">🟢 智能托管开启</span>'
+                            : '<span style="color: #888;">⚫ 智能托管关闭</span>';
+                        return `<strong>${time}</strong><br/>${statusText}`;
+                    }
+                }
+            };
+
+            timelineChart.setOption(option);
+
+            // Responsive resize
+            window.addEventListener('resize', () => {
+                timelineChart && timelineChart.resize();
+            });
+        }
+
+
+
+        // ========== Export Data ==========
+        function exportData() {
+            if (operationsData.length === 0) {
+                showToast('error', '导出失败', '没有可导出的数据');
+                return;
+            }
+
+            const headers = ['时间', '指令类型', '来源', '功率(MW)', '持续时间(min)', '操作员', '结果'];
+            const rows = operationsData.map(op => [
+                op.time,
+                op.command === 'charge' ? '充电' : '放电',
+                op.source,
+                op.power,
+                op.duration,
+                op.operator,
+                op.result
+            ]);
+
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(item => `"${item}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${selectedStation}_${selectedDate}_operations.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast('success', '导出成功', `已导出 ${operationsData.length} 条操作记录`);
+        }
+
+        // ========== Toast Notifications ==========
+        function showToast(type, title, message, duration = 3000) {
+            toastCounter++;
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.id = `toast-${toastCounter}`;
+            toast.innerHTML = `
+                <div class="toast-icon">${type === 'success' ? '✓' : '✕'}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => hideToast(toast.id), duration);
+        }
+
+        function hideToast(id) {
+            const toast = document.getElementById(id);
+            if (toast) {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }
+
+        // ========== Initialize on DOM Ready ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize i18n
+            if (window.I18nManager) {
+                window.i18n = new I18nManager();
+                const savedLang = localStorage.getItem('app_language') || 'zh';
+                window.i18n.setLanguage(savedLang);
+            }
+
+            // Initialize HeaderNav
+            const headerNav = new HeaderNav({
+                currentPage: 'operationLog',
+                containerId: 'headerContainer'
+            });
+
+            // Initialize page content
+            initializePage();
+        });
+    </script>
+</body>
+</html>

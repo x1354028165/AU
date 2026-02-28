@@ -1,0 +1,357 @@
+/* 通用抽屉组件样式 */
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(3px);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.drawer-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.drawer-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 480px;
+    height: 100vh;
+    background: rgba(15, 15, 15, 0.98);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.drawer-overlay.show .drawer-container {
+    transform: translateX(0);
+}
+
+/* 抽屉头部 */
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.drawer-back {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: color 0.3s;
+    user-select: none;
+}
+
+.drawer-back:hover {
+    color: #fff;
+}
+
+.drawer-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.drawer-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: rgba(255, 255, 255, 0.6);
+    user-select: none;
+}
+
+.drawer-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* 抽屉标签页 */
+.drawer-tabs {
+    display: flex;
+    padding: 0 24px;
+    gap: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.drawer-tab {
+    padding: 16px 0;
+    position: relative;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: color 0.3s;
+    font-size: 14px;
+    font-weight: 500;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.drawer-tab:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.drawer-tab.active {
+    color: #fff;
+}
+
+.drawer-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(135deg, #00ff88, #00aaff);
+    border-radius: 2px;
+}
+
+/* 抽屉内容 */
+.drawer-content {
+    padding: 24px;
+    padding-bottom: 24px;
+    overflow-y: auto;
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.drawer-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.drawer-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.drawer-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.drawer-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 详情信息样式 */
+.detail-section {
+    margin-bottom: 32px;
+    flex-shrink: 0;
+}
+
+.detail-section:last-child {
+    margin-bottom: 0;
+}
+
+.detail-section.flex-fill {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    min-height: 0;
+}
+
+.detail-section.flex-fill .detail-section-title {
+    flex-shrink: 0;
+}
+
+.scrollable-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+    min-height: 600px;
+    height: 100%;
+}
+
+.detail-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* 状态标签样式 */
+.status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-tag.success {
+    background: rgba(52, 199, 89, 0.15);
+    color: #34c759;
+    border: 1px solid rgba(52, 199, 89, 0.25);
+}
+
+.status-tag.warning {
+    background: rgba(255, 149, 0, 0.15);
+    color: #ff9500;
+    border: 1px solid rgba(255, 149, 0, 0.25);
+}
+
+.status-tag.danger {
+    background: rgba(255, 59, 48, 0.15);
+    color: #ff3b30;
+    border: 1px solid rgba(255, 59, 48, 0.25);
+}
+
+.status-tag.info {
+    background: rgba(0, 122, 255, 0.15);
+    color: #007aff;
+    border: 1px solid rgba(0, 122, 255, 0.25);
+}
+
+/* 命令标签样式 */
+.command-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.command-tag.charge {
+    background: rgba(52, 199, 89, 0.15);
+    color: #34c759;
+    border: 1px solid rgba(52, 199, 89, 0.25);
+}
+
+.command-tag.discharge {
+    background: rgba(255, 149, 0, 0.15);
+    color: #ff9500;
+    border: 1px solid rgba(255, 149, 0, 0.25);
+}
+
+.command-tag.stop-charge {
+    background: rgba(255, 59, 48, 0.15);
+    color: #ff3b30;
+    border: 1px solid rgba(255, 59, 48, 0.25);
+}
+
+.command-tag.stop-discharge {
+    background: rgba(0, 122, 255, 0.15);
+    color: #007aff;
+    border: 1px solid rgba(0, 122, 255, 0.25);
+}
+
+/* 统计卡片样式 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #00ff88;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+/* 响应式样式 */
+@media (max-width: 1024px) {
+    .drawer-container {
+        width: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .drawer-container {
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    .drawer-content {
+        padding: 16px;
+    }
+    
+    .drawer-tabs {
+        padding: 0 16px;
+        gap: 24px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}

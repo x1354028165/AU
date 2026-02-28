@@ -1,0 +1,183 @@
+/**
+ * Standard Layout CSS
+ * Unified layout and spacing standards for all pages
+ */
+
+/* Container Standards */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 24px 40px; /* Standard padding for header spacing */
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Page Header Standards */
+.page-header {
+    margin-bottom: 20px; /* Standard spacing from header to content */
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 36px 0; /* Standard 36px spacing from title to search/controls */
+}
+
+/* Tab/Control Section Standards */
+.page-view-tabs,
+.control-panel,
+.time-selector-group {
+    margin-bottom: 16px; /* Reduced spacing from controls to content */
+}
+
+/* Search/Filter Section Standards */
+.search-filter-section {
+    margin-bottom: 16px; /* Reduced spacing from filters to content */
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Card/Content Section Standards */
+.stats-grid,
+.charts-section,
+.cards-grid {
+    margin-bottom: 24px; /* Reduced spacing between major sections */
+}
+
+/* Table Section Standards */
+.table-section {
+    margin-bottom: 24px;
+}
+
+.table-container {
+    padding: 20px; /* Reduced padding inside cards/containers */
+}
+
+/* Standard Responsive Breakpoints */
+@media (max-width: 1024px) {
+    .container {
+        padding: 72px 20px 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 64px 16px 40px;
+    }
+    
+    .page-title {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 60px 12px 40px;
+    }
+    
+    .page-title {
+        font-size: 20px;
+    }
+}
+
+/* Tab Styles Standards */
+.page-tab,
+.time-tab,
+.filter-tab {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.page-tab.active,
+.time-tab.active,
+.filter-tab.active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
+
+.page-tab:hover:not(.active),
+.time-tab:hover:not(.active),
+.filter-tab:hover:not(.active) {
+    background: var(--color-bg-card);
+    color: var(--color-text);
+    border-color: var(--color-text-secondary);
+}
+
+/* Button Standards */
+.btn,
+.filter-btn,
+.action-btn {
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn.primary,
+.filter-btn.primary {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.btn.secondary,
+.filter-btn.secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+/* Input Standards */
+.search-input,
+.filter-input,
+.form-input {
+    height: 40px;
+    padding: 0 16px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text);
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus,
+.filter-input:focus,
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--color-bg-card);
+}
+
+/* Select Standards */
+.filter-select,
+.form-select {
+    height: 40px;
+    padding: 0 32px 0 16px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text);
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg width="14" height="8" viewBox="0 0 14 8" xmlns="http://www.w3.org/2000/svg"%3e%3cpath d="M1 1l6 6 6-6" stroke="%23999" stroke-width="1.5" fill="none"/%3e%3c/svg%3e');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}

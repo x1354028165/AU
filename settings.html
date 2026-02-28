@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - U Energy</title>
+    <link rel="stylesheet" href="components/common-styles.css">
+    <link rel="stylesheet" href="components/i18n.css">
+    <link rel="stylesheet" href="components/notification-center.css">
+    <script src="components/i18n.js"></script>
+    <script src="components/simple-message-icon.js"></script>
+    <link rel="stylesheet" href="components/header-nav.css">
+    <link rel="stylesheet" href="components/standard-layout.css">
+    <link rel="stylesheet" href="components/user-dropdown.css">
+    <script src="components/header-nav.js"></script>
+    <script src="components/user-menu-link.js"></script>
+    <script src="components/user-dropdown-simple-new.js"></script>
+    <style>
+        /* 基础样式 - 默认暗色主题 */
+        :root {
+            --color-bg: #000;
+            --color-bg-card: rgba(255, 255, 255, 0.03);
+            --color-text: rgba(255, 255, 255, 0.9);
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-primary: #00ff88;
+            --color-accent: #1e7fff;
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-shadow: 0 2px 8px rgba(0,0,0,0.32);
+            --radius: 12px;
+        }
+
+        /* 强制覆盖可能的外部样式 */
+        html, body {
+            background: #000 !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        /* 确保主要内容区域显示正常 */
+        .container {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        /* 确保header显示在最上层 */
+        #headerContainer {
+            position: relative;
+            z-index: 1000;
+        }
+
+        /* 确保所有设置相关元素都能正常显示 */
+        .settings-section,
+        .settings-group,
+        .settings-item,
+        .settings-item-label,
+        .settings-item-description,
+        .settings-item-control,
+        .settings-input,
+        .settings-unit,
+        .settings-range,
+        .settings-range-separator {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* 覆盖可能的外部样式干扰 */
+        .settings-section * {
+            color: inherit !important;
+        }
+
+        .settings-section h2 {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .settings-group h3 {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        html, body {
+            background: #000 !important;
+            width: 100vw;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* 强制应用正确的主题 */
+        body {
+            background: #000 !important;
+        }
+        
+        .container {
+            background: transparent !important;
+            width: 100%;
+            max-width: 95%;
+            min-height: 100vh;
+            margin: 0 auto;
+            box-sizing: border-box;
+            padding: 100px 24px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            margin-bottom: 32px;
+            padding-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+            letter-spacing: -1px;
+            background: none;
+            -webkit-text-fill-color: unset;
+        }
+
+        /* 设置区域 */
+        .settings-section {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.32);
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .settings-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9) !important;
+            margin: 0 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: block !important;
+        }
+
+        .settings-group {
+            margin-bottom: 24px;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .settings-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-group h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9) !important;
+            margin: 0 0 16px 0;
+            display: block !important;
+        }
+
+        .settings-item {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02) !important;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            visibility: visible !important;
+        }
+
+        .settings-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-item-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9) !important;
+            margin-bottom: 4px;
+            display: block !important;
+        }
+
+        .settings-item-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6) !important;
+            display: block !important;
+        }
+
+        .settings-item-control {
+            display: flex !important;
+            align-items: center;
+            gap: 12px;
+            visibility: visible !important;
+        }
+
+        /* 输入框样式 */
+        .settings-input {
+            width: 100px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-size: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: inline-block !important;
+        }
+
+        .settings-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .settings-input-wide {
+            width: 150px;
+        }
+
+        .settings-input-range {
+            width: 60px;
+        }
+
+        /* 单位标签 */
+        .settings-unit {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6) !important;
+            margin-left: 8px;
+            display: inline-block !important;
+        }
+
+        /* 范围显示 */
+        .settings-range {
+            display: flex !important;
+            align-items: center;
+            gap: 8px;
+            visibility: visible !important;
+        }
+
+        .settings-range-separator {
+            color: rgba(255, 255, 255, 0.6) !important;
+            font-size: 14px;
+            display: inline-block !important;
+        }
+
+        /* 按钮样式 - 采用推送策略标准样式 */
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+
+        .btn-primary:hover {
+            background: #00e67a;
+            border-color: #00e67a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 编辑模式样式 */
+        .edit-mode .settings-input {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .edit-mode .settings-item {
+            border-color: rgba(0, 255, 136, 0.2);
+            background: rgba(0, 255, 136, 0.02);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 80px 16px 24px;
+            }
+            
+            .settings-section {
+                padding: 24px;
+            }
+            
+            .settings-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .settings-item-control {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .settings-input {
+                width: 80px;
+            }
+        }
+
+        /* 固定底部保存按钮 - 与推送策略保持一致 */
+        .fixed-bottom-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px; /* 向左移动20像素 (从50px改为30px) */
+            z-index: 1000;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .fixed-bottom-actions .btn {
+            padding: 12px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            min-width: 100px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* 为主容器添加底部内边距，避免内容被固定底栏遮挡 */
+        .edit-mode .container {
+            padding-bottom: 100px;
+        }
+
+        /* 编辑切换按钮 */
+        .edit-button {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+
+        .edit-button:hover {
+            background: #00e67a;
+            border-color: #00e67a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .edit-button.editing {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+            color: #fff;
+        }
+
+        .edit-button.editing:hover {
+            background: #ff5252;
+            border-color: #ff5252;
+        }
+
+        /* 价格预测滑块样式 */
+        .predict-slider-container {
+            margin-top: 32px;
+        }
+
+        .predict-slider-track {
+            position: relative;
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-bottom: 40px;
+            cursor: pointer;
+        }
+
+        .predict-slider-fill {
+            position: absolute;
+            height: 100%;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .predict-slider-fill.accurate {
+            background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+            z-index: 3;
+        }
+
+        .predict-slider-fill.moderate {
+            background: linear-gradient(90deg, #ffd93d 0%, #ffb700 100%);
+            z-index: 2;
+        }
+
+        .predict-slider-fill.large {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff4757 100%);
+            z-index: 1;
+        }
+
+        /* 滑块手柄 */
+        .predict-slider-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: #00ff88;
+            border: 3px solid rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            cursor: grab;
+            z-index: 10;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .predict-slider-handle.large-handle {
+            background: #ff6b6b;
+        }
+
+        .predict-slider-handle:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .predict-slider-handle:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .predict-slider-handle.dragging {
+            transform: translate(-50%, -50%) scale(1.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 手柄提示 */
+        .handle-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            margin-bottom: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .predict-slider-handle:hover .handle-tooltip,
+        .predict-slider-handle.dragging .handle-tooltip {
+            opacity: 1;
+        }
+
+        /* 数值显示容器 */
+        .predict-values-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .predict-value-group {
+            flex: 1;
+            text-align: center;
+        }
+
+        .predict-value-label {
+            display: block;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .predict-value-input-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .predict-value-input {
+            width: 60px;
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .predict-value-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .predict-value-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .predict-value-unit {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .predict-value-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .predict-value-display {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 4px;
+        }
+
+        .predict-value-group.readonly {
+            opacity: 0.7;
+        }
+
+        /* 编辑模式下的样式 */
+        .edit-mode .predict-value-input {
+            opacity: 1;
+            cursor: text;
+        }
+
+        .edit-mode .predict-slider-handle {
+            opacity: 1;
+            cursor: grab;
+        }
+
+        .edit-mode .predict-slider-handle:active {
+            cursor: grabbing;
+        }
+
+        /* 卖电分析滑块样式 */
+        .sell-slider-container {
+            margin-top: 24px;
+            margin-bottom: 40px;
+        }
+
+        .sell-slider-track {
+            position: relative;
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-bottom: 40px;
+            cursor: pointer;
+        }
+
+        .sell-slider-fill {
+            position: absolute;
+            height: 100%;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .sell-slider-fill.low {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff4757 100%);
+            z-index: 1;
+        }
+
+        .sell-slider-fill.normal {
+            background: linear-gradient(90deg, #ffd93d 0%, #ffb700 100%);
+            z-index: 2;
+        }
+
+        .sell-slider-fill.high {
+            background: linear-gradient(90deg, #4ecdc4 0%, #44a8b3 100%);
+            z-index: 3;
+        }
+
+        .sell-slider-fill.optimal {
+            background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+            z-index: 4;
+        }
+
+        /* 卖电滑块手柄 */
+        .sell-slider-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 3px solid rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            cursor: grab;
+            z-index: 10;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .sell-slider-handle:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .sell-slider-handle:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .sell-slider-handle.dragging {
+            transform: translate(-50%, -50%) scale(1.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 卖电数值显示容器 */
+        .sell-values-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .sell-value-group {
+            flex: 1;
+            text-align: center;
+        }
+
+        .sell-value-label {
+            display: block;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .sell-value-input-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .sell-value-input {
+            width: 60px;
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .sell-value-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .sell-value-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .sell-value-unit {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .sell-value-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .sell-value-display {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 4px;
+        }
+
+        /* 编辑模式下的卖电滑块样式 */
+        .edit-mode .sell-value-input {
+            opacity: 1;
+            cursor: text;
+        }
+
+        .edit-mode .sell-slider-handle {
+            opacity: 1;
+            cursor: grab;
+        }
+
+        .edit-mode .sell-slider-handle:active {
+            cursor: grabbing;
+        }
+
+        /* 充电分析滑块样式 */
+        .buy-slider-container {
+            margin-top: 24px;
+            margin-bottom: 60px;
+        }
+
+        .buy-slider-track {
+            position: relative;
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        /* 谷值基准线 */
+        .valley-baseline {
+            position: absolute;
+            left: 0;
+            top: -8px;
+            bottom: -8px;
+            width: 2px;
+            background: #00ff88;
+            z-index: 5;
+        }
+
+        .valley-baseline::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -4px;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: #00ff88;
+            border-radius: 50%;
+            border: 2px solid #000;
+        }
+
+        .buy-slider-fill {
+            position: absolute;
+            height: 100%;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .buy-slider-fill.optimal {
+            background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+            z-index: 4;
+        }
+
+        .buy-slider-fill.low {
+            background: linear-gradient(90deg, #4ecdc4 0%, #44a8b3 100%);
+            z-index: 3;
+        }
+
+        .buy-slider-fill.normal {
+            background: linear-gradient(90deg, #ffd93d 0%, #ffb700 100%);
+            z-index: 2;
+        }
+
+        .buy-slider-fill.high {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff4757 100%);
+            z-index: 1;
+        }
+
+        /* 充电滑块手柄 */
+        .buy-slider-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 3px solid rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            cursor: grab;
+            z-index: 10;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .buy-slider-handle:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .buy-slider-handle:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .buy-slider-handle.dragging {
+            transform: translate(-50%, -50%) scale(1.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 刻度标记 */
+        .buy-scale-marks {
+            position: relative;
+            height: 20px;
+            margin-top: 8px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+        }
+
+        .buy-scale-marks .scale-mark {
+            position: absolute;
+            transform: translateX(-50%);
+        }
+
+        /* 充电数值显示容器 */
+        .buy-values-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .buy-value-group {
+            flex: 1;
+            text-align: center;
+        }
+
+        .buy-value-group.readonly {
+            opacity: 0.7;
+        }
+
+        .buy-value-label {
+            display: block;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .buy-value-input-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            margin-bottom: 4px;
+        }
+
+        .buy-value-prefix {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+
+        .buy-value-input {
+            width: 60px;
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .buy-value-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .buy-value-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .buy-value-unit {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .buy-value-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .buy-value-display {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 4px;
+        }
+
+        /* 编辑模式下的充电滑块样式 */
+        .edit-mode .buy-value-input {
+            opacity: 1;
+            cursor: text;
+        }
+
+        .edit-mode .buy-slider-handle {
+            opacity: 1;
+            cursor: grab;
+        }
+
+        .edit-mode .buy-slider-handle:active {
+            cursor: grabbing;
+        }
+
+        .settings-readonly-value {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+
+        .readonly-item {
+            opacity: 0.8;
+        }
+
+        .readonly-item .settings-item-label {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Header Container for HeaderNav Component -->
+    <div id="headerContainer"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title" data-i18n="settings.title" data-text-zh="设置" data-text-en="Settings">设置</h1>
+            <button class="edit-button" id="editToggleBtn" onclick="toggleEditMode()">
+                <span data-i18n="settings.buttons.edit" data-text-zh="编辑" data-text-en="Edit">编辑</span>
+            </button>
+        </div>
+
+        <!-- 价格预测设置 -->
+        <div class="settings-section">
+            <h2 data-i18n="settings.pricePredict.title" data-text-zh="价格预测" data-text-en="Price Prediction">价格预测</h2>
+            
+            <!-- 进度条直接在卡片上 -->
+            <div class="predict-slider-container">
+                <div class="predict-slider-track" id="predictSliderTrack">
+                    <div class="predict-slider-fill accurate" id="accurateFill" style="width: 10%"></div>
+                    <div class="predict-slider-fill moderate" id="moderateFill" style="left: 10%; width: 20%"></div>
+                    <div class="predict-slider-fill large" id="largeFill" style="left: 30%; width: 70%"></div>
+                    
+                    <!-- 可拖动的滑块 -->
+                    <div class="predict-slider-handle" id="accurateHandle" style="left: 10%">
+                        <div class="handle-tooltip" data-i18n="settings.pricePredict.accurate" data-text-zh="准确预测" data-text-en="Accurate Prediction">准确预测</div>
+                    </div>
+                    <div class="predict-slider-handle large-handle" id="largeHandle" style="left: 30%">
+                        <div class="handle-tooltip" data-i18n="settings.pricePredict.large" data-text-zh="偏差较大" data-text-en="Large Deviation">偏差较大</div>
+                    </div>
+                </div>
+                
+                <!-- 下方的数值显示和输入 -->
+                <div class="predict-values-container">
+                    <div class="predict-value-group">
+                        <label class="predict-value-label" data-i18n="settings.pricePredict.accurate">准确预测</label>
+                        <div class="predict-value-input-wrapper">
+                            <input type="number" class="predict-value-input" id="accuratePredictThreshold" 
+                                   value="5" min="1" max="98" disabled 
+                                   onchange="updatePricePredictVisual()" 
+                                   oninput="updateFromInput('accurate')">
+                            <span class="predict-value-unit">%</span>
+                        </div>
+                        <span class="predict-value-desc" data-i18n="settings.pricePredict.deviationRange" data-text-zh="±偏差范围" data-text-en="±Deviation Range">±偏差范围</span>
+                    </div>
+                    
+                    <div class="predict-value-group readonly">
+                        <label class="predict-value-label" data-i18n="settings.pricePredict.moderate">较准预测</label>
+                        <div class="predict-value-display" id="moderateDisplay">5% - 15%</div>
+                        <span class="predict-value-desc" data-i18n="settings.pricePredict.deviationRange" data-text-zh="±偏差范围" data-text-en="±Deviation Range">±偏差范围</span>
+                    </div>
+                    
+                    <div class="predict-value-group">
+                        <label class="predict-value-label" data-i18n="settings.pricePredict.large">偏差较大</label>
+                        <div class="predict-value-input-wrapper">
+                            <input type="number" class="predict-value-input" id="largePredictThreshold" 
+                                   value="15" min="2" max="99" disabled 
+                                   onchange="updatePricePredictVisual()"
+                                   oninput="updateFromInput('large')">
+                            <span class="predict-value-unit">%</span>
+                        </div>
+                        <span class="predict-value-desc" data-i18n="settings.pricePredict.greaterThan" data-text-zh="大于此值" data-text-en="Greater than">大于此值</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 隐藏的输入框用于保持数据兼容性 -->
+            <input type="hidden" id="moderatePredictMin" value="5">
+            <input type="hidden" id="moderatePredictMax" value="15">
+        </div>
+
+        <!-- 操作分析设置 -->
+        <div class="settings-section">
+            <h2 data-i18n="settings.operationAnalysis.title" data-text-zh="操作分析" data-text-en="Operation Analysis">操作分析</h2>
+            
+            <!-- 卖电分析滑块 -->
+            <h3 data-i18n="settings.operationAnalysis.sellTitle" data-text-zh="卖电分析" data-text-en="Sell Analysis">卖电分析</h3>
+            
+            <div class="sell-slider-container">
+                <div class="sell-slider-track" id="sellSliderTrack">
+                    <div class="sell-slider-fill low" id="sellLowFill" style="width: 60%"></div>
+                    <div class="sell-slider-fill normal" id="sellNormalFill" style="left: 60%; width: 20%"></div>
+                    <div class="sell-slider-fill high" id="sellHighFill" style="left: 80%; width: 15%"></div>
+                    <div class="sell-slider-fill optimal" id="sellOptimalFill" style="left: 95%; width: 5%"></div>
+                    
+                    <!-- 可拖动的滑块 -->
+                    <div class="sell-slider-handle" id="sellLowHandle" style="left: 60%">
+                        <div class="handle-tooltip" data-i18n="settings.operationAnalysis.sellLow" data-text-zh="低价" data-text-en="Low Price">低价</div>
+                    </div>
+                    <div class="sell-slider-handle" id="sellNormalHandle" style="left: 80%">
+                        <div class="handle-tooltip" data-i18n="settings.operationAnalysis.normal" data-text-zh="一般" data-text-en="Normal">一般</div>
+                    </div>
+                    <div class="sell-slider-handle" id="sellHighHandle" style="left: 95%">
+                        <div class="handle-tooltip" data-i18n="settings.operationAnalysis.highPoint" data-text-zh="高点" data-text-en="High Point">高点</div>
+                    </div>
+                </div>
+                
+                <!-- 下方的数值显示和输入 -->
+                <div class="sell-values-container">
+                    <div class="sell-value-group">
+                        <label class="sell-value-label" data-i18n="settings.operationAnalysis.sellLow" data-text-zh="低价" data-text-en="Low Price">低价</label>
+                        <div class="sell-value-input-wrapper">
+                            <input type="number" class="sell-value-input" id="sellLowThreshold" 
+                                   value="60" min="1" max="98" disabled 
+                                   onchange="updateSellVisual()" 
+                                   oninput="updateSellFromInput('low')">
+                            <span class="sell-value-unit">%</span>
+                        </div>
+                        <span class="sell-value-desc" data-i18n="settings.operationAnalysis.belowPeak" data-text-zh="峰值以下" data-text-en="Below Peak">峰值以下</span>
+                    </div>
+                    
+                    <div class="sell-value-group">
+                        <label class="sell-value-label" data-i18n="settings.operationAnalysis.sellNormal" data-text-zh="卖在一般" data-text-en="Sell at Normal">卖在一般</label>
+                        <div class="sell-value-display" id="sellNormalDisplay">60% - 80%</div>
+                        <span class="sell-value-desc" data-i18n="settings.operationAnalysis.peakRange" data-text-zh="峰值区间" data-text-en="Peak Range">峰值区间</span>
+                    </div>
+                    
+                    <div class="sell-value-group">
+                        <label class="sell-value-label" data-i18n="settings.operationAnalysis.sellHigh" data-text-zh="卖在高点" data-text-en="Sell at High">卖在高点</label>
+                        <div class="sell-value-display" id="sellHighDisplay">80% - 95%</div>
+                        <span class="sell-value-desc" data-i18n="settings.operationAnalysis.peakRange" data-text-zh="峰值区间" data-text-en="Peak Range">峰值区间</span>
+                    </div>
+                    
+                    <div class="sell-value-group">
+                        <label class="sell-value-label" data-i18n="settings.operationAnalysis.sellOptimal" data-text-zh="卖在最佳点" data-text-en="Sell at Optimal">卖在最佳点</label>
+                        <div class="sell-value-display" id="sellOptimalDisplay">&gt;95%</div>
+                        <span class="sell-value-desc" data-i18n="settings.operationAnalysis.abovePeak" data-text-zh="峰值以上" data-text-en="Above Peak">峰值以上</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 隐藏的输入框用于保持数据兼容性 -->
+            <input type="hidden" id="sellHighMin" value="80">
+            <input type="hidden" id="sellHighMax" value="95">
+            <input type="hidden" id="sellNormalMin" value="60">
+            <input type="hidden" id="sellNormalMax" value="80">
+            <input type="hidden" id="sellOptimalThreshold" value="95">
+
+            <!-- 充电分析滑块 -->
+            <h3 data-i18n="settings.operationAnalysis.buyTitle" style="margin-top: 40px;" data-text-zh="充电分析" data-text-en="Charge Analysis">充电分析</h3>
+            
+            <div class="buy-slider-container">
+                <div class="buy-slider-track" id="buySliderTrack">
+                    <!-- 谷值基准线 -->
+                    <div class="valley-baseline"></div>
+                    
+                    <div class="buy-slider-fill optimal" id="buyOptimalFill" style="width: 5%"></div>
+                    <div class="buy-slider-fill low" id="buyLowFill" style="left: 5%; width: 15%"></div>
+                    <div class="buy-slider-fill normal" id="buyNormalFill" style="left: 20%; width: 30%"></div>
+                    <div class="buy-slider-fill high" id="buyHighFill" style="left: 50%; width: 50%"></div>
+                    
+                    <!-- 可拖动的滑块 -->
+                    <div class="buy-slider-handle" id="buyOptimalHandle" style="left: 5%">
+                        <div class="handle-tooltip" data-i18n="settings.operationAnalysis.optimalPoint" data-text-zh="最佳点" data-text-en="Optimal Point">最佳点</div>
+                    </div>
+                    <div class="buy-slider-handle" id="buyLowHandle" style="left: 20%">
+                        <div class="handle-tooltip" data-i18n="settings.operationAnalysis.lowPrice" data-text-zh="低价" data-text-en="Low Price">低价</div>
+                    </div>
+                    <div class="buy-slider-handle" id="buyNormalHandle" style="left: 50%">
+                        <div class="handle-tooltip" data-i18n="settings.operationAnalysis.normal" data-text-zh="一般" data-text-en="Normal">一般</div>
+                    </div>
+                </div>
+                
+                <!-- 刻度标记 -->
+                <div class="buy-scale-marks">
+                    <span class="scale-mark" style="left: 0" data-i18n="settings.operationAnalysis.valley" data-text-zh="谷值" data-text-en="Valley">谷值</span>
+                    <span class="scale-mark" style="left: 25%">+50%</span>
+                    <span class="scale-mark" style="left: 50%">+100%</span>
+                    <span class="scale-mark" style="left: 75%">+150%</span>
+                    <span class="scale-mark" style="left: 100%">+200%</span>
+                </div>
+                
+                <!-- 下方的数值显示和输入 -->
+                <div class="buy-values-container">
+                    <div class="buy-value-group">
+                        <label class="buy-value-label" data-i18n="settings.operationAnalysis.buyLowestPoint" data-text-zh="充电最低点" data-text-en="Charge Lowest Point">充电最低点</label>
+                        <div class="buy-value-input-wrapper">
+                            <span class="buy-value-prefix">+</span>
+                            <input type="number" class="buy-value-input" id="buyOptimalThreshold" 
+                                   value="5" min="0" max="500" disabled 
+                                   onchange="updateBuyVisual()" 
+                                   oninput="updateBuyFromInput('optimal')">
+                            <span class="buy-value-unit">%</span>
+                        </div>
+                        <span class="buy-value-desc" data-i18n="settings.operationAnalysis.aboveValley" data-text-zh="超过谷值" data-text-en="Above Valley">超过谷值</span>
+                    </div>
+                    
+                    <div class="buy-value-group">
+                        <label class="buy-value-label" data-i18n="settings.operationAnalysis.buyLow" data-text-zh="充电低价" data-text-en="Charge Low Price">充电低价</label>
+                        <div class="buy-value-input-wrapper">
+                            <span class="buy-value-prefix">+</span>
+                            <input type="number" class="buy-value-input" id="buyLowMax" 
+                                   value="20" min="1" max="500" disabled 
+                                   onchange="updateBuyVisual()" 
+                                   oninput="updateBuyFromInput('low')">
+                            <span class="buy-value-unit">%</span>
+                        </div>
+                        <span class="buy-value-desc" data-i18n="settings.operationAnalysis.aboveValley" data-text-zh="超过谷值" data-text-en="Above Valley">超过谷值</span>
+                    </div>
+                    
+                    <div class="buy-value-group">
+                        <label class="buy-value-label" data-i18n="settings.operationAnalysis.buyNormal" data-text-zh="充电一般" data-text-en="Charge Normal">充电一般</label>
+                        <div class="buy-value-input-wrapper">
+                            <span class="buy-value-prefix">+</span>
+                            <input type="number" class="buy-value-input" id="buyNormalMax" 
+                                   value="50" min="2" max="500" disabled 
+                                   onchange="updateBuyVisual()" 
+                                   oninput="updateBuyFromInput('normal')">
+                            <span class="buy-value-unit">%</span>
+                        </div>
+                        <span class="buy-value-desc" data-i18n="settings.operationAnalysis.aboveValley" data-text-zh="超过谷值" data-text-en="Above Valley">超过谷值</span>
+                    </div>
+                    
+                    <div class="buy-value-group readonly">
+                        <label class="buy-value-label" data-i18n="settings.operationAnalysis.buyHigh" data-text-zh="充电高价" data-text-en="Charge High Price">充电高价</label>
+                        <div class="buy-value-display" id="buyHighDisplay">&gt;+50%</div>
+                        <span class="buy-value-desc" data-i18n="settings.operationAnalysis.aboveValley" data-text-zh="超过谷值" data-text-en="Above Valley">超过谷值</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 隐藏的输入框用于保持数据兼容性 -->
+            <input type="hidden" id="buyLowMin" value="5">
+            <input type="hidden" id="buyLowMax" value="20">
+            <input type="hidden" id="buyNormalMin" value="20">
+            <input type="hidden" id="buyNormalMax" value="50">
+            <input type="hidden" id="buyHighThreshold" value="50">
+        </div>
+
+
+    </div>
+
+    <!-- 固定底部保存按钮 -->
+    <div class="fixed-bottom-actions" id="saveSection" style="display: none;">
+        <button class="btn btn-secondary" onclick="cancelEdit()">
+            <span data-i18n="settings.buttons.cancel" data-text-zh="取消" data-text-en="Cancel">取消</span>
+        </button>
+        <button class="btn btn-primary" onclick="saveSettings()">
+            <span data-i18n="settings.buttons.save" data-text-zh="保存" data-text-en="Save">保存</span>
+        </button>
+    </div>
+
+    <script>
+        // 全局变量
+        let isEditMode = false;
+        let originalSettings = {};
+        
+
+        // 更新价格预测可视化
+        function updatePricePredictVisual() {
+            const accurate = parseInt(document.getElementById('accuratePredictThreshold').value) || 5;
+            const large = parseInt(document.getElementById('largePredictThreshold').value) || 15;
+            
+            // 验证输入
+            if (accurate >= large) {
+                alert(window.i18n ? window.i18n.getText('settings.validation.pricePredictError') : '准确预测阈值必须小于偏差较大阈值');
+                // 恢复到有效值
+                if (accurate >= 15) {
+                    document.getElementById('accuratePredictThreshold').value = large - 1;
+                } else {
+                    document.getElementById('largePredictThreshold').value = accurate + 1;
+                }
+                return;
+            }
+            
+            // 更新滑块填充
+            const accurateFill = document.getElementById('accurateFill');
+            const moderateFill = document.getElementById('moderateFill');
+            const largeFill = document.getElementById('largeFill');
+            
+            // 更新滑块手柄位置
+            const accurateHandle = document.getElementById('accurateHandle');
+            const largeHandle = document.getElementById('largeHandle');
+            
+            // 计算百分比位置
+            const accuratePercent = accurate; // 直接使用百分比值
+            const largePercent = large;
+            
+            // 应用样式
+            accurateFill.style.width = `${accuratePercent}%`;
+            moderateFill.style.left = `${accuratePercent}%`;
+            moderateFill.style.width = `${largePercent - accuratePercent}%`;
+            largeFill.style.left = `${largePercent}%`;
+            largeFill.style.width = `${100 - largePercent}%`;
+            
+            // 更新手柄位置
+            accurateHandle.style.left = `${accuratePercent}%`;
+            largeHandle.style.left = `${largePercent}%`;
+            
+            // 更新显示值
+            document.getElementById('moderateDisplay').textContent = `${accurate}% - ${large}%`;
+            
+            // 更新隐藏的输入值（用于保存）
+            document.getElementById('moderatePredictMin').value = accurate;
+            document.getElementById('moderatePredictMax').value = large;
+        }
+
+        // 从输入框更新
+        function updateFromInput(type) {
+            updatePricePredictVisual();
+        }
+
+        // 更新卖电分析可视化
+        function updateSellVisual() {
+            const low = parseInt(document.getElementById('sellLowThreshold').value) || 60;
+            const normalMax = parseInt(document.getElementById('sellNormalMax').value) || 80;
+            const highMax = parseInt(document.getElementById('sellHighMax').value) || 95;
+            
+            // 更新滑块填充
+            const lowFill = document.getElementById('sellLowFill');
+            const normalFill = document.getElementById('sellNormalFill');
+            const highFill = document.getElementById('sellHighFill');
+            const optimalFill = document.getElementById('sellOptimalFill');
+            
+            // 更新滑块手柄位置
+            const lowHandle = document.getElementById('sellLowHandle');
+            const normalHandle = document.getElementById('sellNormalHandle');
+            const highHandle = document.getElementById('sellHighHandle');
+            
+            // 应用样式
+            lowFill.style.width = `${low}%`;
+            normalFill.style.left = `${low}%`;
+            normalFill.style.width = `${normalMax - low}%`;
+            highFill.style.left = `${normalMax}%`;
+            highFill.style.width = `${highMax - normalMax}%`;
+            optimalFill.style.left = `${highMax}%`;
+            optimalFill.style.width = `${100 - highMax}%`;
+            
+            // 更新手柄位置
+            lowHandle.style.left = `${low}%`;
+            normalHandle.style.left = `${normalMax}%`;
+            highHandle.style.left = `${highMax}%`;
+            
+            // 更新显示值
+            document.getElementById('sellNormalDisplay').textContent = `${low}% - ${normalMax}%`;
+            document.getElementById('sellHighDisplay').textContent = `${normalMax}% - ${highMax}%`;
+            document.getElementById('sellOptimalDisplay').textContent = `>${highMax}%`;
+            
+            // 更新隐藏的输入值（用于保存）
+            document.getElementById('sellNormalMin').value = low;
+            document.getElementById('sellHighMin').value = normalMax;
+            document.getElementById('sellOptimalThreshold').value = highMax;
+        }
+
+        // 从卖电输入框更新
+        function updateSellFromInput(type) {
+            updateSellVisual();
+        }
+
+        // 更新充电分析可视化
+        function updateBuyVisual() {
+            const optimal = parseInt(document.getElementById('buyOptimalThreshold').value) || 5;
+            const lowMax = parseInt(document.getElementById('buyLowMax').value) || 20;
+            const normalMax = parseInt(document.getElementById('buyNormalMax').value) || 50;
+            
+            // 验证输入
+            if (optimal >= lowMax) {
+                document.getElementById('buyOptimalThreshold').value = lowMax - 1;
+                return;
+            }
+            if (lowMax >= normalMax) {
+                document.getElementById('buyLowMax').value = normalMax - 1;
+                return;
+            }
+            
+            // 动态确定最大值范围，确保能容纳所有输入值
+            const maxRange = Math.max(200, normalMax * 1.2); // 至少200%，或者比normalMax多20%的空间
+            
+            // 转换为滑块位置（动态范围）
+            const optimalPos = Math.min((optimal / maxRange) * 100, 100);
+            const lowPos = Math.min((lowMax / maxRange) * 100, 100);
+            const normalPos = Math.min((normalMax / maxRange) * 100, 100);
+            
+            // 更新滑块填充
+            const optimalFill = document.getElementById('buyOptimalFill');
+            const lowFill = document.getElementById('buyLowFill');
+            const normalFill = document.getElementById('buyNormalFill');
+            const highFill = document.getElementById('buyHighFill');
+            
+            // 更新滑块手柄位置
+            const optimalHandle = document.getElementById('buyOptimalHandle');
+            const lowHandle = document.getElementById('buyLowHandle');
+            const normalHandle = document.getElementById('buyNormalHandle');
+            
+            // 应用样式
+            optimalFill.style.width = `${optimalPos}%`;
+            lowFill.style.left = `${optimalPos}%`;
+            lowFill.style.width = `${lowPos - optimalPos}%`;
+            normalFill.style.left = `${lowPos}%`;
+            normalFill.style.width = `${normalPos - lowPos}%`;
+            highFill.style.left = `${normalPos}%`;
+            highFill.style.width = `${100 - normalPos}%`;
+            
+            // 更新手柄位置
+            optimalHandle.style.left = `${optimalPos}%`;
+            lowHandle.style.left = `${lowPos}%`;
+            normalHandle.style.left = `${normalPos}%`;
+            
+            // 更新充电高价显示值
+            document.getElementById('buyHighDisplay').textContent = `>+${normalMax}%`;
+            
+            // 更新刻度标记（如果值超过200%）
+            updateBuyScaleMarks(maxRange);
+            
+            // 更新隐藏的输入值（用于保存）
+            document.getElementById('buyLowMin').value = optimal;
+            document.getElementById('buyHighThreshold').value = normalMax;
+        }
+
+        // 从充电输入框更新
+        function updateBuyFromInput(type) {
+            updateBuyVisual();
+        }
+        
+        // 更新充电分析刻度标记
+        function updateBuyScaleMarks(maxRange) {
+            const scaleMarksContainer = document.querySelector('.buy-scale-marks');
+            if (!scaleMarksContainer) return;
+            
+            // 清除现有的刻度标记
+            scaleMarksContainer.innerHTML = '';
+            
+            // 始终显示谷值基准点
+            const valleyMark = document.createElement('span');
+            valleyMark.className = 'scale-mark';
+            valleyMark.style.left = '0';
+            valleyMark.textContent = window.i18n ? window.i18n.getText('settings.operationAnalysis.valley') : '谷值';
+            scaleMarksContainer.appendChild(valleyMark);
+            
+            // 根据最大范围动态生成刻度
+            const markCount = 4; // 除了谷值外的刻度数量
+            for (let i = 1; i <= markCount; i++) {
+                const percentage = (i / markCount) * maxRange;
+                const position = (i / markCount) * 100;
+                
+                const mark = document.createElement('span');
+                mark.className = 'scale-mark';
+                mark.style.left = `${position}%`;
+                mark.textContent = `+${Math.round(percentage)}%`;
+                scaleMarksContainer.appendChild(mark);
+            }
+        }
+
+        // 初始化滑块拖动功能
+        function initSliders() {
+            const track = document.getElementById('predictSliderTrack');
+            const accurateHandle = document.getElementById('accurateHandle');
+            const largeHandle = document.getElementById('largeHandle');
+            
+            let isDragging = false;
+            let currentHandle = null;
+            
+            // 处理滑块拖动
+            function startDrag(e, handle) {
+                if (isEditMode) {
+                    isDragging = true;
+                    currentHandle = handle;
+                    handle.classList.add('dragging');
+                    e.preventDefault();
+                }
+            }
+            
+            function drag(e) {
+                if (!isDragging || !currentHandle) return;
+                
+                const rect = track.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                
+                if (currentHandle === accurateHandle) {
+                    const largeValue = parseInt(document.getElementById('largePredictThreshold').value);
+                    const newValue = Math.min(Math.round(percent), largeValue - 1);
+                    document.getElementById('accuratePredictThreshold').value = newValue;
+                } else if (currentHandle === largeHandle) {
+                    const accurateValue = parseInt(document.getElementById('accuratePredictThreshold').value);
+                    const newValue = Math.max(Math.round(percent), accurateValue + 1);
+                    document.getElementById('largePredictThreshold').value = newValue;
+                }
+                
+                updatePricePredictVisual();
+            }
+            
+            function stopDrag() {
+                if (currentHandle) {
+                    currentHandle.classList.remove('dragging');
+                }
+                isDragging = false;
+                currentHandle = null;
+            }
+            
+            // 添加事件监听器
+            accurateHandle.addEventListener('mousedown', (e) => startDrag(e, accurateHandle));
+            largeHandle.addEventListener('mousedown', (e) => startDrag(e, largeHandle));
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            
+            // 点击轨道快速定位
+            track.addEventListener('click', function(e) {
+                if (!isEditMode || isDragging) return;
+                
+                const rect = track.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percent = Math.round((x / rect.width) * 100);
+                
+                const accurateValue = parseInt(document.getElementById('accuratePredictThreshold').value);
+                const largeValue = parseInt(document.getElementById('largePredictThreshold').value);
+                
+                // 判断点击位置更接近哪个手柄
+                const accurateDist = Math.abs(percent - accurateValue);
+                const largeDist = Math.abs(percent - largeValue);
+                
+                if (accurateDist < largeDist) {
+                    document.getElementById('accuratePredictThreshold').value = Math.min(percent, largeValue - 1);
+                } else {
+                    document.getElementById('largePredictThreshold').value = Math.max(percent, accurateValue + 1);
+                }
+                
+                updatePricePredictVisual();
+            });
+            
+            // 初始化卖电分析滑块
+            initSellSliders();
+            // 初始化充电分析滑块
+            initBuySliders();
+        }
+        
+        // 初始化充电分析滑块
+        function initBuySliders() {
+            const track = document.getElementById('buySliderTrack');
+            const optimalHandle = document.getElementById('buyOptimalHandle');
+            const lowHandle = document.getElementById('buyLowHandle');
+            const normalHandle = document.getElementById('buyNormalHandle');
+            
+            let isDragging = false;
+            let currentHandle = null;
+            
+            // 处理滑块拖动
+            function startDrag(e, handle) {
+                if (isEditMode) {
+                    isDragging = true;
+                    currentHandle = handle;
+                    handle.classList.add('dragging');
+                    e.preventDefault();
+                }
+            }
+            
+            function drag(e) {
+                if (!isDragging || !currentHandle) return;
+                
+                const rect = track.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                
+                // 获取当前的最大值以确定动态范围
+                const currentNormalMax = parseInt(document.getElementById('buyNormalMax').value) || 50;
+                const maxRange = Math.max(200, currentNormalMax * 1.2);
+                
+                // 转换百分比到实际值（动态范围）
+                const value = Math.round((percent / 100) * maxRange);
+                
+                if (currentHandle === optimalHandle) {
+                    const lowMax = parseInt(document.getElementById('buyLowMax').value);
+                    const newValue = Math.min(value, lowMax - 1);
+                    document.getElementById('buyOptimalThreshold').value = newValue;
+                } else if (currentHandle === lowHandle) {
+                    const optimal = parseInt(document.getElementById('buyOptimalThreshold').value);
+                    const normalMax = parseInt(document.getElementById('buyNormalMax').value);
+                    const newValue = Math.max(Math.min(value, normalMax - 1), optimal + 1);
+                    document.getElementById('buyLowMax').value = newValue;
+                } else if (currentHandle === normalHandle) {
+                    const lowMax = parseInt(document.getElementById('buyLowMax').value);
+                    const newValue = Math.max(value, lowMax + 1);
+                    document.getElementById('buyNormalMax').value = newValue;
+                }
+                
+                updateBuyVisual();
+            }
+            
+            function stopDrag() {
+                if (currentHandle) {
+                    currentHandle.classList.remove('dragging');
+                }
+                isDragging = false;
+                currentHandle = null;
+            }
+            
+            // 添加事件监听器
+            optimalHandle.addEventListener('mousedown', (e) => startDrag(e, optimalHandle));
+            lowHandle.addEventListener('mousedown', (e) => startDrag(e, lowHandle));
+            normalHandle.addEventListener('mousedown', (e) => startDrag(e, normalHandle));
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+        
+        // 初始化卖电分析滑块
+        function initSellSliders() {
+            const track = document.getElementById('sellSliderTrack');
+            const lowHandle = document.getElementById('sellLowHandle');
+            const normalHandle = document.getElementById('sellNormalHandle');
+            const highHandle = document.getElementById('sellHighHandle');
+            
+            let isDragging = false;
+            let currentHandle = null;
+            
+            // 处理滑块拖动
+            function startDrag(e, handle) {
+                if (isEditMode) {
+                    isDragging = true;
+                    currentHandle = handle;
+                    handle.classList.add('dragging');
+                    e.preventDefault();
+                }
+            }
+            
+            function drag(e) {
+                if (!isDragging || !currentHandle) return;
+                
+                const rect = track.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                
+                if (currentHandle === lowHandle) {
+                    const normalMax = parseInt(document.getElementById('sellNormalMax').value);
+                    const newValue = Math.min(Math.round(percent), normalMax - 1);
+                    document.getElementById('sellLowThreshold').value = newValue;
+                } else if (currentHandle === normalHandle) {
+                    const low = parseInt(document.getElementById('sellLowThreshold').value);
+                    const highMax = parseInt(document.getElementById('sellHighMax').value);
+                    const newValue = Math.max(Math.min(Math.round(percent), highMax - 1), low + 1);
+                    document.getElementById('sellNormalMax').value = newValue;
+                } else if (currentHandle === highHandle) {
+                    const normalMax = parseInt(document.getElementById('sellNormalMax').value);
+                    const newValue = Math.max(Math.round(percent), normalMax + 1);
+                    document.getElementById('sellHighMax').value = newValue;
+                }
+                
+                updateSellVisual();
+            }
+            
+            function stopDrag() {
+                if (currentHandle) {
+                    currentHandle.classList.remove('dragging');
+                }
+                isDragging = false;
+                currentHandle = null;
+            }
+            
+            // 添加事件监听器
+            lowHandle.addEventListener('mousedown', (e) => startDrag(e, lowHandle));
+            normalHandle.addEventListener('mousedown', (e) => startDrag(e, normalHandle));
+            highHandle.addEventListener('mousedown', (e) => startDrag(e, highHandle));
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        // 初始化页面
+        // 确保 i18n 在页面加载前初始化
+        function ensureI18nInitialized() {
+            if (!window.i18n) {
+                console.log('Initializing i18n...');
+                window.i18n = new I18n();
+            }
+            // 等待 i18n 完全初始化
+            return new Promise((resolve) => {
+                const checkReady = () => {
+                    if (window.i18n && window.i18n.isReady) {
+                        console.log('i18n is ready, current language:', window.i18n.currentLanguage);
+                        resolve();
+                    } else {
+                        setTimeout(checkReady, 50);
+                    }
+                };
+                checkReady();
+            });
+        }
+        
+        ensureI18nInitialized();
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 等待 i18n 初始化完成
+            await ensureI18nInitialized();
+            
+            // 初始化HeaderNav组件
+            const headerNav = new HeaderNav({
+                currentPage: 'settings',
+                containerId: 'headerContainer'
+            });
+
+            // 初始化多语言支持
+            if (window.i18n) {
+                window.i18n.addObserver((newLang, oldLang) => {
+                    console.log('Language changed from', oldLang, 'to', newLang);
+                    updateAllTexts();
+                });
+                
+                // 立即执行强制翻译
+                console.log('Initial language:', window.i18n.currentLanguage);
+                forceTranslate();
+                
+                // 然后更新页面文本
+                setTimeout(() => {
+                    console.log('Updating page texts, current language:', window.i18n.currentLanguage);
+                    window.i18n.updatePageTexts();
+                    updateAllTexts();
+                }, 100);
+            }
+
+            // 加载设置
+            loadSettings();
+            // 初始化价格预测可视化
+            updatePricePredictVisual();
+            // 初始化卖电分析可视化
+            updateSellVisual();
+            // 初始化充电分析可视化
+            updateBuyVisual();
+            // 初始化滑块
+            initSliders();
+            // 加载时间条件
+            loadTimePeriods();
+        });
+
+        // 切换编辑模式
+        function toggleEditMode() {
+            isEditMode = true;
+            const editBtn = document.getElementById('editToggleBtn');
+            const saveSection = document.getElementById('saveSection');
+            const inputs = document.querySelectorAll('.settings-input');
+            const container = document.querySelector('.container');
+
+            // 进入编辑模式
+            editBtn.style.display = 'none';
+            saveSection.style.display = 'flex';
+            container.classList.add('edit-mode');
+            
+            // 启用所有输入框（包括不同类型的输入框）
+            const allInputs = document.querySelectorAll('.settings-input, .predict-value-input, .sell-value-input, .buy-value-input');
+            allInputs.forEach(input => {
+                input.disabled = false;
+            });
+            
+            // 启用时间条件按钮
+            document.querySelectorAll('.add-period-btn').forEach(btn => {
+                btn.disabled = false;
+            });
+
+            // 备份原始设置
+            backupSettings();
+            // 备份时间条件
+        }
+
+        // 退出编辑模式
+        function exitEditMode() {
+            isEditMode = false;
+            const editBtn = document.getElementById('editToggleBtn');
+            const saveSection = document.getElementById('saveSection');
+            const inputs = document.querySelectorAll('.settings-input');
+            const container = document.querySelector('.container');
+
+            editBtn.style.display = 'inline-flex';
+            saveSection.style.display = 'none';
+            container.classList.remove('edit-mode');
+            
+            // 禁用所有输入框（包括不同类型的输入框）
+            const allInputs = document.querySelectorAll('.settings-input, .predict-value-input, .sell-value-input, .buy-value-input');
+            allInputs.forEach(input => {
+                input.disabled = true;
+            });
+            
+            // 禁用时间条件按钮
+            document.querySelectorAll('.add-period-btn').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            // 重新渲染时间条件（更新按钮状态）
+        }
+
+        // 备份设置
+        function backupSettings() {
+            const inputs = document.querySelectorAll('.settings-input');
+            originalSettings = {};
+            inputs.forEach(input => {
+                originalSettings[input.id] = input.value;
+            });
+        }
+
+        // 取消编辑
+        function cancelEdit() {
+            // 恢复原始设置
+            Object.keys(originalSettings).forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.value = originalSettings[id];
+                }
+            });
+            
+            // 恢复时间条件
+            
+            exitEditMode();
+        }
+
+        // 保存设置
+        function saveSettings() {
+            const accurate = parseInt(document.getElementById('accuratePredictThreshold').value);
+            const large = parseInt(document.getElementById('largePredictThreshold').value);
+            
+            const settings = {
+                pricePredict: {
+                    accurate: accurate,
+                    moderateMin: accurate,  // 自动计算
+                    moderateMax: large,     // 自动计算
+                    large: large
+                },
+                operationAnalysis: {
+                    sell: {
+                        optimal: parseInt(document.getElementById('sellOptimalThreshold').value),
+                        highMin: parseInt(document.getElementById('sellHighMin').value),
+                        highMax: parseInt(document.getElementById('sellHighMax').value),
+                        normalMin: parseInt(document.getElementById('sellNormalMin').value),
+                        normalMax: parseInt(document.getElementById('sellNormalMax').value),
+                        low: parseInt(document.getElementById('sellLowThreshold').value)
+                    },
+                    buy: {
+                        optimal: parseInt(document.getElementById('buyOptimalThreshold').value),
+                        lowMin: parseInt(document.getElementById('buyOptimalThreshold').value),  // 最低点就是optimal
+                        lowMax: parseInt(document.getElementById('buyLowMax').value),
+                        normalMin: parseInt(document.getElementById('buyLowMax').value),  // 低价的上限就是一般的下限
+                        normalMax: parseInt(document.getElementById('buyNormalMax').value),
+                        high: parseInt(document.getElementById('buyNormalMax').value)  // 一般的上限就是高价的下限
+                    }
+                }
+            };
+
+            // 验证设置
+            if (validateSettings(settings)) {
+                // 保存到localStorage
+                localStorage.setItem('uEnergySettings', JSON.stringify(settings));
+                
+                // 保存时间条件
+                saveTimePeriods();
+                
+                // 显示保存成功消息
+                showSuccessMessage();
+                
+                // 退出编辑模式
+                exitEditMode();
+            }
+        }
+
+        // 验证设置
+        function validateSettings(settings) {
+            // 验证价格预测阈值
+            if (settings.pricePredict.accurate >= settings.pricePredict.large) {
+                alert(window.i18n ? window.i18n.getText('settings.validation.pricePredictError') : '准确预测阈值必须小于偏差较大阈值');
+                return false;
+            }
+
+            // 验证卖电分析阈值
+            if (settings.operationAnalysis.sell.highMin >= settings.operationAnalysis.sell.highMax) {
+                alert(window.i18n ? window.i18n.getText('settings.validation.sellHighRangeError') : '卖在高点范围设置错误');
+                return false;
+            }
+
+            if (settings.operationAnalysis.sell.normalMin >= settings.operationAnalysis.sell.normalMax) {
+                alert(window.i18n ? window.i18n.getText('settings.validation.sellNormalRangeError') : '卖在一般范围设置错误');
+                return false;
+            }
+
+            // 验证充电分析阈值
+            if (settings.operationAnalysis.buy.lowMin >= settings.operationAnalysis.buy.lowMax) {
+                alert(window.i18n ? window.i18n.getText('settings.validation.buyLowRangeError') : '充电低价范围设置错误');
+                return false;
+            }
+
+            if (settings.operationAnalysis.buy.normalMin >= settings.operationAnalysis.buy.normalMax) {
+                alert(window.i18n ? window.i18n.getText('settings.validation.buyNormalRangeError') : '充电一般范围设置错误');
+                return false;
+            }
+
+            return true;
+        }
+
+        // 加载设置
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('uEnergySettings');
+            if (savedSettings) {
+                try {
+                    const settings = JSON.parse(savedSettings);
+                    applySettings(settings);
+                } catch (e) {
+                    console.error('Failed to load settings:', e);
+                    loadDefaultSettings();
+                }
+            } else {
+                loadDefaultSettings();
+            }
+        }
+
+        // 加载默认设置
+        function loadDefaultSettings() {
+            const defaultSettings = {
+                pricePredict: {
+                    accurate: 5,
+                    moderateMin: 5,
+                    moderateMax: 15,
+                    large: 15
+                },
+                operationAnalysis: {
+                    sell: {
+                        optimal: 95,
+                        highMin: 80,
+                        highMax: 95,
+                        normalMin: 60,
+                        normalMax: 80,
+                        low: 60
+                    },
+                    buy: {
+                        optimal: 95,
+                        lowMin: 80,
+                        lowMax: 95,
+                        normalMin: 60,
+                        normalMax: 80,
+                        high: 60
+                    }
+                }
+            };
+            applySettings(defaultSettings);
+        }
+
+        // 应用设置
+        function applySettings(settings) {
+            // 价格预测设置
+            document.getElementById('accuratePredictThreshold').value = settings.pricePredict.accurate;
+            document.getElementById('largePredictThreshold').value = settings.pricePredict.large;
+            
+            // 更新可视化
+            updatePricePredictVisual();
+
+            // 卖电分析设置
+            document.getElementById('sellOptimalThreshold').value = settings.operationAnalysis.sell.optimal;
+            document.getElementById('sellHighMin').value = settings.operationAnalysis.sell.highMin;
+            document.getElementById('sellHighMax').value = settings.operationAnalysis.sell.highMax;
+            document.getElementById('sellNormalMin').value = settings.operationAnalysis.sell.normalMin;
+            document.getElementById('sellNormalMax').value = settings.operationAnalysis.sell.normalMax;
+            document.getElementById('sellLowThreshold').value = settings.operationAnalysis.sell.low;
+
+            // 充电分析设置
+            document.getElementById('buyOptimalThreshold').value = settings.operationAnalysis.buy.optimal;
+            document.getElementById('buyLowMin').value = settings.operationAnalysis.buy.lowMin;
+            document.getElementById('buyLowMax').value = settings.operationAnalysis.buy.lowMax;
+            document.getElementById('buyNormalMin').value = settings.operationAnalysis.buy.normalMin;
+            document.getElementById('buyNormalMax').value = settings.operationAnalysis.buy.normalMax;
+            document.getElementById('buyHighThreshold').value = settings.operationAnalysis.buy.high;
+        }
+
+        // 显示成功消息
+        function showSuccessMessage() {
+            const message = window.i18n ? window.i18n.getText('settings.messages.saveSuccess') : '设置保存成功';
+            // 这里可以添加toast通知或其他成功提示
+            alert(message);
+        }
+
+
+        // 在 window.onload 时再次更新文本
+        window.addEventListener('load', function() {
+            console.log('Window loaded, updating texts again...');
+            if (window.i18n) {
+                window.i18n.updatePageTexts();
+                updateAllTexts();
+            }
+        });
+        
+        // 强制翻译函数 - 现在已集成到 i18n.updatePageTexts() 中
+        function forceTranslate() {
+            if (window.i18n) {
+                console.log('Force translating via i18n system, current language:', window.i18n.currentLanguage);
+                console.log('localStorage language:', localStorage.getItem('app_language'));
+                window.i18n.updatePageTexts();
+            }
+        }
+        
+        // 更新所有文本
+        function updateAllTexts() {
+            if (!window.i18n) return;
+            
+            // 更新页面标题
+            document.title = `${window.i18n.getText('settings.title')} - U Energy`;
+            
+            // 更新编辑按钮文本
+            const editBtn = document.getElementById('editToggleBtn');
+            if (editBtn) {
+                const span = editBtn.querySelector('span');
+                if (isEditMode) {
+                    span.textContent = window.i18n.getText('settings.buttons.exitEdit');
+                } else {
+                    span.textContent = window.i18n.getText('settings.buttons.edit');
+                }
+            }
+        }
+    </script>
+    <script src="components/global-notifications.js"></script>
+</body>
+</html>
