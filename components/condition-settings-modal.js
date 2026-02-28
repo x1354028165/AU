@@ -2,7 +2,6 @@
 (function() {
     'use strict';
     
-    console.log('🚀 Condition Settings Modal JS loaded successfully!');
     
     // 时间条件数据版本号 - 用于检测数据格式变化
     const TIME_PERIODS_VERSION = '1.2';
@@ -288,7 +287,6 @@
     
     // 打开模态框
     function openConditionSettingsModal() {
-        console.log('🚀 Opening condition settings modal...');
         
         const modalContent = document.getElementById('modalContent');
         if (!modalContent) {
@@ -296,7 +294,6 @@
             return;
         }
         
-        console.log('✅ Modal content element found');
         modalContent.style.display = 'block';
         
         // 保存模态框打开状态到localStorage
@@ -309,7 +306,6 @@
         // 初始化模态框拖拽功能
         makeModalDraggable(modalContent);
         
-        console.log('About to render time conditions...');
         
         // 渲染时间条件
         renderTimePeriods();
@@ -318,12 +314,10 @@
         modalContent.style.setProperty('z-index', '2147483648', 'important');
         modalContent.style.setProperty('position', 'fixed', 'important');
         
-        console.log('Modal opened successfully');
     }
     
     // 关闭模态框
     function closeConditionSettingsModal() {
-        console.log('Closing condition settings modal...');
         const modalContent = document.getElementById('modalContent');
         if (modalContent) {
             modalContent.style.display = 'none';
@@ -367,7 +361,6 @@
     
     // 初始化组件
     function initConditionSettingsModal() {
-        console.log('Initializing condition settings modal...');
 
         // 不创建新的模态框，使用现有的 modalContent
         // index.html 中已经有了模态框，我们只需要初始化时间条件功能
@@ -384,7 +377,6 @@
         // 添加语言切换监听，确保模态框中的文本随语言切换更新
         if (window.i18n && typeof window.i18n.addObserver === 'function') {
             window.i18n.addObserver((newLanguage, oldLanguage) => {
-                console.log('Language changed, updating conditions display...');
                 // 如果模态框当前是打开状态，重新渲染时间段以更新价格标签
                 const modalContent = document.getElementById('modalContent');
                 if (modalContent && modalContent.style.display !== 'none') {
@@ -398,8 +390,6 @@
     
     // 时间条件相关函数
     function renderTimePeriods() {
-        console.log('🎨 Rendering time periods...');
-        console.log('📊 Current timePeriods:', timePeriods);
         
         // 先检查模态框是否存在
         const modal = document.getElementById('modalContent');
@@ -407,37 +397,28 @@
             console.error('❌ Modal not found when trying to render time periods!');
             return;
         }
-        console.log('✅ Modal exists when rendering');
         
         // 渲染充电时间段
         const chargeContainer = document.getElementById('chargeTimePeriods');
         if (chargeContainer) {
-            console.log('🔋 Found charge container, rendering periods...');
             chargeContainer.innerHTML = '';
             timePeriods.charge.forEach((period, index) => {
-                console.log(`🔋 Creating charge period ${index + 1}:`, period);
                 chargeContainer.appendChild(createTimePeriodElement(period, 'charge'));
             });
-            console.log('✅ Rendered charge periods:', timePeriods.charge.length);
         } else {
             console.error('❌ chargeTimePeriods container not found!');
-            console.log('🔍 Available elements with time-related IDs:');
             ['chargeTimePeriods', 'dischargeTimePeriods', 'time-condition-container'].forEach(id => {
                 const elem = document.getElementById(id);
-                console.log(`  ${id}: ${elem ? 'EXISTS' : 'NOT FOUND'}`);
             });
         }
 
         // 渲染放电时间段
         const dischargeContainer = document.getElementById('dischargeTimePeriods');
         if (dischargeContainer) {
-            console.log('⚡ Found discharge container, rendering periods...');
             dischargeContainer.innerHTML = '';
             timePeriods.discharge.forEach((period, index) => {
-                console.log(`⚡ Creating discharge period ${index + 1}:`, period);
                 dischargeContainer.appendChild(createTimePeriodElement(period, 'discharge'));
             });
-            console.log('✅ Rendered discharge periods:', timePeriods.discharge.length);
         } else {
             console.error('❌ dischargeTimePeriods container not found!');
         }
@@ -448,7 +429,6 @@
 
     // 更新24小时时间轴显示
     function updateTimelineDisplay() {
-        console.log('📅 Updating timeline display...');
 
         const chargeBlocks = document.getElementById('chargeTimelineBlocks');
         const dischargeBlocks = document.getElementById('dischargeTimelineBlocks');
@@ -460,7 +440,6 @@
                 const chargeRetry = document.getElementById('chargeTimelineBlocks');
                 const dischargeRetry = document.getElementById('dischargeTimelineBlocks');
                 if (chargeRetry && dischargeRetry) {
-                    console.log('✅ Timeline containers found on retry, rendering...');
                     renderTimelineContent(chargeRetry, dischargeRetry);
                 } else {
                     console.error('❌ Timeline containers still not found after retry');
@@ -478,15 +457,12 @@
         chargeBlocks.innerHTML = '';
         dischargeBlocks.innerHTML = '';
 
-        console.log(`🔋 Rendering ${timePeriods.charge.length} charge periods`);
-        console.log(`⚡ Rendering ${timePeriods.discharge.length} discharge periods`);
 
         // 渲染充电时间段
         timePeriods.charge.forEach((period, index) => {
             const blocks = createTimelineBlocks(period, '#00ff88');
             blocks.forEach(block => {
                 chargeBlocks.appendChild(block);
-                console.log(`  ✓ Added charge block ${index + 1}: ${period.startTime}-${period.endTime}`);
             });
         });
 
@@ -495,13 +471,9 @@
             const blocks = createTimelineBlocks(period, '#ffc107');
             blocks.forEach(block => {
                 dischargeBlocks.appendChild(block);
-                console.log(`  ✓ Added discharge block ${index + 1}: ${period.startTime}-${period.endTime}`);
             });
         });
 
-        console.log('✅ Timeline display updated successfully');
-        console.log(`   - Charge blocks: ${chargeBlocks.children.length}`);
-        console.log(`   - Discharge blocks: ${dischargeBlocks.children.length}`);
     }
 
     // 创建时间轴块
@@ -614,7 +586,6 @@
     }
 
     function addTimePeriod(type) {
-        console.log('Adding time period for type:', type);
 
         const newPeriod = {
             id: `${type}-${Date.now()}`,
@@ -628,21 +599,17 @@
         renderTimePeriods();
         saveTimePeriods();
 
-        console.log('Added new period:', newPeriod);
     }
 
     function deleteTimePeriod(id, type) {
-        console.log('Deleting time period:', id, type);
         
         timePeriods[type] = timePeriods[type].filter(p => p.id !== id);
         renderTimePeriods();
         saveTimePeriods();
         
-        console.log('Deleted period:', id);
     }
 
     function updateTimePeriod(id, type, field, value) {
-        console.log('Updating time period:', id, type, field, value);
         
         const period = timePeriods[type].find(p => p.id === id);
         if (period) {
@@ -762,17 +729,13 @@
         if (saved && savedVersion === TIME_PERIODS_VERSION) {
             try {
                 timePeriods = JSON.parse(saved);
-                console.log('✅ Loaded time periods from localStorage:', timePeriods);
             } catch (e) {
                 console.error('❌ Failed to load time periods:', e);
-                console.log('🔄 Using default time periods');
                 timePeriods = JSON.parse(JSON.stringify(defaultTimePeriods));
             }
         } else {
             if (savedVersion && savedVersion !== TIME_PERIODS_VERSION) {
-                console.log('🔄 Version mismatch (saved:', savedVersion, 'current:', TIME_PERIODS_VERSION, ') - resetting to defaults');
             } else {
-                console.log('📋 No saved time periods found - using defaults');
             }
             timePeriods = JSON.parse(JSON.stringify(defaultTimePeriods));
             // 保存新的默认值和版本号
@@ -783,15 +746,12 @@
     function saveTimePeriods() {
         localStorage.setItem('modalTimePeriods', JSON.stringify(timePeriods));
         localStorage.setItem('modalTimePeriodsVersion', TIME_PERIODS_VERSION);
-        console.log('💾 Saved time periods to localStorage:', timePeriods);
-        console.log('📌 Version:', TIME_PERIODS_VERSION);
         // 同时更新主界面的条件显示
         updateMainPageConditionsDisplay();
     }
 
     // 更新主界面的充放电条件显示
     function updateMainPageConditionsDisplay() {
-        console.log('📊 Updating main page conditions display...');
 
         // 获取主界面的容器
         const chargeList = document.getElementById('chargeConditionsList');
@@ -807,7 +767,6 @@
         const lessThanText = window.i18n?.getText('lessThanPrice') || '低于';
         const greaterThanText = window.i18n?.getText('greaterThanPrice') || '高于';
 
-        console.log('📝 Price text:', priceText, '(should be "Price" in English mode)');
 
         // 渲染充电条件
         chargeList.innerHTML = '';
@@ -863,12 +822,10 @@
             dischargeList.innerHTML = '<div style="font-size: 12px; color: rgba(255,255,255,0.5); font-style: italic;">-</div>';
         }
 
-        console.log('✅ Main page conditions display updated');
     }
 
     // 保存条件设置并关闭模态框
     function saveConditionSettings() {
-        console.log('💾 Saving condition settings...');
         saveTimePeriods();
         
         // 显示保存成功提示
@@ -922,26 +879,21 @@
     // 页面加载完成后初始化
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('📄 DOMContentLoaded - initializing modal...');
             initConditionSettingsModal();
         });
     } else {
-        console.log('📄 Document already loaded - initializing modal...');
         initConditionSettingsModal();
     }
     
     // 延迟检查（确保所有资源加载完成）
     setTimeout(() => {
-        console.log('⏰ Delayed check - restoring modal state...');
         checkAndRestoreModal();
     }, 1000);
     
     // 额外的检查：确保函数在页面完全加载后可用
     window.addEventListener('load', () => {
-        console.log('🌍 Window load event - ensuring modal is ready...');
         const modalContent = document.getElementById('modalContent');
         if (modalContent) {
-            console.log('🔧 Modal found on window load, initializing time periods...');
             // 延迟一点时间确保DOM完全加载
             setTimeout(() => {
                 renderTimePeriods();
@@ -952,7 +904,6 @@
 
         // 额外延迟更新主界面显示，确保DOM容器已加载
         setTimeout(() => {
-            console.log('🔄 Extra delayed update for main page conditions...');
             updateMainPageConditionsDisplay();
         }, 1500);
     });

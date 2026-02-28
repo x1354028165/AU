@@ -445,7 +445,6 @@ class NotificationCenter {
     
     viewMore() {
         // 跳转到完整的消息中心页面
-        console.log('跳转到消息中心页面');
         this.close();
     }
     

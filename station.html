@@ -3265,7 +3265,6 @@
             const station = stationData.find(s => s.id === id);
             if (station) {
                 station.runMode = mode;
-                console.log(`[${id}] 运行模式已切换为: ${mode}`);
             }
             // 更新按钮状态
             document.querySelectorAll('.control-btn').forEach(btn => {
@@ -3278,7 +3277,6 @@
             const station = stationData.find(s => s.id === id);
             if (!station) return;
 
-            console.log(`[${id}] 发送命令: ${command}`);
 
             switch(command) {
                 case 'charge':
@@ -3302,7 +3300,6 @@
 
         function applyControl(id) {
             const powerValue = document.getElementById('powerSlider')?.value || 0;
-            console.log(`[${id}] 应用功率设置: ${powerValue} MW`);
 
             const station = stationData.find(s => s.id === id);
             if (station) {
@@ -3596,7 +3593,6 @@
             link.download = `station_export_${new Date().toISOString().slice(0,10)}.csv`;
             link.click();
 
-            console.log(`导出 ${filteredData.length} 条数据`);
         }
 
         function toggleSelectAll() {
@@ -3730,7 +3726,6 @@
                     reverseGeocode(position.lat, position.lng);
                 });
 
-                console.log('✅ 地图初始化成功');
 
             } catch (error) {
                 console.error('❌ 地图初始化失败:', error);

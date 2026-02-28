@@ -318,7 +318,6 @@ class UserDropdownSimpleNew {
             dialog.style.justifyContent = 'center';
             
             dialog.classList.add('show');
-            console.log('Logout confirm dialog shown');
         } else {
             console.error('Logout confirm dialog not found');
         }

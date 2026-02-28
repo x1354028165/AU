@@ -179,7 +179,6 @@ class HeaderNav {
                     window.userDropdownSimpleNew = new UserDropdownSimpleNew({
                         containerId: 'userDropdownContainer'
                     });
-                    console.log('UserDropdownSimpleNew initialized successfully');
                 }
             }, 100);
         }
@@ -228,11 +227,9 @@ class HeaderNav {
     }
     
     toggleLanguageDropdown() {
-        console.log('Toggle language dropdown');
         const dropdown = document.getElementById('languageDropdown');
         if (dropdown) {
             dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-            console.log('Dropdown display:', dropdown.style.display);
         } else {
             console.error('Language dropdown not found');
         }
@@ -246,7 +243,6 @@ class HeaderNav {
     }
     
     changeLanguage(lang) {
-        console.log('Changing language to:', lang);
         if (this.i18n) {
             this.i18n.setLanguage(lang);
         } else if (window.i18n) {

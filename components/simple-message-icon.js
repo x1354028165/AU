@@ -21,7 +21,6 @@ class SimpleMessageIcon {
         // 查找消息中心容器
         const messageCenter = document.querySelector('.message-center');
         if (!messageCenter) {
-            console.log('Message center container not found');
             return;
         }
         

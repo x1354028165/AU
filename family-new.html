@@ -1717,7 +1717,6 @@
         window.filteredData = [];
         
         window.sortTable = function(column, direction, element) {
-            console.log('sortTable called:', column, direction);
             
             // Check if data is available
             if (!window.filteredData || window.filteredData.length === 0) {
@@ -1954,11 +1953,9 @@
         
         // Generate data immediately
         window.familyData = generateFamilyData();
-        console.log('Generated family data:', window.familyData.length, 'items');
         let currentPage = 1;
         let pageSize = 20;
         window.filteredData = [...window.familyData];
-        console.log('Filtered data initialized:', window.filteredData.length, 'items');
         let pagination = null;
         
         // Ensure data loads even if other methods fail
@@ -2068,61 +2065,48 @@
                 const tbody = document.getElementById('familyTableBody');
                 if (tbody && tbody.children.length === 0) {
                     // Force load data if table is still empty
-                    console.log('Force loading family data...');
                     loadFamilyCards();
                 }
                 
                 // 检查排序按钮是否存在
                 const sortButtons = document.querySelectorAll('.sort-btn');
-                console.log('找到排序按钮数量:', sortButtons.length);
                 
                 // 检查表格是否存在
                 const table = document.querySelector('.data-table');
-                console.log('表格存在:', !!table);
                 
                 // 检查表头是否存在
                 const tableHeaders = document.querySelectorAll('.data-table th');
-                console.log('表头数量:', tableHeaders.length);
                 
                 // 检查具体的排序按钮容器
                 const sortContainers = document.querySelectorAll('.sort-buttons');
-                console.log('排序按钮容器数量:', sortContainers.length);
                 
                 // 直接检查HTML内容
                 const tableContainer = document.querySelector('.table-container');
                 if (tableContainer) {
-                    console.log('表格容器HTML长度:', tableContainer.innerHTML.length);
                 }
                 
                 if (sortButtons.length === 0) {
                     console.error('排序按钮未找到！请检查HTML结构');
                 } else {
-                    console.log('排序按钮已正确加载');
                 }
             }, 200);
             
             // 再次延迟检查，确保所有内容都加载完成
             setTimeout(() => {
-                console.log('=== 延迟检查 (1秒后) ===');
                 const sortButtons2 = document.querySelectorAll('.sort-btn');
-                console.log('第二次检查 - 找到排序按钮数量:', sortButtons2.length);
                 
                 // 手动检查每个应该有排序按钮的列
                 const thElements = document.querySelectorAll('th');
                 thElements.forEach((th, index) => {
                     const text = th.textContent.trim();
                     const hasSortButtons = th.querySelector('.sort-buttons');
-                    console.log(`列${index}: ${text} - 有排序按钮: ${!!hasSortButtons}`);
                 });
                 
                 // 检查原始HTML模板
                 const tableHTML = document.querySelector('.table-container').innerHTML;
-                console.log('表格HTML包含sort-buttons:', tableHTML.includes('sort-buttons'));
-                console.log('表格HTML包含sort-btn:', tableHTML.includes('sort-btn'));
                 
                 // 获取第3个th的innerHTML（应该是"今日获利"）
                 if (thElements[2]) {
-                    console.log('今日获利列的HTML:', thElements[2].innerHTML);
                 }
             }, 1000);
 
@@ -2291,8 +2275,6 @@
                 return;
             }
             
-            console.log('Loading family cards, filteredData length:', window.filteredData.length);
-            console.log('Current sort:', window.currentSortColumn, window.currentSortDirection);
             tbody.innerHTML = '';
 
             // Don't reset filteredData here if we're sorting
@@ -2427,7 +2409,6 @@
             // Get the current family ID from the drawer
             const drawerId = document.querySelector('.drawer-container').getAttribute('data-family-id');
             
-            console.log('Confirmed family ID:', drawerId);
             
             // Close drawer
             closeFamilyDrawer();
@@ -2435,11 +2416,9 @@
 
         // Test function to show drawer without data dependencies
         function testShowDrawer() {
-            console.log('Testing drawer display...');
             const drawer = document.getElementById('dischargeDrawer');
             if (drawer) {
                 drawer.classList.add('show');
-                console.log('Test drawer shown successfully');
             } else {
                 console.error('Drawer element not found');
             }
@@ -2447,21 +2426,17 @@
         
         // Open discharge data drawer
         function openDischargeDrawer(familyId, period) {
-            console.log('openDischargeDrawer called with:', familyId, period);
-            console.log('familyData:', familyData);
             
             const family = familyData.find(f => f.id == familyId);
             if (!family) {
                 console.error('Family not found with ID:', familyId);
                 return;
             }
-            console.log('Found family:', family);
             
             const drawer = document.getElementById('dischargeDrawer');
             const title = document.getElementById('dischargeDrawerTitle');
             const content = document.getElementById('dischargeDrawerContent');
             
-            console.log('Drawer elements:', { drawer, title, content });
             
             if (!drawer) {
                 console.error('dischargeDrawer element not found!');
@@ -2469,8 +2444,6 @@
             }
             
             // Set title based on period and language
-            console.log('Current i18n state:', window.i18n);
-            console.log('Current language:', window.i18n ? window.i18n.currentLanguage : 'no i18n');
             
             // Get current language
             const currentLang = window.i18n ? window.i18n.currentLanguage : 'en';
@@ -2485,8 +2458,6 @@
                 String(targetDate.getDate()).padStart(2, '0');
             const userName = window.i18n ? window.i18n.getText(family.nameKey) : family.name;
             
-            console.log('Period text:', periodText);
-            console.log('User name:', userName);
             
             title.textContent = `${userName}——${periodText}`;
             
@@ -2497,9 +2468,7 @@
             loadDischargeContent(content, dischargeData, period);
             
             // Show drawer
-            console.log('Showing discharge drawer...');
             drawer.classList.add('show');
-            console.log('Drawer classes after adding show:', drawer.classList.toString());
         }
 
         // Close discharge drawer
@@ -3129,22 +3098,18 @@
 
         // Search and filter functions
         function handleSearch(value) {
-            console.log('Search:', value);
         }
 
 
         function handleDeviceCodeSearch(value) {
-            console.log('Device code search:', value);
         }
         
         function handleMeterSearch(value) {
-            console.log('Meter search:', value);
         }
 
         
         
         function handleDeviceStatusFilter(value) {
-            console.log('Device status filter:', value);
             applyFilters(); // 直接触发过滤
         }
 
@@ -3180,35 +3145,29 @@
             document.getElementById('brandModelDropdown').classList.remove('active');
 
             // 触发筛选
-            console.log('Brand/Model filter:', value);
             applyFilters();
         }
 
         // 兼容旧的 handleBrandFilter 函数（如果有其他地方调用）
         function handleBrandFilter(value) {
-            console.log('Brand/Model filter:', value);
             applyFilters();
         }
 
         function handleRegionFilter(value) {
-            console.log('Region filter:', value);
             applyFilters(); // 直接触发过滤
         }
 
         function applyFilters() {
             // Apply all filters and reload data
-            console.log('Applying filters...');
             currentPage = 1;
             loadFamilyCards();
         }
 
         function refreshData() {
             // Refresh data without changing filters
-            console.log('Refreshing data...');
             loadFamilyCards();
             // Show refresh notification
             const timestamp = new Date().toLocaleTimeString();
-            console.log('Data refreshed at:', timestamp);
         }
         
 
@@ -3750,7 +3709,6 @@
             const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1; // Include end date
 
             // Generate detailed running data CSV
-            console.log('Exporting detail data from', startDate, 'to', endDate, 'Granularity:', granularity, 'min, Users:', selectedData.length);
 
             // Create CSV content with specified granularity interval data
             const headers = [
@@ -3855,11 +3813,8 @@
         
         // Query filtered data flow directions
         window.queryFilteredFlows = function() {
-            console.log('=== 当前筛选结果流向数据 ===');
-            console.log('筛选后设备数:', window.filteredData.length);
             
             window.filteredData.forEach(family => {
-                console.log(`${family.name}: ${family.deviceStatus} - ${family.chargingSource || family.dischargingDestination || 'N/A'}`);
             });
             
             return window.filteredData.map(f => ({

@@ -21,9 +21,7 @@ class I18n {
     }
     
     init() {
-        console.log('I18n init called, current language:', this.currentLanguage);
         this.loadTranslations();
-        console.log('Translations loaded, available languages:', Object.keys(this.translations));
         
         // Set initial HTML lang attribute
         document.documentElement.lang = this.currentLanguage === 'zh' ? 'zh-CN' : this.currentLanguage;
@@ -34,27 +32,23 @@ class I18n {
         
         // 延迟再次更新页面文本，确保页面内容完全加载
         setTimeout(() => {
-            console.log('Delayed page text update (500ms)');
             this.updatePageTexts();
         }, 500);
         
         // 更长的延迟，确保动态内容也加载完成
         setTimeout(() => {
-            console.log('Delayed page text update (1500ms)');
             this.updatePageTexts();
         }, 1500);
         
         // 监听页面加载完成事件
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
-                console.log('DOMContentLoaded: updating page texts');
                 this.updatePageTexts();
             });
         }
         
         // 监听页面完全加载
         window.addEventListener('load', () => {
-            console.log('Window load: updating page texts');
             this.updatePageTexts();
         });
         
@@ -66,7 +60,6 @@ class I18n {
         
         // Mark as ready after all initialization is complete
         this.isReady = true;
-        console.log('I18n initialization completed, isReady set to true');
     }
     
     loadTranslations() {
@@ -1488,7 +1481,8 @@ class I18n {
                             content: "NSW地区充电价格$300，超过阈值$250，请充电",
                             currentPrice: "当前价格",
                             belowThreshold: "，低于阈值",
-                            aboveThreshold: "，超过阈值",
+                            forceRefreshing: "正在强制刷新页面...",
+                aboveThreshold: "，超过阈值",
                             pleaseCharge: "，请充电",
                             pleaseDischarge: "，请放电"
                         },
@@ -1515,7 +1509,8 @@ class I18n {
                     optimalChargeTitle: "最佳充电时机提醒——NSW",
                     lowPriceChargeTitle: "低价充电提醒——NSW",
                     belowThreshold: "，低于阈值",
-                    aboveThreshold: "，高于阈值",
+                    forceRefreshing: "Force refreshing page...",
+                aboveThreshold: "，高于阈值",
                     pleaseCharge: "，请充电",
                     pleaseDischarge: "，请放电",
                     regionChargePrice: "地区充电价格",
@@ -5078,7 +5073,6 @@ class I18n {
     }
     
     setLanguage(language) {
-        console.log('setLanguage called:', language);
         if (!this.supportedLanguages[language]) {
             console.warn(`Language ${language} is not supported`);
             return;
@@ -5086,7 +5080,6 @@ class I18n {
         
         const oldLanguage = this.currentLanguage;
         this.currentLanguage = language;
-        console.log('Language changed from', oldLanguage, 'to', language);
         
         // 保存到本地存储
         this.saveLanguageToStorage(language);
@@ -5118,14 +5111,11 @@ class I18n {
         
         // 强制更新页面所有翻译文本，避免页面刷新导致的问题
         setTimeout(() => {
-            console.log('Language switched to:', language, 'Starting translation update...');
             this.updatePageTexts();
-            console.log('Translation update completed');
         }, 50);
         
         // 额外的延迟更新，确保所有内容都被翻译
         setTimeout(() => {
-            console.log('Language switch: additional update (300ms)');
             this.updatePageTexts();
         }, 300);
     }
@@ -5154,11 +5144,9 @@ class I18n {
     }
     
     updatePageTexts() {
-        console.log('updatePageTexts called, current language:', this.currentLanguage);
         
         // 首先处理强制翻译元素 (data-text-zh 和 data-text-en)
         const forceTranslateElements = document.querySelectorAll('[data-text-zh][data-text-en]');
-        console.log('Found', forceTranslateElements.length, 'elements with forced translation');
         
         forceTranslateElements.forEach(element => {
             const zhText = element.getAttribute('data-text-zh');
@@ -5168,7 +5156,6 @@ class I18n {
         
         // 然后更新所有标记了 data-i18n 的元素
         const dataI18nElements = document.querySelectorAll('[data-i18n]');
-        console.log('Found', dataI18nElements.length, 'elements with data-i18n');
         
         dataI18nElements.forEach(element => {
             // 如果元素已经有强制翻译属性，跳过
@@ -5178,7 +5165,6 @@ class I18n {
             
             const key = element.getAttribute('data-i18n');
             const text = this.getText(key);
-            console.log('data-i18n:', key, '->', text);
             if (text !== key) { // 只有找到翻译时才更新
                 if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'search')) {
                     element.placeholder = text;
@@ -5190,12 +5176,10 @@ class I18n {
 
         // 新增：批量替换所有 data-i18n-key
         const dataI18nKeyElements = document.querySelectorAll('[data-i18n-key]');
-        console.log('Found', dataI18nKeyElements.length, 'elements with data-i18n-key');
         
         dataI18nKeyElements.forEach(el => {
             const key = el.getAttribute('data-i18n-key');
             const text = this.getText(key);
-            console.log('data-i18n-key:', key, '->', text);
             if (text !== key) {
                 if (el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'search')) {
                     el.placeholder = text;
@@ -5233,24 +5217,20 @@ class I18n {
     }
     
     getText(key, params = {}) {
-        console.log('getText called for key:', key, 'currentLanguage:', this.currentLanguage);
         const keys = key.split('.');
         let text = this.translations[this.currentLanguage];
         
-        console.log('Available translations for', this.currentLanguage, ':', text ? Object.keys(text) : 'undefined');
         
         for (const k of keys) {
             if (text && typeof text === 'object' && k in text) {
                 text = text[k];
             } else {
-                console.log('Key', k, 'not found in', this.currentLanguage, 'falling back to', this.defaultLanguage);
                 // fallback to default language
                 text = this.translations[this.defaultLanguage];
                 for (const fallbackKey of keys) {
                     if (text && typeof text === 'object' && fallbackKey in text) {
                         text = text[fallbackKey];
                     } else {
-                        console.log('Fallback failed for key:', key, 'returning original key');
                         return key; // 返回原始key作为fallback
                     }
                 }
@@ -5259,7 +5239,6 @@ class I18n {
         }
         
         if (typeof text !== 'string') {
-            console.log('Final text is not string:', text, 'returning original key');
             return key;
         }
         
@@ -5268,7 +5247,6 @@ class I18n {
             return params[param] !== undefined ? params[param] : match;
         });
         
-        console.log('getText result for', key, ':', result);
         return result;
     }
     
@@ -5340,7 +5318,6 @@ class I18n {
     loadLanguageFromStorage() {
         try {
             const stored = localStorage.getItem(this.storageKey);
-            console.log('Loaded language from storage:', stored);
             return stored;
         } catch (error) {
             console.warn('Failed to load language from localStorage:', error);
@@ -5350,7 +5327,6 @@ class I18n {
     
     // 重置语言设置
     resetLanguage() {
-        console.log('Resetting language settings');
         localStorage.removeItem(this.storageKey);
         sessionStorage.removeItem('pageStateBeforeLanguageSwitch');
         this.currentLanguage = this.defaultLanguage;
@@ -5359,7 +5335,6 @@ class I18n {
     
     // 强制完整翻译更新
     forceUpdateAllTexts() {
-        console.log('Force updating all texts');
         this.updatePageTexts();
         // 多次尝试确保所有动态内容都被翻译
         setTimeout(() => this.updatePageTexts(), 100);
@@ -5543,11 +5518,9 @@ if (typeof window !== 'undefined') {
     
     // 创建默认实例
     if (!window.i18n) {
-        console.log('Creating default i18n instance...');
         window.i18n = new I18n({
             defaultLanguage: 'zh',
             containerId: 'languageSelector'
         });
-        console.log('Default i18n instance created:', window.i18n);
     }
 }

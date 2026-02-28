@@ -348,14 +348,11 @@
 
     // 最佳时机提醒弹窗函数
     window.showOptimalNotification = function() {
-        console.log('showOptimalNotification called');
         closeNotification();
         updateNotificationContent('optimalTimeNotification', 'optimal');
         const element = document.getElementById('optimalTimeNotification');
-        console.log('optimalTimeNotification element found:', element);
         if (element) {
             element.style.display = 'block';
-            console.log('optimalTimeNotification shown');
         } else {
             console.error('optimalTimeNotification element not found!');
         }
@@ -381,23 +378,18 @@
     // 模拟通知函数
     // 模拟通知函数
     window.simulateChargeNotification = function() {
-        console.log('显示充电提醒弹窗');
         showChargeNotification();
     };
 
     window.simulateDischargeNotification = function() {
-        console.log('显示放电提醒弹窗');
         showDischargeNotification();
     };
 
     window.simulateOptimalNotification = function() {
-        console.log('显示最佳时机提醒弹窗');
-        console.log('optimalNotification element:', document.getElementById('optimalNotification'));
         showOptimalNotification();
     };
 
     window.simulateLowPriceNotification = function() {
-        console.log('显示低价充电提醒弹窗');
         showLowPriceNotification();
     };
 
@@ -515,7 +507,6 @@
             container.style.transform = 'none';
             localStorage.removeItem('testCardPosition');
             updateTestCardPosition();
-            console.log('Test card position reset to bottom-left corner');
         }
     };
 
@@ -531,30 +522,24 @@
 
     // 测试工具相关函数
     window.toggleTestTools = function() {
-        console.log('toggleTestTools called!'); // Debug log
         const panel = document.getElementById('testToolsPanel');
         const toggle = document.getElementById('testToolsToggle');
-        console.log('Panel:', panel, 'Toggle:', toggle); // Debug log
         if (panel && toggle) {
             if (panel.style.display === 'none' || !panel.style.display) {
                 panel.style.display = 'block';
                 toggle.style.transform = 'rotate(45deg)';
-                console.log('Panel opened'); // Debug log
                 
                 // 强制更新面板内的翻译
                 setTimeout(() => {
-                    console.log('Checking i18n availability:', window.i18n);
                     
                     // 尝试直接调用updatePageTexts
                     if (window.i18n && window.i18n.updatePageTexts) {
-                        console.log('Calling updatePageTexts directly');
                         window.i18n.updatePageTexts();
                     }
                     
                     // 同时尝试手动更新
                     if (window.i18n) {
                         const currentLang = window.i18n.currentLanguage || 'zh';
-                        console.log('Current language:', currentLang);
                         
                         // 使用正确的翻译
                         const translations = {
@@ -581,7 +566,6 @@
                             const text = langTexts[key];
                             if (text) {
                                 el.textContent = text;
-                                console.log(`Manually updated: ${key} -> ${text}`);
                             }
                         });
                     }
@@ -589,7 +573,6 @@
             } else {
                 panel.style.display = 'none';
                 toggle.style.transform = 'rotate(0deg)';
-                console.log('Panel closed'); // Debug log
             }
         } else {
             console.error('Panel or toggle not found!'); // Debug log
@@ -610,7 +593,6 @@
         if (container) {
             container.style.display = 'block';
             updateTestCardPosition();
-            console.log('Test card shown');
         }
     };
 
@@ -618,7 +600,6 @@
         const container = document.getElementById('testCardContainer');
         if (container) {
             container.style.display = 'none';
-            console.log('Test card hidden');
         }
     };
 
@@ -641,7 +622,6 @@
             }));
             
             updateTestCardPosition();
-            console.log(`Test card moved to random position: (${randomX}, ${randomY})`);
         }
     };
 
@@ -689,20 +669,11 @@
         listenToLanguageChange();
         
         // Debug: 确认组件已加载
-        console.log('Global notifications component loaded with all notifications');
-        console.log('toggleTestTools function available:', typeof window.toggleTestTools);
         
         // 检查所有弹窗元素是否创建成功
-        console.log('chargeNotification:', document.getElementById('chargeNotification'));
-        console.log('dischargeNotification:', document.getElementById('dischargeNotification'));
-        console.log('optimalTimeNotification:', document.getElementById('optimalTimeNotification'));
-        console.log('lowPriceNotification:', document.getElementById('lowPriceNotification'));
         
         // 测试函数是否可用
         setTimeout(() => {
-            console.log('Testing notification functions:');
-            console.log('simulateOptimalNotification available:', typeof window.simulateOptimalNotification);
-            console.log('showOptimalNotification available:', typeof window.showOptimalNotification);
         }, 1000);
     }
 
@@ -715,15 +686,10 @@
     
     // 提供全局测试函数
     window.testOptimalNotification = function() {
-        console.log('=== Testing Optimal Notification ===');
         const elem = document.getElementById('optimalTimeNotification');
-        console.log('Element found:', elem);
         if (elem) {
-            console.log('Current display:', elem.style.display);
             elem.style.display = 'block';
-            console.log('New display:', elem.style.display);
             updateNotificationContent('optimalTimeNotification', 'optimal');
-            console.log('Content updated');
         }
     };
 })();

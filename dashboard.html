@@ -8215,7 +8215,7 @@
                 box-shadow: 0 8px 32px rgba(0, 255, 136, 0.5);
                 animation: pulse 0.5s ease-in-out;
             `;
-            notification.textContent = '正在强制刷新页面...';
+            notification.textContent = window.i18n ? window.i18n.getText('forceRefreshing') : '正在强制刷新页面...';
             document.body.appendChild(notification);
         }
 
@@ -14834,7 +14834,7 @@
             // Update basic information
             const operationType = currentOperation === 'charge' ? '充电' : (currentOperation === 'discharge' ? '放电' : '停止操作');
             document.getElementById('detailsOperationType').textContent = operationType;
-            document.getElementById('detailsTargetDevices').textContent = '500个设备';
+            document.getElementById('detailsTargetDevices').textContent = (window.i18n && window.i18n.getCurrentLanguage() === 'en') ? '500 Devices' : '500个设备';
             const profitElement = document.getElementById('detailsEstimatedProfit');
             if (profitElement) {
                 profitElement.innerHTML = '<span data-i18n="estimatedProfitValue">+$340</span>';
@@ -15129,7 +15129,7 @@
 
         // Header functions
         function toggleMessages() {
-            alert('消息中心：\n• 系统维护通知 (2小时前)\n• 电价波动提醒 (4小时前)\n• 设备状态报告 (1天前)');
+            window.location.href = 'message-center.html';
         }
 
         function toggleLanguage() {
@@ -15144,7 +15144,7 @@
         }
 
         function toggleUserMenu() {
-            alert('用户菜单：\n• 个人设置\n• 账户管理\n• 退出登录');
+            window.location.href = 'user-settings.html';
         }
 
         // 点击其他地方关闭下拉菜单
@@ -16039,7 +16039,7 @@
             if (currentLang === 'en') {
                 targetDevices.textContent = '500';
             } else {
-                targetDevices.textContent = '500个';
+                targetDevices.textContent = (window.i18n && window.i18n.getCurrentLanguage() === 'en') ? '500' : '500个';
             }
             
             // 生成随机统计数据
@@ -17589,13 +17589,13 @@
             const settings = currentConditionType === 'charge' ? chargeTimeSettings : dischargeTimeSettings;
             
             if (settings.segments.length === 0) {
-                currentSettings.innerHTML = `${currentSelectedRegion} - ${typeText}: 未设置时间段`;
+                currentSettings.innerHTML = `${currentSelectedRegion} - ${typeText}: ${window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'No time slots' : '未设置时间段'}`;
             } else if (settings.segments.length === 1) {
                 const segment = settings.segments[0];
                 const timeText = `${segment.start.toString().padStart(2, '0')}:00 - ${segment.end.toString().padStart(2, '0')}:00`;
                 currentSettings.innerHTML = `${currentSelectedRegion} - ${typeText}: ${timeText}`;
             } else {
-                currentSettings.innerHTML = `${currentSelectedRegion} - ${typeText}: ${settings.segments.length}个时间段`;
+                currentSettings.innerHTML = `${currentSelectedRegion} - ${typeText}: ${settings.segments.length}${window.i18n && window.i18n.getCurrentLanguage() === 'en' ? ' slots' : '个时间段'}`;
             }
         }
         
@@ -17714,7 +17714,7 @@
             if (info) {
                 info.innerHTML = message;
                 setTimeout(() => {
-                    info.innerHTML = '<span style="color: rgba(255,255,255,0.6); font-size: 12px;">💡 点击空白区域添加时间段，拖拽时间段调整时间</span>';
+                    info.innerHTML = '<span style="color: rgba(255,255,255,0.6); font-size: 12px;">💡 ' + (window.i18n ? window.i18n.getText('dragToAddTimeSlot') : '点击空白区域添加时间段，拖拽时间段调整时间') + '</span>';
                 }, 3000);
             }
         }
@@ -18208,7 +18208,7 @@
                 }, 200);
             } catch (error) {
                 console.error('Error opening modal:', error);
-                alert('打开设置弹窗时出错：' + error.message);
+                alert((window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Error opening settings: ' : '打开设置弹窗时出错：') + error.message);
             }
         }
         
@@ -18583,7 +18583,7 @@
             const endTime = document.getElementById('segmentEnd').value;
             
             if (!startTime || !endTime) {
-                alert('请选择开始和结束时间');
+                alert(window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Please select start and end time' : '请选择开始和结束时间');
                 return;
             }
             
@@ -18592,7 +18592,7 @@
                 updateTimeSegmentDisplay();
                 closeAddSegmentModal();
             } else {
-                alert('时间段重叠，请重新选择时间');
+                alert(window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Time slots overlap, please reselect' : '时间段重叠，请重新选择时间');
             }
         }
         
@@ -18669,7 +18669,7 @@
         
         // 删除时间段
         function deleteTimeSegment(segmentId) {
-            if (confirm('确认删除此时间段？')) {
+            if (confirm(window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Delete this time slot?' : '确认删除此时间段？')) {
                 window.timeSegmentManager.removeTimeSegment(segmentId);
                 updateTimeSegmentDisplay();
             }
@@ -18853,10 +18853,10 @@
                 
                 
                 // 显示保存成功提示
-                alert('设置已保存成功！');
+                alert(window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Settings saved!' : '设置已保存成功！');
             } catch (error) {
                 console.error('保存设置时出错:', error);
-                alert('保存设置失败：' + error.message);
+                alert((window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Save failed: ' : '保存设置失败：') + error.message);
             }
         }
         
@@ -19629,7 +19629,7 @@
         function addCurrentTimeSelection() {
             
             if (!timeSelection.current || !currentTimeSelectionMode) {
-                alert('请先在时间轴上选择时间段');
+                alert(window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Please select time slots on timeline first' : '请先在时间轴上选择时间段');
                 return;
             }
             
@@ -20809,13 +20809,13 @@
         function cancelSettings() {
             // 这里可以重置设置到之前的状态
             // 暂时只显示提示
-            alert('设置已取消');
+            alert(window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Settings cancelled' : '设置已取消');
         }
         
         function saveSettings() {
             // 这里可以保存当前设置状态
             // 暂时只显示提示
-            alert('设置已保存');
+            alert(window.i18n && window.i18n.getCurrentLanguage() === 'en' ? 'Settings saved' : '设置已保存');
         }
     </script>
     
@@ -21262,7 +21262,7 @@
                 } else {
                     const comparison = action === '充电' ? '低于' : '超过';
                     const highlightAction = `<span class="highlight-action">${action}</span>`;
-                    contentElement.innerHTML = `当前价格${highlightPrice}，${comparison}阈值${highlightThreshold}，请${highlightAction}`;
+                    contentElement.innerHTML = (window.i18n && window.i18n.getCurrentLanguage() === 'en') ? `Price ${highlightPrice}, ${comparison} threshold ${highlightThreshold}, please ${highlightAction}` : `当前价格${highlightPrice}，${comparison}阈值${highlightThreshold}，请${highlightAction}`;
                 }
                 
             } else if (notificationId === 'advancedPushNotification') {
@@ -21291,7 +21291,7 @@
                     contentElement.innerHTML = `${region} region ${actionEn} price ${highlightPrice}, ${timeEn} until optimal ${actionEn} time, please prepare`;
                 } else {
                     const opportunityText = `最佳${action}时间`;
-                    contentElement.innerHTML = `当前价格${highlightPrice}，还有${highlightTime}到达${opportunityText}，请做好准备`;
+                    contentElement.innerHTML = (window.i18n && window.i18n.getCurrentLanguage() === 'en') ? `Price ${highlightPrice}, ${highlightTime} to ${opportunityText}, please prepare` : `当前价格${highlightPrice}，还有${highlightTime}到达${opportunityText}，请做好准备`;
                 }
             }
         }

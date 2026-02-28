@@ -1627,14 +1627,12 @@
         // 确保 i18n 在页面加载前初始化
         function ensureI18nInitialized() {
             if (!window.i18n) {
-                console.log('Initializing i18n...');
                 window.i18n = new I18n();
             }
             // 等待 i18n 完全初始化
             return new Promise((resolve) => {
                 const checkReady = () => {
                     if (window.i18n && window.i18n.isReady) {
-                        console.log('i18n is ready, current language:', window.i18n.currentLanguage);
                         resolve();
                     } else {
                         setTimeout(checkReady, 50);
@@ -1659,17 +1657,14 @@
             // 初始化多语言支持
             if (window.i18n) {
                 window.i18n.addObserver((newLang, oldLang) => {
-                    console.log('Language changed from', oldLang, 'to', newLang);
                     updateAllTexts();
                 });
                 
                 // 立即执行强制翻译
-                console.log('Initial language:', window.i18n.currentLanguage);
                 forceTranslate();
                 
                 // 然后更新页面文本
                 setTimeout(() => {
-                    console.log('Updating page texts, current language:', window.i18n.currentLanguage);
                     window.i18n.updatePageTexts();
                     updateAllTexts();
                 }, 100);
@@ -1932,7 +1927,6 @@
 
         // 在 window.onload 时再次更新文本
         window.addEventListener('load', function() {
-            console.log('Window loaded, updating texts again...');
             if (window.i18n) {
                 window.i18n.updatePageTexts();
                 updateAllTexts();
@@ -1942,8 +1936,6 @@
         // 强制翻译函数 - 现在已集成到 i18n.updatePageTexts() 中
         function forceTranslate() {
             if (window.i18n) {
-                console.log('Force translating via i18n system, current language:', window.i18n.currentLanguage);
-                console.log('localStorage language:', localStorage.getItem('app_language'));
                 window.i18n.updatePageTexts();
             }
         }

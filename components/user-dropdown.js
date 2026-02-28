@@ -332,7 +332,6 @@ class UserDropdown {
         this.countdownTimer = setInterval(updateButton, 1000);
         
         // 模拟发送成功
-        console.log('验证码已发送到:', email);
         this.showSuccess('验证码已发送');
     }
     
@@ -482,7 +481,6 @@ class UserDropdown {
         }
         
         // 保存新密码（实际应调用后端API）
-        console.log('密码已更新');
         
         return true;
     }

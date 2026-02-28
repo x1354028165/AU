@@ -1003,13 +1003,9 @@
 
                 // Check region selector
                 const regionSelector = document.getElementById('regionSelector');
-                console.log('Region selector element:', regionSelector);
                 if (!regionSelector) {
                     console.error('Region selector NOT found in DOM!');
                 } else {
-                    console.log('Region selector found, value:', regionSelector.value);
-                    console.log('Region selector style display:', window.getComputedStyle(regionSelector).display);
-                    console.log('Region selector parent class:', regionSelector.parentElement.className);
                 }
                 
                 // Initialize time selector with default day + today
@@ -1030,7 +1026,6 @@
                         const container = document.getElementById(id);
                         if (container) {
                             const rect = container.getBoundingClientRect();
-                            console.log(`Chart container ${id}: width=${rect.width}, height=${rect.height}`);
                             if (rect.width === 0 || rect.height === 0) {
                                 console.warn(`Chart container ${id} has zero size!`);
                                 // 强制设置高度
@@ -1078,7 +1073,6 @@
             const timeInput = document.getElementById('timeSelector');
             const selectedDate = timeInput.value;
             const period = currentTimePeriod;
-            console.log('Time period changed:', period, selectedDate);
             refreshCharts();
         }
         
@@ -1131,7 +1125,6 @@
         function handleRegionChange() {
             const regionSelector = document.getElementById('regionSelector');
             const selectedRegion = regionSelector.value;
-            console.log('[handleRegionChange] Selected region:', selectedRegion);
             
             // Simply refresh all data with new region
             refreshData();
@@ -1154,9 +1147,6 @@
 
         // Time period switching
         function switchTimePeriod(period, element) {
-            console.log('[switchTimePeriod] ========== SWITCHING TIME PERIOD ==========');
-            console.log('[switchTimePeriod] From:', currentTimePeriod, 'To:', period);
-            console.log('[switchTimePeriod] Current view mode:', currentViewMode);
             currentTimePeriod = period;
             
             // Update pill states
@@ -1214,7 +1204,6 @@
             }
             
             // Force refresh data - both stats and table
-            console.log('[switchTimePeriod] Forcing data refresh');
             
             // Update table headers based on period
             updateTableHeaders(period);
@@ -1229,7 +1218,6 @@
             // If table view is active, update it immediately
             const tableViewContent = document.getElementById('tableViewContent');
             if (tableViewContent && tableViewContent.style.display !== 'none') {
-                console.log('[switchTimePeriod] Table view is active, updating table');
                 
                 // 重置当前页
                 currentPage = 1;
@@ -1271,20 +1259,16 @@
         }
 
         function handleTimeInputChange() {
-            console.log('Time input changed, refreshing all data...');
             handleTimeChange();
             refreshData();
         }
 
         // Refresh data when time changes
         function refreshData() {
-            console.log('[refreshData] Current view mode:', currentViewMode);
-            console.log('[refreshData] Current time period:', currentTimePeriod);
             
             // Get selected region
             const regionSelector = document.getElementById('regionSelector');
             const selectedRegion = regionSelector ? regionSelector.value : 'all';
-            console.log('[refreshData] Selected region:', selectedRegion);
             
             // Update stats
             updateStats(selectedRegion);
@@ -1293,12 +1277,10 @@
             const tableViewContent = document.getElementById('tableViewContent');
             const isTableVisible = tableViewContent && tableViewContent.style.display !== 'none';
             
-            console.log('[refreshData] Is table visible?', isTableVisible);
             
             // Always refresh table data if table view is active
             if (currentViewMode === 'table' || isTableVisible) {
                 // Refresh table data
-                console.log('[refreshData] Refreshing table view');
                 refreshTableData(selectedRegion);
             } else {
                 // Refresh charts
@@ -1308,18 +1290,15 @@
         
         // Refresh table data specifically
         function refreshTableData() {
-            console.log('[refreshTableData] Starting table refresh');
             
             // Generate new data based on current time selection
             generateTableData();
-            console.log('[refreshTableData] Generated', tableData.length, 'rows');
             
             // Reset to first page
             currentPage = 1;
             
             // Update pagination if it exists
             if (pagination) {
-                console.log('[refreshTableData] Recreating pagination');
                 // 重新创建分页组件
                 pagination = new Pagination({
                     containerId: 'paginationContainer',
@@ -1339,7 +1318,6 @@
             }
             
             // Reload table
-            console.log('[refreshTableData] Loading table data');
             loadTableData();
         }
 
@@ -1414,7 +1392,6 @@
 
         // Toggle test mode
         function toggleTestMode() {
-            console.log('Toggling test mode');
             // TODO: Implement test mode functionality
         }
         
@@ -1425,7 +1402,6 @@
                 // Check if region selector already exists
                 let regionSelector = document.getElementById('regionSelector');
                 if (!regionSelector) {
-                    console.log('Creating region selector...');
                     
                     // Create the select element
                     regionSelector = document.createElement('select');
@@ -1458,10 +1434,8 @@
                     const firstChild = timeSelectorModule.firstElementChild;
                     timeSelectorModule.insertBefore(regionSelector, firstChild);
                     
-                    console.log('Region selector created successfully');
                     alert('地区选择器已添加！');
                 } else {
-                    console.log('Region selector already exists');
                     alert('地区选择器已存在！');
                 }
             }
@@ -2021,7 +1995,6 @@
 
         // Export functionality
         function exportTableData() {
-            console.log('Exporting table data...');
             // Implementation for data export
         }
         
@@ -2049,14 +2022,9 @@
         
         // Generate table data function that is called by other functions
         function generateTableData() {
-            console.log('[generateTableData] Called, current time period:', currentTimePeriod);
             const timeSelector = document.getElementById('timeSelector');
-            console.log('[generateTableData] Time selector value:', timeSelector ? timeSelector.value : 'null');
-            console.log('[generateTableData] Time selector type:', timeSelector ? timeSelector.type : 'null');
             tableData = generateUserParticipationData();
-            console.log('[generateTableData] Generated', tableData.length, 'rows of data');
             if (tableData.length > 0) {
-                console.log('[generateTableData] First row date:', tableData[0].date);
             }
         }
         
@@ -2071,7 +2039,6 @@
             const timeSelector = document.getElementById('timeSelector');
             const selectedTime = timeSelector ? timeSelector.value : '';
             
-            console.log('[generateUserParticipationData] Period:', currentTimePeriod, 'Selected time:', selectedTime);
             
             switch (currentTimePeriod) {
                 case 'day': {
@@ -2201,7 +2168,6 @@
         
         // Load table data into the table
         function loadTableData() {
-            console.log('[loadTableData] Starting with time period:', currentTimePeriod);
             
             const tbody = document.getElementById('userParticipationTableBody');
             if (!tbody) {
@@ -2214,7 +2180,6 @@
             
             // Check if we have data
             if (!tableData || tableData.length === 0) {
-                console.log('[loadTableData] No data to display, generating new data...');
                 generateTableData();
                 
                 if (!tableData || tableData.length === 0) {
@@ -2223,7 +2188,6 @@
                 }
             }
             
-            console.log('[loadTableData] Loading', tableData.length, 'rows for period:', currentTimePeriod);
             
             // Get current page data
             const startIndex = (currentPage - 1) * pageSize;
@@ -2394,7 +2358,6 @@
             // Update all i18n texts after page fully loaded
             setTimeout(() => {
                 if (window.i18n && window.i18n.updatePageTexts) {
-                    console.log('Force updating all i18n texts after page load...');
                     window.i18n.updatePageTexts();
                 }
             }, 500);
@@ -2404,7 +2367,6 @@
                     // Check if region selector already exists
                     let regionSelector = document.getElementById('regionSelector');
                     if (!regionSelector) {
-                        console.log('Creating region selector...');
                         
                         // Create the select element
                         regionSelector = document.createElement('select');
@@ -2437,9 +2399,7 @@
                         const firstChild = timeSelectorModule.firstElementChild;
                         timeSelectorModule.insertBefore(regionSelector, firstChild);
                         
-                        console.log('Region selector created successfully');
                     } else {
-                        console.log('Region selector already exists');
                     }
                 }
             }, 500);

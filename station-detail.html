@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电站详情 - 每日分析</title>
+    <title>Station Detail - Daily Analysis</title>
+    <script src="components/i18n.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         .detail-container {
@@ -243,7 +244,7 @@
                 <span>返回列表</span>
             </a>
             <div class="detail-title">
-                <h1 id="stationName">加载中...</h1>
+                <h1 id="stationName">Loading...</h1>
                 <p id="dateDisplay">数据加载中...</p>
             </div>
         </div>
@@ -433,7 +434,7 @@
                 labels: hours,
                 datasets: [
                     {
-                        label: '实际价格',
+                        label: (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Actual Price' : '实际价格'),
                         data: actualPrices,
                         borderColor: '#007aff',
                         backgroundColor: 'rgba(0, 122, 255, 0.1)',
@@ -444,7 +445,7 @@
                         pointHoverRadius: 6
                     },
                     {
-                        label: '预测价格',
+                        label: (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Forecast Price' : '预测价格'),
                         data: predictedPrices,
                         borderColor: '#5856d6',
                         backgroundColor: 'transparent',
@@ -456,7 +457,7 @@
                         pointHoverRadius: 6
                     },
                     {
-                        label: '充电',
+                        label: (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Charge' : '充电'),
                         data: operationScatterData.filter(op => op.type === 'charge').map(op => ({x: op.x, y: op.y})),
                         backgroundColor: '#34c759',
                         borderColor: '#fff',
@@ -467,7 +468,7 @@
                         type: 'scatter'
                     },
                     {
-                        label: '放电',
+                        label: (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Discharge' : '放电'),
                         data: operationScatterData.filter(op => op.type === 'discharge').map(op => ({x: op.x, y: op.y})),
                         backgroundColor: '#FFD60A',
                         borderColor: '#fff',
@@ -478,7 +479,7 @@
                         type: 'scatter'
                     },
                     {
-                        label: '停止',
+                        label: (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Stop' : '停止'),
                         data: operationScatterData.filter(op => op.type === 'stop').map(op => ({x: op.x, y: op.y})),
                         backgroundColor: '#ff453a',
                         borderColor: '#fff',
@@ -569,7 +570,7 @@
 
                 const bar = document.createElement('div');
                 bar.className = `hour-bar ${isOn ? 'on' : 'off'}`;
-                bar.textContent = isOn ? '开启' : '关闭';
+                bar.textContent = isOn ? (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'On' : '开启') : (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Off' : '关闭');
 
                 block.appendChild(label);
                 block.appendChild(bar);
@@ -610,7 +611,7 @@
 
         // Show loading complete toast
         setTimeout(() => {
-            showToast('success', '数据加载完成', `已加载 ${selectedStation} 在 ${selectedDate} 的详细数据`);
+            showToast('success', (window.i18n && window.i18n.getCurrentLanguage()==='en' ? 'Data loaded' : '数据加载完成'), `已加载 ${selectedStation} 在 ${selectedDate} 的详细数据`);
         }, 500);
     </script>
 </body>

@@ -1846,10 +1846,10 @@
 
         <!-- Strategy Toggle -->
         <div class="strategy-toggle">
-            <button class="toggle-btn active" onclick="console.log('普通策略按钮被点击'); if(window.switchStrategy) { window.switchStrategy('normal', this); } else { alert('switchStrategy函数未加载'); }" data-i18n-key="pushStrategy.categories.normal">
+            <button class="toggle-btn active" onclick="if(window.switchStrategy) { window.switchStrategy('normal', this); } else { alert('switchStrategy函数未加载'); }" data-i18n-key="pushStrategy.categories.normal">
                 <span data-i18n="pushStrategy.tabs.normal">普通策略</span>
             </button>
-            <button class="toggle-btn" onclick="console.log('高级策略按钮被点击'); if(window.switchStrategy) { window.switchStrategy('advanced', this); } else { alert('switchStrategy函数未加载'); }" data-i18n-key="pushStrategy.categories.advanced">
+            <button class="toggle-btn" onclick="if(window.switchStrategy) { window.switchStrategy('advanced', this); } else { alert('switchStrategy函数未加载'); }" data-i18n-key="pushStrategy.categories.advanced">
                 <span data-i18n="pushStrategy.tabs.advanced">高级策略</span>
             </button>
         </div>
@@ -1865,7 +1865,7 @@
                         <!-- 移除标题和描述 -->
                     </div>
                     <div class="strategy-actions">
-                        <button class="edit-button" id="normalEditBtn" onclick="console.log('编辑按钮被点击'); if(window.editNormalStrategy) { window.editNormalStrategy(); } else { alert('editNormalStrategy函数未加载'); }" data-i18n-key="pushStrategy.buttons.edit">编辑</button>
+                        <button class="edit-button" id="normalEditBtn" onclick="if(window.editNormalStrategy) { window.editNormalStrategy(); } else { alert('editNormalStrategy函数未加载'); }" data-i18n-key="pushStrategy.buttons.edit">编辑</button>
                         <!-- Save actions moved to bottom -->
                     </div>
                 </div>
@@ -2018,7 +2018,7 @@
                         <!-- 移除标题和描述 -->
                     </div>
                     <div class="strategy-actions">
-                        <button class="edit-button" id="advancedEditBtn" onclick="console.log('高级策略编辑按钮被点击'); if(window.editAdvancedStrategy) { window.editAdvancedStrategy(); } else { alert('editAdvancedStrategy函数未加载'); }" data-i18n-key="pushStrategy.buttons.edit">编辑</button>
+                        <button class="edit-button" id="advancedEditBtn" onclick="if(window.editAdvancedStrategy) { window.editAdvancedStrategy(); } else { alert('editAdvancedStrategy函数未加载'); }" data-i18n-key="pushStrategy.buttons.edit">编辑</button>
                         <!-- Save actions moved to bottom -->
                     </div>
                 </div>
@@ -2446,7 +2446,6 @@
         // 立即在全局作用域定义所需函数
         window.switchStrategy = function(strategy, button) {
             try {
-                console.log('切换策略:', strategy);
                 const tabs = document.querySelectorAll('.toggle-btn');
                 const normalStrategy = document.getElementById('normalStrategy');
                 const advancedStrategy = document.getElementById('advancedStrategy');
@@ -2472,7 +2471,6 @@
                     advancedStrategy.style.display = 'block';
                 }
                 
-                console.log('切换成功到', strategy);
                 // Toast removed
             } catch (error) {
                 console.error('切换策略失败:', error);
@@ -2482,7 +2480,6 @@
         
         window.editNormalStrategy = function() {
             try {
-                console.log('进入普通策略编辑模式');
                 const inputs = document.querySelectorAll('#normalStrategy .region-input, #normalStrategy .counter-value, #normalStrategy .checkbox-input');
                 const editButton = document.getElementById('normalEditBtn');
                 const counterBtns = document.querySelectorAll('#normalStrategy .counter-btn');
@@ -2517,7 +2514,6 @@
                     bottomSaveBtn.onclick = saveNormalStrategy;
                 }
                 
-                console.log('成功进入编辑模式');
                 // Toast removed
             } catch (error) {
                 console.error('进入编辑模式失败:', error);
@@ -2527,7 +2523,6 @@
         
         window.editAdvancedStrategy = function() {
             try {
-                console.log('进入高级策略编辑模式');
                 const inputs = document.querySelectorAll('#advancedStrategy .form-input, #advancedStrategy .counter-value, #advancedStrategy .checkbox-input');
                 const editButton = document.getElementById('advancedEditBtn');
                 const counterBtns = document.querySelectorAll('#advancedStrategy .counter-btn');
@@ -2568,7 +2563,6 @@
                     bottomSaveBtn.onclick = saveAdvancedStrategy;
                 }
                 
-                console.log('成功进入高级策略编辑模式');
                 // Toast removed
             } catch (error) {
                 console.error('进入编辑模式失败:', error);
@@ -2577,11 +2571,6 @@
         };
         
         // 立即验证函数是否已定义
-        console.log('=== 函数定义验证 ===');
-        console.log('window.switchStrategy:', typeof window.switchStrategy);
-        console.log('window.editNormalStrategy:', typeof window.editNormalStrategy);
-        console.log('window.editAdvancedStrategy:', typeof window.editAdvancedStrategy);
-        console.log('===================');
         
         // 全局错误处理
         window.onerror = function(msg, url, lineNo, columnNo, error) {
@@ -3610,7 +3599,6 @@
                 }
             }
             
-            console.log('推送策略页面初始化完成');
             
             // 确保初始显示普通策略
             const normalStrategy = document.getElementById('normalStrategy');
@@ -3623,10 +3611,6 @@
             // Toast removed
             
             // 验证函数是否已注册
-            console.log('验证函数注册状态:');
-            console.log('editNormalStrategy:', typeof window.editNormalStrategy);
-            console.log('editAdvancedStrategy:', typeof window.editAdvancedStrategy);
-            console.log('switchStrategy:', typeof window.switchStrategy);
             
             // 启动模拟推送（仅供测试，可注释掉）
             // simulatePushNotifications();

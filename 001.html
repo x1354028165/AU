@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>实时数据分析 - U Energy</title>
+    <title data-i18n="analysis.pageTitle">实时数据分析 - U Energy</title>
     <script src="vendor/echarts.min.js"></script>
     <!-- Header Navigation Dependencies -->
     <link rel="stylesheet" href="components/common-styles.css">
@@ -1469,6 +1469,10 @@
         const translations = {
             zh: {
                 allRegions: "全部地区",
+                averagePrice: "一般价格",
+                excellentPrice: "优秀价格",
+                goodPrice: "良好价格",
+                veryLowPrice: "极低价格",
                 nswRegion: "NSW",
                 qldRegion: "QLD", 
                 vicRegion: "VIC",
@@ -1628,6 +1632,10 @@
             },
             en: {
                 allRegions: "All Regions",
+                averagePrice: "Average Price",
+                excellentPrice: "Excellent Price",
+                goodPrice: "Good Price",
+                veryLowPrice: "Very Low Price",
                 nswRegion: "NSW",
                 qldRegion: "QLD",
                 vicRegion: "VIC", 
@@ -1922,14 +1930,12 @@
         function switchRegion(region, button) {
             document.querySelectorAll('.region-tab').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            console.log('Switched to region:', region);
         }
         
         // 历史分析地区切换
         function switchHistoricalRegion(region, button) {
             document.querySelectorAll('.historical-region-tab').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            console.log('Historical analysis switched to region:', region);
             
             // 更新当前选中的地区
             window.currentHistoricalRegion = region;
@@ -1943,7 +1949,6 @@
             const currentDimension = document.querySelector('.dimension-tab.active')?.getAttribute('onclick')?.match(/switchDimension\('([^']+)'/)?.[1] || 'price';
             const currentTimeDimension = document.querySelector('.time-tab.active')?.getAttribute('data-range') || 'yesterday';
             
-            console.log('Updating historical data for:', {
                 region: window.currentHistoricalRegion || 'nsw',
                 dimension: currentDimension,
                 timeDimension: currentTimeDimension
@@ -3099,7 +3104,6 @@
         // 页面初始化
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize HeaderNav component
-            console.log('Initializing HeaderNav...');
             if (typeof HeaderNav === 'undefined') {
                 console.error('HeaderNav class not found!');
                 return;
@@ -3109,12 +3113,10 @@
                 currentPage: 'analysis',  // Set current page as analysis
                 containerId: 'headerContainer'
             });
-            console.log('HeaderNav initialized successfully');
             
             // Wait for i18n to be initialized by HeaderNav
             function waitForI18nReady() {
                 if (window.i18n && window.i18n.isReady) {
-                    console.log('I18n ready, current language:', window.i18n.getCurrentLanguage());
                     // Get current language from i18n system
                     currentLanguage = window.i18n.getCurrentLanguage();
                     
@@ -3143,7 +3145,6 @@
                     // Initialize translations with correct language
                     updateAllTexts();
                 } else {
-                    console.log('I18n not ready, waiting...');
                     setTimeout(waitForI18nReady, 50);
                 }
             }

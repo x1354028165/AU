@@ -97,7 +97,6 @@ export function measurePerformance(name, func) {
     const endTime = performance.now();
     const duration = endTime - startTime;
     
-    console.log(`[Performance] ${name} took ${duration.toFixed(2)}ms`);
     
     // Log slow operations
     if (duration > 50) {
@@ -240,12 +239,10 @@ export class ChartManager {
     
     pauseAnimations() {
         // Implementation depends on chart library
-        console.log('[ChartManager] Pausing animations');
     }
     
     resumeAnimations() {
         // Implementation depends on chart library
-        console.log('[ChartManager] Resuming animations');
     }
 }
 

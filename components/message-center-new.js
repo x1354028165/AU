@@ -54,7 +54,6 @@ class MessageCenterNew {
             messageCenter.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Message center clicked, navigating to message-center.html');
                 
                 // 清除未读计数和隐藏徽章
                 self.markAllAsRead();

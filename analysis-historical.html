@@ -1784,11 +1784,9 @@
             // Wait for i18n to be ready before initializing charts
             function initializeWhenReady() {
                 if (window.i18n && window.i18n.isReady) {
-                    console.log('I18n ready, initializing charts with language:', window.i18n.getCurrentLanguage());
                     initializeCharts();
                     updateSellingPerformanceMetrics('yesterday');
                 } else {
-                    console.log('I18n not ready, waiting...');
                     setTimeout(initializeWhenReady, 50);
                 }
             }
@@ -1797,7 +1795,6 @@
             
             // Listen for language changes
             document.addEventListener('languageChanged', function() {
-                console.log('Language changed, reinitializing charts...');
                 setTimeout(() => {
                     initializeCharts();
                     updateSellingPerformanceMetrics(currentTimeDimension || 'yesterday');
@@ -1862,7 +1859,6 @@
             button.classList.add('active');
 
             // Update data based on selected region
-            console.log('Switching to region:', region);
             
             // Here you can add logic to update charts and data based on region
             // For now, we'll just log the region change
@@ -1873,7 +1869,6 @@
         function updateDataForRegion(region) {
             // This function would update all charts and data displays based on the selected region
             // For demonstration, we'll just log the region
-            console.log('Updating data for region:', region);
             
             // Add your region-specific data update logic here
             // For example:
@@ -1884,7 +1879,6 @@
 
         // Switch time dimension
         function switchTimeDimension(range, button) {
-            console.log('Switching time dimension to:', range);
             
             // Update active button
             document.querySelectorAll('.time-tab').forEach(btn => {
@@ -2191,7 +2185,6 @@
 
         // Update all analysis data
         function updateAllAnalysisData(range) {
-            console.log(`Updating analysis data for ${range}`);
             
             // Update price analysis data
             updatePriceAnalysisData(range);
@@ -3448,18 +3441,10 @@
             }
             
             // 返回计算结果的详细信息
-            console.log('=== 供需平衡分析报告 ===');
-            console.log('总需求量:', demandData.reduce((a, b) => a + b, 0), 'MWh');
-            console.log('总发电量:', generationData.reduce((a, b) => a + b, 0), 'MWh');
-            console.log('平均缺口:', (gapData.reduce((a, b) => a + b, 0) / 24).toFixed(0), 'MW');
             
             const positiveGaps = gapData.filter(gap => gap > 0);
             const negativeGaps = gapData.filter(gap => gap < 0);
             
-            console.log('供应不足时段:', positiveGaps.length, '小时');
-            console.log('供应过剩时段:', negativeGaps.length, '小时');
-            console.log('最大缺口:', Math.max(...gapData), 'MW');
-            console.log('最大过剩:', Math.min(...gapData), 'MW');
             
             return { 
                 times, 
