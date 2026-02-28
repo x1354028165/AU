@@ -10911,13 +10911,15 @@
             if (ecEl) ecEl.textContent = '$' + estCost;
             
             // 第三行标签根据充/放切换
+            const durLabel = document.querySelector('[data-i18n="dashboard.modal.estFullTime"]');
+            const costLabel = document.querySelector('[data-i18n="dashboard.modal.estCost"]');
             if (operationType === 'discharge') {
-                const durLabel = document.querySelector('[data-i18n="dashboard.modal.estFullTime"]');
-                const costLabel = document.querySelector('[data-i18n="dashboard.modal.estCost"]');
                 if (durLabel) durLabel.textContent = currentLanguage === 'en' ? 'Est. Discharge Time' : '预计放完时长';
                 if (costLabel) costLabel.textContent = currentLanguage === 'en' ? 'Est. Revenue' : '预计收入';
                 if (ecEl) ecEl.style.color = '#00ff88';
             } else {
+                if (durLabel) durLabel.textContent = currentLanguage === 'en' ? 'Est. Full Charge Time' : '预计充满时长';
+                if (costLabel) costLabel.textContent = currentLanguage === 'en' ? 'Est. Cost' : '预计成本';
                 if (ecEl) ecEl.style.color = '#ffc107';
             }
             
