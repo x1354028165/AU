@@ -4772,34 +4772,11 @@
         </div>
 
         
-            <!-- 今日指标栏 -->
-            <div style="position: relative; display: flex; align-items: stretch; width: 100%; margin: 20px 0 20px 0; background: rgba(255,255,255,0.06); backdrop-filter: blur(30px) saturate(1.5); -webkit-backdrop-filter: blur(30px) saturate(1.5); border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); padding: 14px 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.3); box-sizing: border-box;">
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px;">
-                    <div style="font-size: 18px; margin-bottom: 4px;">⚡</div>
-                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="dashboard.todayChargeLabel">今日充电量</div>
-                    <div style="font-size: 22px; font-weight: 700; color: #00ff88;" id="todayChargeAmount">2.45 MWh</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px;"><span data-i18n="dashboard.costLabel">成本</span> <span style="color: #ff6b6b; font-weight: 600;" id="todayChargeCost">$108</span></div>
-                </div>
-                <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;"></div>
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px;">
-                    <div style="font-size: 18px; margin-bottom: 4px;">🔋</div>
-                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="dashboard.todayDischargeLabel">今日放电量</div>
-                    <div style="font-size: 22px; font-weight: 700; color: #ffc107;" id="todayDischargeAmount">2.18 MWh</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px;"><span data-i18n="dashboard.revenueLabel">收入</span> <span style="color: #00ff88; font-weight: 600;" id="todayDischargeRevenue">$523</span></div>
-                </div>
-                <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;"></div>
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px;">
-                    <div style="font-size: 18px; margin-bottom: 4px;">💰</div>
-                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 4px;" data-i18n="dashboard.netProfitLabel">净利润</div>
-                    <div style="font-size: 22px; font-weight: 700; color: #00ff88;" id="todayNetProfit">$415</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px;"><span data-i18n="dashboard.vsYesterday">较昨日</span> <span id="profitVsYesterday" style="color: #00ff88; font-weight: 600;">↑ 12.3%</span></div>
-                </div>
-            </div>
 
         <!-- 第三排：放电与获利（全屏宽度） -->
         <div style="margin-bottom: 20px; margin-top: 0;">
             <!-- Discharge & Profit Chart 放电与收益 -->
-                <div class="card" style="height:422px; min-height:422px; max-height:422px; margin-top:0; display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start; padding:24px;">
+                <div class="card" style="height:510px; min-height:510px; max-height:510px; margin-top:0; display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start; padding:24px;">
                     <div class="chart-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
                         <div class="chart-title" style="font-size:18px; font-weight:500; color:var(--color-text);">
                             <span data-i18n="profit.charts.dischargeAndProfit">电量与获利</span>
@@ -4819,7 +4796,27 @@
                             </div>
                         </div>
                     </div>
-                    <div id="powerRevenueChart" style="width:100%; height:calc(100% - 70px); min-height:0;"></div>
+                    <!-- Today Metrics Row -->
+                    <div style="display:flex; align-items:stretch; gap:0; margin-bottom:12px; background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.08); padding:10px 0;">
+                        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px;">
+                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" data-i18n="dashboard.todayChargeLabel">Today Charge</div>
+                            <div style="font-size:18px; font-weight:700; color:#00ff88;" id="todayChargeAmount">2.45 MWh</div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span data-i18n="dashboard.costLabel">Cost</span> <span style="color:#ff6b6b; font-weight:600;" id="todayChargeCost">$108</span></div>
+                        </div>
+                        <div style="width:1px; background:rgba(255,255,255,0.08); margin:6px 0;"></div>
+                        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px;">
+                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" data-i18n="dashboard.todayDischargeLabel">Today Discharge</div>
+                            <div style="font-size:18px; font-weight:700; color:#ffc107;" id="todayDischargeAmount">2.18 MWh</div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span data-i18n="dashboard.revenueLabel">Revenue</span> <span style="color:#00ff88; font-weight:600;" id="todayDischargeRevenue">$523</span></div>
+                        </div>
+                        <div style="width:1px; background:rgba(255,255,255,0.08); margin:6px 0;"></div>
+                        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px;">
+                            <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;" data-i18n="dashboard.netProfitLabel">Net Profit</div>
+                            <div style="font-size:18px; font-weight:700; color:#00ff88;" id="todayNetProfit">$415</div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:2px;"><span data-i18n="dashboard.vsYesterday">vs Yesterday</span> <span id="profitVsYesterday" style="color:#00ff88; font-weight:600;">↑ 12.3%</span></div>
+                        </div>
+                    </div>
+                    <div id="powerRevenueChart" style="width:100%; height:calc(100% - 130px); min-height:0;"></div>
                 </div>
             </div>
             
