@@ -119,12 +119,7 @@ class HeaderNav {
             </div>
         `;
 
-        // 设置图标（已移除）
-        const settingsIcon = `
-            <div class="settings-icon" style="display:none;">
-                <span style="font-size: 20px;">⚙️</span>
-            </div>
-        `;
+                const settingsIcon = '';
         const languageSelector = '';
         const themeToggleBtn = '';
         const userAvatar = this.showUserAvatar ? '<div id="userDropdownContainer"></div>' : '';
